@@ -1,214 +1,6 @@
-// import "package:flutter/foundation.dart";
-// import "package:flutter/material.dart";
-// import "package:driver_app/components/pump_card.dart";
-
-// import "../components/shimmer.dart";
-// import "../components/user_info_card.dart";
-// import "../core/api_client.dart";
-
-// class InfoScreen extends StatefulWidget {
-//   final Map<String, dynamic>? userData;
-//   const InfoScreen({super.key, required this.userData});
-
-//   @override
-//   State<InfoScreen> createState() => _InfoScreenState();
-// }
-
-// class _InfoScreenState extends State<InfoScreen> {
-//   Future<Map<String, dynamic>>? _pumpData;
-
-//   @override
-//   void initState() {
-//     super.initState();
-
-//     _pumpData = ApiClient().getPumps();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     var size = MediaQuery.of(context).size;
-
-//     return SafeArea(
-//       child: Container(
-//         decoration: BoxDecoration(
-//           image: const DecorationImage(
-//             image: AssetImage("assets/images/pvcb_info_logo.png"),
-//           ),
-//           gradient: LinearGradient(
-//             begin: Alignment.topCenter,
-//             end: Alignment.bottomCenter,
-//             colors: [
-//               const Color(0xFFFFC923),
-//               const Color(0xFFFFF2CC),
-//               const Color(0xFFFFFFFF),
-//               const Color(0xFFFFFFFF),
-//             ],
-//           ),
-//         ),
-//         child: Align(
-//           alignment: Alignment.center,
-//           child: Container(
-//             constraints: const BoxConstraints.expand(),
-//             child: SingleChildScrollView(
-//               child: Column(
-//                 children: [
-//                   Container(
-//                     padding: const EdgeInsetsDirectional.only(top: 10),
-//                     child: UserInfoCard(
-//                       userName: widget.userData?["data"]["displayName"] ?? "",
-//                       userId: widget.userData?["data"]["id"],
-//                       avatar: widget.userData?["data"]["avatar"] ?? "",
-//                     ),
-//                   ),
-//                   SizedBox(height: size.height * 0.02),
-//                   Container(
-//                     padding: const EdgeInsetsDirectional.only(bottom: 10),
-//                     width: size.width * 0.9,
-//                     child: FutureBuilder(
-//                       future: _pumpData,
-//                       builder: (BuildContext context,
-//                           AsyncSnapshot<Map<String, dynamic>> snapshot) {
-//                         if (snapshot.connectionState != ConnectionState.done ||
-//                             snapshot.data?["data"].length == null) {
-//                           return const Center(
-//                             child: CircularProgressIndicator(),
-//                           );
-//                         }
-
-//                         return ListView.separated(
-//                           shrinkWrap: true,
-//                           physics: const NeverScrollableScrollPhysics(),
-//                           itemCount: snapshot.data?["data"].length,
-//                           itemBuilder: (BuildContext context, int index) {
-//                             final pump = snapshot.data?["data"][index];
-//                             if (kDebugMode) {
-//                               print(pump.toString());
-//                             }
-//                             var fullName = pump["pumpName"].split(" - ");
-//                             var pumpName = "${fullName[0]} - ${fullName[1]}";
-//                             var productName = fullName[2];
-//                             var pumpLogs = ApiClient().getPumpLogs(
-//                                 widget.userData?["data"]["branchId"],
-//                                 pump["id"].toString());
-
-//                             return FutureBuilder(
-//                               future: pumpLogs,
-//                               builder: (BuildContext context,
-//                                   AsyncSnapshot<Map<String, dynamic>>
-//                                       snapshot) {
-//                                 if (kDebugMode) {
-//                                   print(snapshot.data);
-//                                 }
-//                                 if (snapshot.connectionState ==
-//                                     ConnectionState.done) {
-//                                   return PumpCard(
-//                                     userData: widget.userData,
-//                                     pumpId: pump["id"],
-//                                     pumpName: pumpName,
-//                                     productName: productName,
-//                                     pumpLogs: snapshot.data,
-//                                   );
-//                                 }
-
-//                                 // TODO: make this better
-//                                 return Container(
-//                                   padding: const EdgeInsets.symmetric(
-//                                     horizontal: 10,
-//                                     vertical: 10,
-//                                   ),
-//                                   decoration: BoxDecoration(
-//                                     color: Colors.white,
-//                                     borderRadius: BorderRadius.circular(10),
-//                                     boxShadow: [
-//                                       BoxShadow(
-//                                         color: Colors.black.withOpacity(0.05),
-//                                         blurRadius: 8,
-//                                         offset: const Offset(0, 4),
-//                                       )
-//                                     ],
-//                                   ),
-//                                   child: Row(
-//                                     mainAxisAlignment:
-//                                         MainAxisAlignment.spaceBetween,
-//                                     children: [
-//                                       Row(
-//                                         children: [
-//                                           ShimmerLoading(
-//                                             isLoading: true,
-//                                             child: Container(
-//                                               width: 44,
-//                                               height: 44,
-//                                               decoration: BoxDecoration(
-//                                                 borderRadius:
-//                                                     BorderRadius.circular(12),
-//                                                 color: Colors.black,
-//                                               ),
-//                                             ),
-//                                           ),
-//                                           SizedBox(width: size.width * 0.025),
-//                                           Column(
-//                                             crossAxisAlignment:
-//                                                 CrossAxisAlignment.start,
-//                                             children: [
-//                                               ShimmerLoading(
-//                                                 isLoading: true,
-//                                                 child: Container(
-//                                                   width: size.width * 0.4,
-//                                                   height: 16,
-//                                                   decoration: BoxDecoration(
-//                                                     color: Colors.black,
-//                                                     borderRadius:
-//                                                         BorderRadius.circular(
-//                                                             12),
-//                                                   ),
-//                                                 ),
-//                                               ),
-//                                               SizedBox(
-//                                                   height: size.height * 0.005),
-//                                               ShimmerLoading(
-//                                                 isLoading: true,
-//                                                 child: Container(
-//                                                   width: size.width * 0.2,
-//                                                   height: 16,
-//                                                   decoration: BoxDecoration(
-//                                                     color: Colors.black,
-//                                                     borderRadius:
-//                                                         BorderRadius.circular(
-//                                                             12),
-//                                                   ),
-//                                                 ),
-//                                               ),
-//                                             ],
-//                                           ),
-//                                         ],
-//                                       ),
-//                                     ],
-//                                   ),
-//                                 );
-//                               },
-//                             );
-//                           },
-//                           separatorBuilder: (BuildContext context, int index) =>
-//                               const SizedBox(height: 10),
-//                         );
-//                       },
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class InforSreen extends StatefulWidget {
   const InforSreen({super.key});
@@ -217,21 +9,99 @@ class InforSreen extends StatefulWidget {
   State<InforSreen> createState() => _InforSreenState();
 }
 
+List<Mainproperty> _item = [
+  Mainproperty(text: 'Quét Qr', svgAsset: 'assets/icons/qr_code.svg'),
+  Mainproperty(text: 'CHXD', svgAsset: 'assets/icons/map.svg'),
+  Mainproperty(text: 'Thông báo', svgAsset: 'assets/icons/notifications.svg'),
+  Mainproperty(text: 'Thống kê', svgAsset: 'assets/icons/thống_kê.svg'),
+];
+
 class _InforSreenState extends State<InforSreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return Column(children: [
-      Container(
-          height: size.height * 0.075,
-          width: size.width * 0.75,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                    color: Colors.grey.withOpacity(0.5), offset: Offset(0, 4),),
-              ],),)
-    ],);
+    return Scaffold(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: size.height * 0.05,
+                ),
+                Center(
+                  child: Container(
+                    height: size.height * 0.085,
+                    width: size.width * 0.85,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          offset: Offset(0, 4),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: size.height * 0.02,
+                ),
+                Text(
+                  'Tính năng chính',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(
+                  height: size.height * 0.75,
+                  child: GridView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: 4,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: size.width * 0.005,
+                      crossAxisSpacing: size.height * 0.005,
+                    ),
+                    itemBuilder: (context, index) {
+                      return Center(
+                        child: Container(
+                          height: 100,
+                          width: 100,
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 236, 213, 213),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(_item[index].svgAsset),
+                              Text(_item[index].text),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
+}
+
+class Mainproperty {
+  final String text;
+  final String svgAsset;
+
+  Mainproperty({required this.text, required this.svgAsset});
 }
