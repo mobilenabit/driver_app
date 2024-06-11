@@ -1,3 +1,4 @@
+import "package:driver_app/screens/license_plate.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_svg/flutter_svg.dart";
@@ -108,8 +109,10 @@ class _LoginScreenState extends State<LoginScreen> {
               .writeSecureData("last_logged_in_username", _username);
 
           // ignore: use_build_context_synchronously
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => LicensePlateScreen()));
         }
       }
     }

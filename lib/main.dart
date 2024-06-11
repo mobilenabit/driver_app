@@ -1,3 +1,5 @@
+import 'package:driver_app/screens/info.dart';
+import 'package:driver_app/screens/license_plate.dart';
 import 'package:flutter/material.dart';
 import "screens/login.dart";
 import 'dart:ui';
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const LoginScreen(),
+      home: const InforSreen(),
     );
   }
 }

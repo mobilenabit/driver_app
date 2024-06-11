@@ -203,16 +203,35 @@
 //     );
 //   }
 // }
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
-class InfoScreen extends StatelessWidget {
-  const InfoScreen({super.key});
+
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+
+class InforSreen extends StatefulWidget {
+  const InforSreen({super.key});
 
   @override
+  State<InforSreen> createState() => _InforSreenState();
+}
+
+class _InforSreenState extends State<InforSreen> {
+  @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Home'),
-    );
+    var size = MediaQuery.of(context).size;
+    return Column(children: [
+      Container(
+          height: size.height * 0.075,
+          width: size.width * 0.75,
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.grey.withOpacity(0.5), offset: Offset(0, 4),),
+              ],),)
+    ],);
   }
 }

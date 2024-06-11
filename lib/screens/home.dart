@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           body: <Widget>[
-            InfoScreen(),
+           // InfoScreen(),
             HistoryScreen(),
             SettingsScreen(userData: snapshot.data),
           ][currentPageIndex],
