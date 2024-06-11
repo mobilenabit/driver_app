@@ -71,8 +71,8 @@ class _InfoScreenState extends State<InfoScreen> {
                     itemBuilder: (context, index) {
                       return Center(
                         child: Container(
-                          height: 100,
-                          width: 100,
+                          height: 110,
+                          width: 110,
                           decoration: BoxDecoration(
                             color: Color.fromARGB(255, 236, 213, 213),
                             borderRadius: BorderRadius.circular(12),

@@ -1,3 +1,4 @@
+import 'package:driver_app/screens/gas_station.dart';
 import 'package:driver_app/screens/home.dart';
 import 'package:driver_app/screens/info.dart';
 import 'package:driver_app/screens/license_plate.dart';
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const GasStationScreen(),
     );
   }
 }
