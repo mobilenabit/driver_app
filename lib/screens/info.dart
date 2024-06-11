@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class InforSreen extends StatefulWidget {
-  const InforSreen({super.key});
+class InfoScreen extends StatefulWidget {
+  const InfoScreen({super.key});
 
   @override
-  State<InforSreen> createState() => _InforSreenState();
+  State<InfoScreen> createState() => _InfoScreenState();
 }
 
 List<Mainproperty> _item = [
@@ -16,7 +16,7 @@ List<Mainproperty> _item = [
   Mainproperty(text: 'Thống kê', svgAsset: 'assets/icons/thống_kê.svg'),
 ];
 
-class _InforSreenState extends State<InforSreen> {
+class _InfoScreenState extends State<InfoScreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -51,7 +51,7 @@ class _InforSreenState extends State<InforSreen> {
                 SizedBox(
                   height: size.height * 0.02,
                 ),
-                Text(
+                const Text(
                   'Tính năng chính',
                   style: TextStyle(
                     fontSize: 15,
@@ -59,7 +59,7 @@ class _InforSreenState extends State<InforSreen> {
                   ),
                 ),
                 SizedBox(
-                  height: size.height * 0.75,
+                  height: size.height * 0.5,
                   child: GridView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: 4,
