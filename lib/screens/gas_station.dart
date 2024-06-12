@@ -56,15 +56,8 @@ class _GasStationScreenState extends State<GasStationScreen> {
               vertical: 5.0,
             ),
             padding: const EdgeInsets.all(10.0),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
-              // boxShadow: [
-              //   BoxShadow(
-              //     color: Colors.black12,
-              //     blurRadius: 5.0,
-              //     offset: Offset(0, 2),
-              //   ),
-              // ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,10 +125,11 @@ class _GasStationScreenState extends State<GasStationScreen> {
                 Text(
                   _item[index].status,
                   style: TextStyle(
-                      fontSize: 13,
-                      color: _item[index].status == 'Đang mở cửa'
-                          ? Color.fromRGBO(22, 197, 29, 0.53)
-                          : Color.fromRGBO(197, 22, 22, 0.53)),
+                    fontSize: 13,
+                    color: _item[index].status == 'Đang mở cửa'
+                        ? Color.fromRGBO(22, 197, 29, 0.53)
+                        : Color.fromRGBO(197, 22, 22, 0.53),
+                  ),
                 ),
               ],
             ),

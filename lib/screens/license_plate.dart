@@ -32,7 +32,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Chọn biển số xe',
           style: TextStyle(
             fontSize: 15,
