@@ -5,6 +5,7 @@ class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HistoryScreenState createState() => _HistoryScreenState();
 }
 
@@ -32,9 +33,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
         fuel: 'RON 92'),
   ];
 
+  // fomrat type of number
   final NumberFormat currencyFormat =
       NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
 
+  // date picker
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
 
@@ -57,6 +60,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
+  // filter item in list by date picker
   List<History> get _filteredItems {
     return _items.where((item) {
       DateTime itemDate = DateFormat('HH:mm - dd/MM/yyyy').parse(item.dateTime);
@@ -110,7 +114,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Từ ngày',
                           style: TextStyle(
                             fontSize: 13,
@@ -119,13 +123,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ),
                         Text(
                           DateFormat('dd/MM/yyyy').format(_startDate),
-                          style: TextStyle(fontSize: 14),
+                          style: const TextStyle(fontSize: 14),
                         ),
                       ],
                     ),
                     IconButton(
                         onPressed: () => _selectDate(context, true),
-                        icon: Icon(Icons.calendar_month_outlined))
+                        icon: const Icon(Icons.calendar_month_outlined))
                   ],
                 ),
               ),
@@ -148,7 +152,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Đến ngày',
                           style: TextStyle(
                             fontSize: 13,
@@ -157,13 +161,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ),
                         Text(
                           DateFormat('dd/MM/yyyy').format(_endDate),
-                          style: TextStyle(fontSize: 14),
+                          style: const TextStyle(fontSize: 14),
                         ),
                       ],
                     ),
                     IconButton(
                         onPressed: () => _selectDate(context, false),
-                        icon: Icon(Icons.calendar_month_outlined))
+                        icon: const Icon(Icons.calendar_month_outlined))
                   ],
                 ),
               ),
