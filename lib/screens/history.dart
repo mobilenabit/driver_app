@@ -5,12 +5,11 @@ class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _HistoryScreenState createState() => _HistoryScreenState();
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  final List<History> _item = [
+  final List<History> _items = [
     History(
         driver: 'Lê Quang Dũng',
         numberLicense: '30A-123.45',
@@ -45,6 +44,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       initialDate: isStart ? _startDate : _endDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
+      locale: const Locale('vi', 'VN'), // Set locale to Vietnamese
     );
     if (pickedDate != null) {
       setState(() {
@@ -57,6 +57,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
+  List<History> get _filteredItems {
+    return _items.where((item) {
+      DateTime itemDate = DateFormat('HH:mm - dd/MM/yyyy').parse(item.dateTime);
+      return itemDate.isAfter(_startDate) && itemDate.isBefore(_endDate);
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -64,12 +71,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(243, 243, 247, 1),
       appBar: AppBar(
-        // leading: IconButton(
-        //   onPressed: () {
-        //     Navigator.pop(context);
-        //   },
-        //   icon: const Icon(Icons.arrow_back_ios),
-        // ),
         title: const Text(
           'Hoạt động',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
@@ -173,8 +174,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: _item.length,
+              itemCount: _filteredItems.length,
               itemBuilder: (context, index) {
+                final item = _filteredItems[index];
                 return Container(
                   margin: const EdgeInsets.all(10),
                   child: Card(
@@ -188,32 +190,32 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Tài xế: ${_item[index].driver}',
+                                'Tài xế: ${item.driver}',
                                 style: const TextStyle(
                                     fontSize: 13, fontWeight: FontWeight.w500),
                               ),
                               Text(
-                                'Biển số xe: ${_item[index].numberLicense}',
+                                'Biển số xe: ${item.numberLicense}',
                                 style: const TextStyle(
                                     fontSize: 13, fontWeight: FontWeight.w500),
                               ),
                               Text(
-                                'Số lít: ${_item[index].amount}',
+                                'Số lít: ${item.amount}',
                                 style: const TextStyle(
                                     fontSize: 13, fontWeight: FontWeight.w500),
                               ),
                               Text(
-                                'Cột bơm: ${_item[index].pump}',
+                                'Cột bơm: ${item.pump}',
                                 style: const TextStyle(
                                     fontSize: 13, fontWeight: FontWeight.w500),
                               ),
                               Text(
-                                'Vòi bơm: ${_item[index].pumpLog}',
+                                'Vòi bơm: ${item.pumpLog}',
                                 style: const TextStyle(
                                     fontSize: 13, fontWeight: FontWeight.w500),
                               ),
                               Text(
-                                _item[index].dateTime,
+                                item.dateTime,
                                 style: const TextStyle(
                                     color: Color.fromRGBO(130, 134, 158, 1),
                                     fontSize: 13,
@@ -228,36 +230,35 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
-                                  color: _item[index].status ==
-                                          'Thanh toán thành công'
+                                  color: item.status == 'Thanh toán thành công'
                                       ? const Color.fromRGBO(
                                           197, 255, 196, 0.36)
                                       : const Color.fromRGBO(
                                           255, 196, 207, 0.36),
                                 ),
                                 child: Text(
-                                  _item[index].status,
+                                  item.status,
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
-                                    color: _item[index].status ==
-                                            'Thanh toán thành công'
-                                        ? Colors.green
-                                        : Colors.red,
+                                    color:
+                                        item.status == 'Thanh toán thành công'
+                                            ? Colors.green
+                                            : Colors.red,
                                   ),
                                 ),
                               ),
                               Row(
                                 children: [
                                   Text(
-                                    currencyFormat.format(_item[index].money),
+                                    currencyFormat.format(item.money),
                                     style: const TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500),
                                   ),
                                   const Text(' - '),
                                   Text(
-                                    _item[index].fuel,
+                                    item.fuel,
                                     style: const TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500),
