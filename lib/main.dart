@@ -1,4 +1,5 @@
 import 'package:driver_app/screens/history.dart';
+import 'package:driver_app/screens/qr_code.dart';
 import 'package:driver_app/screens/statistics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         Locale('en', ''), // English
       ],
       locale: Locale('vi', ''),
-      home: StatisticsScreen(),
+      home: ScanQrScreen(),
     );
   }
 }
