@@ -22,18 +22,40 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     isScanCompleted = false;
   }
 
+  void showInvalidQrAlert() {
+    showDialog(
+        context: context,
+        builder: (
+          BuildContext context,
+        ) {
+          return AlertDialog(
+            title: SvgPicture.asset('assets/icons/exclamation.svg'),
+            content: const Text(
+              'Ảnh QR code không đúng định dạng nhà cung cấp, vui lòng chọn ảnh khác',
+              style: TextStyle(
+                fontSize: 12,
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      isScanCompleted = false;
+                    });
+                  },
+                  child: const Text('OK'))
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFFFFBF0),
-        // leading: IconButton(
-        //   onPressed: () {
-        //     Navigator.pop(context);
-        //   },
-        //   icon: const Icon(Icons.arrow_back_ios),
-        // ),
         title: const Text(
           'Quét mã QR',
           style: TextStyle(
@@ -91,17 +113,23 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                       if (!isScanCompleted) {
                         isScanCompleted = true;
                         String code = barcode.barcodes.first.rawValue ?? "---";
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return QrResultScreen(
-                                code: code,
-                                closeScreen: closeScreen,
-                              );
-                            },
-                          ),
-                        );
+                        // TODO: add validation type of QR
+                        bool isValid = code != "---";
+                        if (isValid) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return QrResultScreen(
+                                  code: code,
+                                  closeScreen: closeScreen,
+                                );
+                              },
+                            ),
+                          );
+                        } else {
+                          showInvalidQrAlert();
+                        }
                       }
                     },
                   ),
