@@ -1,14 +1,17 @@
+import "package:flutter/material.dart";
+import "package:flutter_svg/flutter_svg.dart";
 import "package:driver_app/screens/history.dart";
 import "package:driver_app/screens/info.dart";
 import "package:driver_app/screens/settings.dart";
-import "package:flutter/material.dart";
-import "package:flutter_svg/flutter_svg.dart";
+import "package:driver_app/screens/statistics.dart";
 
 import "../core/api_client.dart";
 import "../core/secure_store.dart";
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String selectedLicensePlate;
+
+  const HomeScreen({super.key, required this.selectedLicensePlate});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -50,8 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
             selectedIndex: currentPageIndex,
             destinations: [
               NavigationDestination(
-                selectedIcon: SvgPicture.asset("assets/icons/logo.svg"),
-                icon: SvgPicture.asset("assets/icons/logo.svg"),
+                selectedIcon: SvgPicture.asset('assets/icons/home.svg'),
+                icon: SvgPicture.asset('assets/icons/home.svg'),
                 label: "Trang chủ",
               ),
               const NavigationDestination(
@@ -74,8 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           body: <Widget>[
-            InfoScreen(),
-            HistoryScreen(),
+            InfoScreen(selectedLicensePlate: widget.selectedLicensePlate),
+            const HistoryScreen(),
+            StatisticsScreen(selectedLicensePlate: widget.selectedLicensePlate),
             SettingsScreen(userData: snapshot.data),
           ][currentPageIndex],
         );
@@ -83,4 +87,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

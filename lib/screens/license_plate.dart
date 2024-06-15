@@ -1,6 +1,8 @@
+import 'package:driver_app/screens/home.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
+
+// ignore: must_be_immutable
 class LicensePlateScreen extends StatefulWidget {
   LicensePlateScreen({super.key});
 
@@ -72,6 +74,9 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                     widget.licensePlateData[index]['plateNumber'];
                 return ListTile(
                   title: Text(licensePlate!),
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(selectedLicensePlate: licensePlate),),);
+                  },
                 );
               },
             ),

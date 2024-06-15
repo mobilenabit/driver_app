@@ -4,7 +4,8 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 
 class StatisticsScreen extends StatefulWidget {
-  const StatisticsScreen({super.key});
+  final String selectedLicensePlate;
+  const StatisticsScreen({super.key, required this.selectedLicensePlate});
 
   @override
   State<StatisticsScreen> createState() => _StatisticsScreenState();
@@ -132,7 +133,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();
-    chosenIndex = 0;
+    chosenIndex = dataset.indexWhere(
+        (element) => element['name'] == widget.selectedLicensePlate);
+    if (chosenIndex == -1) {
+      chosenIndex = 0;
+    }
   }
 
   @override

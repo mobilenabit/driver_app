@@ -127,8 +127,8 @@ class _GasStationScreenState extends State<GasStationScreen> {
                   style: TextStyle(
                     fontSize: 13,
                     color: _item[index].status == 'Đang mở cửa'
-                        ? Color.fromRGBO(22, 197, 29, 0.53)
-                        : Color.fromRGBO(197, 22, 22, 0.53),
+                        ? const Color.fromRGBO(22, 197, 29, 0.53)
+                        : const Color.fromRGBO(197, 22, 22, 0.53),
                   ),
                 ),
               ],

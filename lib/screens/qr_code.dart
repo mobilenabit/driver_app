@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import 'package:driver_app/screens/qr_result.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:qr_scanner_overlay/qr_scanner_overlay.dart';
 
 class ScanQrScreen extends StatefulWidget {
@@ -22,6 +24,27 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     isScanCompleted = false;
   }
 
+  // Add API QR of VietQR
+  // Future<bool> validVietQr(String code) async {
+  //   final response = await http.post(
+  //       Uri.parse(
+  //           'https://img.vietqr.io/image/<BANK_ID>-<ACCOUNT_NO>-<TEMPLATE>.png?amount=<AMOUNT>&addInfo=<DESCRIPTION>&accountName=<ACCOUNT_NAME>'),
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json; charset=UTF-8',
+  //       },
+  //       body: jsonEncode(<String, String>{
+  //         'qr_code': code,
+  //       }));
+
+  //   if (response.statusCode == 200) {
+  //     final responseData = json.decode(response.body);
+  //     return responseData['isValid'];
+  //   } else {
+  //     throw Exception('Failed to validate QR code');
+  //   }
+  // }
+
+  // show alert if qr not valid
   void showInvalidQrAlert() {
     showDialog(
         context: context,
@@ -29,7 +52,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
           BuildContext context,
         ) {
           return AlertDialog(
-            title: SvgPicture.asset('assets/icons/exclamation.svg'),
+            title: Icon(Icons.error),
             content: const Text(
               'Ảnh QR code không đúng định dạng nhà cung cấp, vui lòng chọn ảnh khác',
               style: TextStyle(
@@ -109,11 +132,12 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                 children: [
                   MobileScanner(
                     controller: cameraController,
-                    onDetect: (barcode) {
+                    onDetect: (barcode) async {
                       if (!isScanCompleted) {
                         isScanCompleted = true;
                         String code = barcode.barcodes.first.rawValue ?? "---";
                         // TODO: add validation type of QR
+                        //bool isValid = await validVietQr(code);
                         bool isValid = code != "---";
                         if (isValid) {
                           Navigator.push(
