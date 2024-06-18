@@ -77,9 +77,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           body: <Widget>[
-            InfoScreen(selectedLicensePlate: widget.selectedLicensePlate),
+            InfoScreen(
+              userData: snapshot.data,
+              selectedLicensePlate: widget.selectedLicensePlate,
+            ),
             const HistoryScreen(),
-            StatisticsScreen(selectedLicensePlate: widget.selectedLicensePlate),
             SettingsScreen(userData: snapshot.data),
           ][currentPageIndex],
         );

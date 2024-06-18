@@ -3,7 +3,6 @@ import "package:flutter/material.dart";
 import "package:driver_app/components/text_field.dart";
 import "package:driver_app/core/api_client.dart";
 
-
 import "otp.dart";
 
 class ForgotPasswordScreen extends StatefulWidget {

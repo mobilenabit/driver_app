@@ -1,8 +1,6 @@
 import 'package:driver_app/screens/home.dart';
 import 'package:flutter/material.dart';
 
-
-// ignore: must_be_immutable
 class LicensePlateScreen extends StatefulWidget {
   LicensePlateScreen({super.key});
 
@@ -12,28 +10,48 @@ class LicensePlateScreen extends StatefulWidget {
   int? chosenIndex;
   int? chosenSegment;
   final licensePlateData = [
-    {
-      'plateNumber': '30A-143.45',
-    },
-    {
-      'plateNumber': '30A-152.89',
-    },
-    {
-      'plateNumber': '30A-325.65',
-    },
-    {
-      'plateNumber': '30A-153.75',
-    },
+    {'plateNumber': '30A-143.45'},
+    {'plateNumber': '30A-152.89'},
+    {'plateNumber': '30A-325.65'},
+    {'plateNumber': '30A-153.75'},
+    {'plateNumber': '40A-153.75'},
   ];
 }
 
 class _LicensePlateScreenState extends State<LicensePlateScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, String>> _filteredLicensePlates = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredLicensePlates = widget.licensePlateData;
+    _searchController.addListener(_filterLicensePlates);
+  }
+
+  void _filterLicensePlates() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredLicensePlates = widget.licensePlateData.where((plate) {
+        final plateNumber = plate['plateNumber']!.toLowerCase();
+        return plateNumber.contains(query);
+      }).toList();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false, // Remove the back button
         title: const Text(
           'Chọn biển số xe',
           style: TextStyle(
@@ -47,8 +65,8 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            //TODO: add working search
             child: TextFormField(
+              controller: _searchController,
               decoration: const InputDecoration(
                 hintText: "Tìm kiếm",
                 prefixIcon: Icon(Icons.search),
@@ -68,14 +86,20 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: widget.licensePlateData.length,
+              itemCount: _filteredLicensePlates.length,
               itemBuilder: (context, index) {
                 final licensePlate =
-                    widget.licensePlateData[index]['plateNumber'];
+                    _filteredLicensePlates[index]['plateNumber'];
                 return ListTile(
                   title: Text(licensePlate!),
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(selectedLicensePlate: licensePlate),),);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            HomeScreen(selectedLicensePlate: licensePlate),
+                      ),
+                    );
                   },
                 );
               },

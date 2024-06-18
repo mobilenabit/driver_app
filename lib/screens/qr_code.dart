@@ -79,6 +79,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFFFFBF0),
+        automaticallyImplyLeading: false,
         title: const Text(
           'Quét mã QR',
           style: TextStyle(

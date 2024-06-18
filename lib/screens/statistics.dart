@@ -135,9 +135,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     super.initState();
     chosenIndex = dataset.indexWhere(
         (element) => element['name'] == widget.selectedLicensePlate);
-    if (chosenIndex == -1) {
-      chosenIndex = 0;
-    }
+    if (chosenIndex == -1) 
+    chosenIndex = 0;
   }
 
   @override

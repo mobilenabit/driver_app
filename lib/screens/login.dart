@@ -109,10 +109,8 @@ class _LoginScreenState extends State<LoginScreen> {
               .writeSecureData("last_logged_in_username", _username);
 
           // ignore: use_build_context_synchronously
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => LicensePlateScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => LicensePlateScreen()));
         }
       }
     }
