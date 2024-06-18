@@ -29,6 +29,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
     _searchController.addListener(_filterLicensePlates);
   }
 
+  // search 
   void _filterLicensePlates() {
     final query = _searchController.text.toLowerCase();
     setState(() {

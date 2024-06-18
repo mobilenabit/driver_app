@@ -1,6 +1,6 @@
 import "package:driver_app/screens/chart/bar_graph.dart";
 import "package:flutter/material.dart";
-
+import "package:get/get.dart";
 import "package:intl/intl.dart";
 
 class StatisticsScreen extends StatefulWidget {
@@ -27,31 +27,57 @@ enum ChoiceLabel {
   final String label;
 }
 
+final dataset = [
+  {
+    "name": "30A-123.56",
+  },
+  {
+    "name": "30A-123.45",
+  },
+  {
+    "name": "30A-123.15",
+  },
+  {
+    "name": "30A-123.34",
+  },
+  {
+    "name": "30A-133.45",
+  },
+  {
+    "name": "30A-523.45",
+  },
+  {
+    "name": "30A-163.45",
+  },
+];
+
 class _StatisticsScreenState extends State<StatisticsScreen> {
   int? chosenIndex;
-  final dataset = [
-    {
-      "name": "30A-123.56",
-    },
-    {
-      "name": "30A-123.45",
-    },
-    {
-      "name": "30A-123.15",
-    },
-    {
-      "name": "30A-123.34",
-    },
-    {
-      "name": "30A-133.45",
-    },
-    {
-      "name": "30A-523.45",
-    },
-    {
-      "name": "30A-163.45",
-    },
-  ];
+  List<Map<String, String>> _filteredDataset = [];
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredDataset = List.from(dataset);
+    _searchController.addListener(_searchDataset);
+    chosenIndex = dataset.indexWhere(
+        (element) => element['name'] == widget.selectedLicensePlate);
+    if (chosenIndex == -1) chosenIndex = 0;
+  }
+
+  // search
+  void _searchDataset() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredDataset = dataset.where((e) {
+        final name = e['name']!.toLowerCase();
+        return name.contains(query);
+      }).toList();
+    });
+  }
+
+  // show modal bottom
   void _handleLocationChoice() {
     showModalBottomSheet(
       context: context,
@@ -73,7 +99,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
-                // TODO: Add working search
                 children: [
                   const Center(
                     child: Text(
@@ -85,6 +110,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     ),
                   ),
                   TextFormField(
+                    controller: _searchController,
                     decoration: const InputDecoration(
                       hintText: "Tìm kiếm",
                       prefixIcon: Icon(Icons.search),
@@ -101,19 +127,21 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   Expanded(
                     child: ListView.builder(
                       controller: controller,
-                      itemCount: dataset.length,
+                      itemCount: _filteredDataset.length,
                       itemBuilder: (BuildContext context, int index) {
                         return ListTile(
                           shape: const Border(
                             bottom: BorderSide(color: Colors.grey, width: 0.5),
                           ),
                           contentPadding: const EdgeInsets.all(0),
-                          title: Text(dataset[index]["name"]!,
+                          title: Text(_filteredDataset[index]["name"]!,
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18)),
                           onTap: () {
                             setState(() {
-                              chosenIndex = index;
+                              chosenIndex = dataset.indexWhere((element) =>
+                                  element["name"] ==
+                                  _filteredDataset[index]["name"]);
                             });
                             Navigator.of(context).pop();
                           },
@@ -128,15 +156,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         );
       },
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    chosenIndex = dataset.indexWhere(
-        (element) => element['name'] == widget.selectedLicensePlate);
-    if (chosenIndex == -1) 
-    chosenIndex = 0;
   }
 
   @override
@@ -159,7 +178,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
