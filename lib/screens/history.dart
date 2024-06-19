@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({super.key});
+  final String selectedLicensePlate;
+  const HistoryScreen({super.key, required this.selectedLicensePlate});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -10,34 +11,40 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  final List<History> _items = [
-    History(
-        driver: 'Lê Quang Dũng',
-        numberLicense: '30A-123.45',
+  late final List<History> _items;
+
+  @override
+  void initState() {
+    super.initState();
+    _items = [
+      History(
+        numberLicense: widget.selectedLicensePlate,
         amount: 32,
         pump: 1,
         pumpLog: 2,
-        dateTime: '16:20 - 28/07/2022',
+        dateTime: '16:20 - 19/06/2024',
         status: 'Thanh toán thành công',
         money: 600000,
-        fuel: 'RON 95'),
-    History(
-        driver: 'Lê Quang Dũng',
-        numberLicense: '30A-123.45',
+        fuel: 'RON 95',
+      ),
+      History(
+        numberLicense: widget.selectedLicensePlate,
         amount: 32,
         pump: 1,
         pumpLog: 2,
-        dateTime: '16:20 - 28/07/2022',
+        dateTime: '16:20 - 19/06/2024',
         status: 'Thanh toán thất bại',
         money: 6000000,
-        fuel: 'RON 92'),
-  ];
+        fuel: 'RON 92',
+      ),
+    ];
+  }
 
-  // fomrat type of number
+  // Format type of number
   final NumberFormat currencyFormat =
       NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
 
-  // date picker
+  // Date picker
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
 
@@ -60,7 +67,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
-  // filter item in list by date picker
+  // Filter items in list by date picker
   List<History> get _filteredItems {
     return _items.where((item) {
       DateTime itemDate = DateFormat('HH:mm - dd/MM/yyyy').parse(item.dateTime);
@@ -75,6 +82,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(243, 243, 247, 1),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Hoạt động',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
@@ -86,7 +94,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.all(20),
             child: Text(
               'Truy vấn lịch sử giao dịch',
               style: TextStyle(
@@ -193,10 +201,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Tài xế: ${item.driver}',
-                                style: const TextStyle(
-                                    fontSize: 13, fontWeight: FontWeight.w500),
+                              Row(
+                                children: [
+                                  Text(
+                                    currencyFormat.format(item.money),
+                                    style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  const Text(' - '),
+                                  Text(
+                                    item.fuel,
+                                    style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
                               ),
                               Text(
                                 'Biển số xe: ${item.numberLicense}',
@@ -227,49 +247,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               ),
                             ],
                           ),
-                          Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: item.status == 'Thanh toán thành công'
-                                      ? const Color.fromRGBO(
-                                          197, 255, 196, 0.36)
-                                      : const Color.fromRGBO(
-                                          255, 196, 207, 0.36),
-                                ),
-                                child: Text(
-                                  item.status,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color:
-                                        item.status == 'Thanh toán thành công'
-                                            ? Colors.green
-                                            : Colors.red,
-                                  ),
-                                ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: item.status == 'Thanh toán thành công'
+                                  ? const Color.fromRGBO(197, 255, 196, 0.36)
+                                      .withOpacity(0.5)
+                                  : const Color.fromRGBO(255, 196, 207, 0.36)
+                                      .withOpacity(0.5),
+                            ),
+                            child: Text(
+                              item.status,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: item.status == 'Thanh toán thành công'
+                                    ? Colors.green
+                                    : Colors.red,
                               ),
-                              Row(
-                                children: [
-                                  Text(
-                                    currencyFormat.format(item.money),
-                                    style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  const Text(' - '),
-                                  Text(
-                                    item.fuel,
-                                    style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
@@ -286,7 +284,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
 }
 
 class History {
-  final String driver;
   final String numberLicense;
   final double amount;
   final int pump;
@@ -299,7 +296,6 @@ class History {
   History({
     required this.amount,
     required this.dateTime,
-    required this.driver,
     required this.fuel,
     required this.money,
     required this.numberLicense,

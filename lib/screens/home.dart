@@ -1,12 +1,11 @@
-import "package:flutter/material.dart";
-import "package:flutter_svg/flutter_svg.dart";
-import "package:driver_app/screens/history.dart";
-import "package:driver_app/screens/info.dart";
-import "package:driver_app/screens/settings.dart";
-import "package:driver_app/screens/statistics.dart";
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:driver_app/screens/history.dart';
+import 'package:driver_app/screens/info.dart';
+import 'package:driver_app/screens/settings.dart';
 
-import "../core/api_client.dart";
-import "../core/secure_store.dart";
+import '../core/api_client.dart';
+import '../core/secure_store.dart';
 
 class HomeScreen extends StatefulWidget {
   final String selectedLicensePlate;
@@ -81,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
               userData: snapshot.data,
               selectedLicensePlate: widget.selectedLicensePlate,
             ),
-            const HistoryScreen(),
+            HistoryScreen(selectedLicensePlate: widget.selectedLicensePlate),
             SettingsScreen(userData: snapshot.data),
           ][currentPageIndex],
         );
