@@ -88,6 +88,8 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
           ),
         ),
         centerTitle: true,
+        
+                  
         actions: [
           IconButton(
             onPressed: () {

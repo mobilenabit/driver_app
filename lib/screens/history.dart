@@ -204,7 +204,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     top: 10,
                     left: 10,
                     right: 10,
-                    bottom: 1,
+                    bottom: 0.5,
                   ),
                   child: Card(
                     color: Colors.white,

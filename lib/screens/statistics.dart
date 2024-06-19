@@ -4,8 +4,10 @@ import "package:get/get.dart";
 import "package:intl/intl.dart";
 
 class StatisticsScreen extends StatefulWidget {
+  final Map<String, dynamic>? userData;
   final String selectedLicensePlate;
-  const StatisticsScreen({super.key, required this.selectedLicensePlate});
+  const StatisticsScreen(
+      {super.key, required this.selectedLicensePlate, required this.userData});
 
   @override
   State<StatisticsScreen> createState() => _StatisticsScreenState();
@@ -55,6 +57,26 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   int? chosenIndex;
   List<Map<String, String>> _filteredDataset = [];
   final TextEditingController _searchController = TextEditingController();
+
+  // set avatar
+  Widget _getAvatarWidget() {
+    if (widget.userData?['data']['avatar'] != null &&
+        widget.userData?['data']['avatar'].isNotEmpty) {
+      return Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            image: NetworkImage(widget.userData?['data']['avatar']),
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    } else {
+      return const Icon(Icons.account_circle, size: 40);
+    }
+  }
 
   @override
   void initState() {
@@ -178,7 +200,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
+        //physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -200,25 +222,22 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 children: [
                   Row(
                     children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle, color: Colors.green),
-                      ),
+                      _getAvatarWidget(),
                       SizedBox(
                         width: size.width * 0.05,
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "LÊ QUANG DŨNG",
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600),
-                          ),
+                          widget.userData == null
+                              ? const CircularProgressIndicator()
+                              : Text(
+                                  widget.userData?['data']['displayName'],
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600),
+                                ),
                           Text(
                             "${dataset[chosenIndex!]["name"]}",
                             style: const TextStyle(
@@ -271,6 +290,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     children: [
                       const Text(
                         "8,286L",
+                        
                         style: TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.bold,

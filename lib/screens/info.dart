@@ -1,4 +1,3 @@
-
 import 'package:driver_app/screens/gas_station.dart';
 import 'package:driver_app/screens/promotion.dart';
 import 'package:driver_app/screens/qr_code.dart';
@@ -25,12 +24,12 @@ class InfoScreen extends StatefulWidget {
 class Mainproperty {
   final String text;
   final String svgAsset;
-  final Widget screen;
+  final Widget Function(BuildContext context) screenBuilder;
 
   Mainproperty({
     required this.text,
     required this.svgAsset,
-    required this.screen,
+    required this.screenBuilder,
   });
 }
 
@@ -43,24 +42,33 @@ class _InfoScreenState extends State<InfoScreen> {
     _pumpData = ApiClient().getPumps();
   }
 
-  final List<Mainproperty> _item = [
-    Mainproperty(
+  List<Mainproperty> _item(BuildContext context) {
+    return [
+      Mainproperty(
         text: 'Quét Qr',
         svgAsset: 'assets/icons/qr_code.svg',
-        screen: const ScanQrScreen()),
-    Mainproperty(
+        screenBuilder: (context) => const ScanQrScreen(),
+      ),
+      Mainproperty(
         text: 'CHXD',
         svgAsset: 'assets/icons/map.svg',
-        screen: const GasStationScreen()),
-    Mainproperty(
+        screenBuilder: (context) => const GasStationScreen(),
+      ),
+      Mainproperty(
         text: 'Thông báo',
         svgAsset: 'assets/icons/notifications.svg',
-        screen: const PromotionScreen()),
-    Mainproperty(
+        screenBuilder: (context) => const PromotionScreen(),
+      ),
+      Mainproperty(
         text: 'Thống kê',
         svgAsset: 'assets/icons/thống_kê.svg',
-        screen: const StatisticsScreen(selectedLicensePlate: '')),
-  ];
+        screenBuilder: (context) => StatisticsScreen(
+          selectedLicensePlate: widget.selectedLicensePlate,
+          userData: widget.userData,
+        ),
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,19 +127,20 @@ class _InfoScreenState extends State<InfoScreen> {
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap:
                         true, // This is needed to avoid layout issues with GridView inside SingleChildScrollView
-                    itemCount: _item.length,
+                    itemCount: _item(context).length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       mainAxisSpacing: size.width * 0.005,
                       crossAxisSpacing: size.height * 0.005,
                     ),
                     itemBuilder: (context, index) {
+                      final item = _item(context)[index];
                       return GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => _item[index].screen,
+                              builder: (context) => item.screenBuilder(context),
                             ),
                           );
                         },
@@ -154,8 +163,8 @@ class _InfoScreenState extends State<InfoScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                SvgPicture.asset(_item[index].svgAsset),
-                                Text(_item[index].text),
+                                SvgPicture.asset(item.svgAsset),
+                                Text(item.text),
                               ],
                             ),
                           ),
