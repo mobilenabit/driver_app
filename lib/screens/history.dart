@@ -37,6 +37,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
         money: 6000000,
         fuel: 'RON 92',
       ),
+      History(
+        numberLicense: widget.selectedLicensePlate,
+        amount: 32,
+        pump: 1,
+        pumpLog: 2,
+        dateTime: '16:20 - 19/06/2024',
+        status: 'Thanh toán thất bại',
+        money: 6000000,
+        fuel: 'RON 92',
+      ),
     ];
   }
 
@@ -45,8 +55,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
       NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
 
   // Date picker
-  DateTime _startDate = DateTime.now();
-  DateTime _endDate = DateTime.now();
+  DateTime _startDate = DateTime.now().subtract(const Duration(days: 7));
+  DateTime _endDate = DateTime.now().add(const Duration(days: 1));
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -107,17 +117,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 140,
-                height: 40,
+                width: size.width * 0.35,
+                height: size.height * 0.05,
                 decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color: Color.fromRGBO(130, 134, 158, 1),
+                      color: Colors.black45,
                     ),
                   ),
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,17 +155,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 width: size.width * 0.18,
               ),
               Container(
-                width: 140,
-                height: 40,
+                width: size.width * 0.35,
+                height: size.height * 0.05,
                 decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color: Color.fromRGBO(130, 134, 158, 1),
+                      color: Colors.black45,
                     ),
                   ),
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,7 +200,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
               itemBuilder: (context, index) {
                 final item = _filteredItems[index];
                 return Container(
-                  margin: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.only(
+                    top: 10,
+                    left: 10,
+                    right: 10,
+                    bottom: 1,
+                  ),
                   child: Card(
                     color: Colors.white,
                     child: ListTile(
