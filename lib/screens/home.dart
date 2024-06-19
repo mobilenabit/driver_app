@@ -57,12 +57,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   SettingsScreen(userData: snapshot.data),
                 ][currentPageIndex],
               ),
-              Positioned(
-                bottom: size.height * 0.06,
-                left: 16,
-                right: 16,
-                child: _buildFloatingNavBar(),
-              ),
+              if (currentPageIndex !=
+                  1) // show bottom bar not in history screen
+                Positioned(
+                  bottom: size.height * 0.06,
+                  left: 16,
+                  right: 16,
+                  child: _buildFloatingNavBar(),
+                ),
             ],
           ),
         );
@@ -70,9 +72,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // float bottom bar
   Widget _buildFloatingNavBar() {
     return Container(
-      height: 65,
+      height: 75,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),

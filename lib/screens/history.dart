@@ -1,4 +1,6 @@
+import 'package:driver_app/screens/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class HistoryScreen extends StatefulWidget {
@@ -18,15 +20,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
     super.initState();
     _items = [
       History(
-        numberLicense: widget.selectedLicensePlate,
-        amount: 32,
-        pump: 1,
-        pumpLog: 2,
-        dateTime: '16:20 - 19/06/2024',
-        status: 'Thanh toán thành công',
-        money: 600000,
-        fuel: 'RON 95',
-      ),
+          numberLicense: widget.selectedLicensePlate,
+          amount: 32,
+          pump: 1,
+          pumpLog: 2,
+          dateTime: '16:20 - 19/06/2024',
+          status: 'Thanh toán thành công',
+          money: 600000,
+          fuel: 'RON 95',
+        ),
       History(
         numberLicense: widget.selectedLicensePlate,
         amount: 32,
@@ -122,7 +124,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(243, 243, 247, 1),
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => HomeScreen(
+                    selectedLicensePlate: widget.selectedLicensePlate),
+              ),
+            );
+          },
+          icon: Icon(Icons.arrow_back_ios),
+        ),
         title: const Text(
           'Hoạt động',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),

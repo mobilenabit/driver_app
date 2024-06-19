@@ -83,9 +83,9 @@ class _GasStationScreenState extends State<GasStationScreen> {
                         shape: BoxShape.circle,
                         border: Border.all(width: 0.75, color: Colors.grey),
                       ),
-                      child: Center(
-                        child: SvgPicture.asset(_item[index].iconAsset),
-                      ),
+                      child: 
+                         SvgPicture.asset(_item[index].iconAsset),
+                      
                     ),
                   ],
                 ),

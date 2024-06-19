@@ -24,53 +24,32 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     isScanCompleted = false;
   }
 
-  // Add API QR of VietQR
-  // Future<bool> validVietQr(String code) async {
-  //   final response = await http.post(
-  //       Uri.parse(
-  //           'https://img.vietqr.io/image/<BANK_ID>-<ACCOUNT_NO>-<TEMPLATE>.png?amount=<AMOUNT>&addInfo=<DESCRIPTION>&accountName=<ACCOUNT_NAME>'),
-  //       headers: <String, String>{
-  //         'Content-Type': 'application/json; charset=UTF-8',
-  //       },
-  //       body: jsonEncode(<String, String>{
-  //         'qr_code': code,
-  //       }));
+  // Validate the scanned QR code
+  bool isValidQrCode(String code) {
+    return code.startsWith('000201') &&
+        code.contains('A000000727') &&
+        code.contains('QRIBFTTA') &&
+        code.contains('5802VN');
+  }
 
-  //   if (response.statusCode == 200) {
-  //     final responseData = json.decode(response.body);
-  //     return responseData['isValid'];
-  //   } else {
-  //     throw Exception('Failed to validate QR code');
-  //   }
-  // }
-
-  // show alert if qr not valid
+  // Show alert if QR code is not valid
   void showInvalidQrAlert() {
     showDialog(
-        context: context,
-        builder: (
-          BuildContext context,
-        ) {
-          return AlertDialog(
-            title: Icon(Icons.error),
-            content: const Text(
-              'Ảnh QR code không đúng định dạng nhà cung cấp, vui lòng chọn ảnh khác',
-              style: TextStyle(
-                fontSize: 12,
-              ),
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    setState(() {
-                      isScanCompleted = false;
-                    });
-                  },
-                  child: const Text('OK'))
-            ],
-          );
+      context: context,
+      builder: (BuildContext context) {
+        return const CustomAlertDialog();
+      },
+    );
+
+    // Automatically dismiss the alert after 2-3 seconds
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        Navigator.of(context).pop();
+        setState(() {
+          isScanCompleted = false;
         });
+      }
+    });
   }
 
   @override
@@ -88,8 +67,6 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
           ),
         ),
         centerTitle: true,
-        
-                  
         actions: [
           IconButton(
             onPressed: () {
@@ -139,10 +116,9 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                       if (!isScanCompleted) {
                         isScanCompleted = true;
                         String code = barcode.barcodes.first.rawValue ?? "---";
-                        // TODO: add validation type of QR
-                        //bool isValid = await validVietQr(code);
-                        bool isValid = code != "---";
-                        if (isValid) {
+                        // Validate the QR code
+
+                        if (isValidQrCode(code)) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -214,6 +190,51 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class CustomAlertDialog extends StatelessWidget {
+  const CustomAlertDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    return Align(
+      alignment: Alignment.topCenter,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 50),
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            width: size.width * 0.9,
+            height: size.height * 0.12,
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: const Row(
+              children: [
+                Icon(
+                  Icons.error,
+                  color: Colors.red,
+                  size: 25,
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Ảnh QR code không đúng định dạng nhà cung cấp, vui lòng chọn ảnh khác',
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
