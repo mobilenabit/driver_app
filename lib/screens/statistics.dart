@@ -19,15 +19,32 @@ const List<double> gasolineTotal = [
   510,
 ];
 
-enum ChoiceLabel {
-  all("Tất cả"),
-  month1("Tháng 6"),
-  month2("Tháng 5"),
-  month3("Tháng 4");
-
-  const ChoiceLabel(this.label);
-  final String label;
+enum ChoiceMonth {
+  all,
+  month1,
+  month2,
+  month3,
 }
+
+// auto subtract days to get month
+extension ChoiceMonthExtension on ChoiceMonth {
+  String get label {
+    switch (this) {
+      case ChoiceMonth.all:
+        return "Tất cả";
+      case ChoiceMonth.month1:
+        return "Tháng ${DateFormat('MM').format(DateTime.now().subtract(const Duration(days: 30)))}";
+      case ChoiceMonth.month2:
+        return "Tháng ${DateFormat('MM').format(DateTime.now().subtract(const Duration(days: 60)))}";
+      case ChoiceMonth.month3:
+        return "Tháng ${DateFormat('MM').format(DateTime.now().subtract(const Duration(days: 90)))}";
+      default:
+        return "";
+    }
+  }
+}
+
+
 
 final dataset = [
   {
@@ -87,6 +104,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         (element) => element['name'] == widget.selectedLicensePlate);
     if (chosenIndex == -1) chosenIndex = 0;
   }
+
+  //change date time when choose month
+  void _changeDateTime() {}
 
   // search
   void _searchDataset() {
@@ -200,7 +220,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        //physics: const NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -290,7 +310,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     children: [
                       const Text(
                         "8,286L",
-                        
                         style: TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
@@ -323,12 +342,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                   BorderRadius.all(Radius.circular(10)),
                               borderSide: BorderSide(color: Colors.black)),
                         ),
-                        initialSelection: ChoiceLabel.all.name,
+                        initialSelection: ChoiceMonth.all.name,
                         onSelected: (value) {
                           // TODO: Implement action
                           DoNothingAction();
                         },
-                        dropdownMenuEntries: ChoiceLabel.values
+                        dropdownMenuEntries: ChoiceMonth.values
                             .map((e) => DropdownMenuEntry(
                                 value: e.name, label: e.label))
                             .toList(),

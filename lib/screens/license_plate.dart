@@ -29,7 +29,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
     _searchController.addListener(_filterLicensePlates);
   }
 
-  // search 
+  // search
   void _filterLicensePlates() {
     final query = _searchController.text.toLowerCase();
     setState(() {
@@ -97,8 +97,10 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            HomeScreen(selectedLicensePlate: licensePlate),
+                        builder: (context) => HomeScreen(
+                          selectedLicensePlate: licensePlate,
+                       
+                        ),
                       ),
                     );
                   },

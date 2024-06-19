@@ -124,14 +124,13 @@ class _InfoScreenState extends State<InfoScreen> {
                     ),
                   ),
                   GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap:
                         true, // This is needed to avoid layout issues with GridView inside SingleChildScrollView
                     itemCount: _item(context).length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      mainAxisSpacing: size.width * 0.005,
-                      crossAxisSpacing: size.height * 0.005,
+                      mainAxisSpacing: size.width * 0.001,
+                      crossAxisSpacing: size.height * 0.001,
                     ),
                     itemBuilder: (context, index) {
                       final item = _item(context)[index];

@@ -32,7 +32,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         amount: 32,
         pump: 1,
         pumpLog: 2,
-        dateTime: '16:20 - 19/06/2024',
+        dateTime: '16:20 - 1/06/2024',
         status: 'Thanh toán thất bại',
         money: 6000000,
         fuel: 'RON 92',
@@ -46,6 +46,36 @@ class _HistoryScreenState extends State<HistoryScreen> {
         status: 'Thanh toán thất bại',
         money: 6000000,
         fuel: 'RON 92',
+      ),
+      History(
+        numberLicense: widget.selectedLicensePlate,
+        amount: 32,
+        pump: 1,
+        pumpLog: 2,
+        dateTime: '16:20 - 19/06/2024',
+        status: 'Thanh toán thành công',
+        money: 600000,
+        fuel: 'RON 95',
+      ),
+      History(
+        numberLicense: widget.selectedLicensePlate,
+        amount: 32,
+        pump: 1,
+        pumpLog: 2,
+        dateTime: '16:20 - 19/06/2024',
+        status: 'Thanh toán thành công',
+        money: 600000,
+        fuel: 'RON 95',
+      ),
+      History(
+        numberLicense: widget.selectedLicensePlate,
+        amount: 32,
+        pump: 1,
+        pumpLog: 2,
+        dateTime: '16:20 - 19/06/2024',
+        status: 'Thanh toán thành công',
+        money: 600000,
+        fuel: 'RON 95',
       ),
     ];
   }
@@ -118,7 +148,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             children: [
               Container(
                 width: size.width * 0.35,
-                height: size.height * 0.05,
+                height: size.height * 0.06,
                 decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
@@ -156,7 +186,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
               Container(
                 width: size.width * 0.35,
-                height: size.height * 0.05,
+                height: size.height * 0.06,
                 decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
@@ -204,7 +234,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     top: 10,
                     left: 10,
                     right: 10,
-                    bottom: 0.5,
+                    bottom: 0.25,
                   ),
                   child: Card(
                     color: Colors.white,

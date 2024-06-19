@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:driver_app/screens/history.dart';
 import 'package:driver_app/screens/info.dart';
 import 'package:driver_app/screens/settings.dart';
+import 'package:get/get.dart';
 
 import '../core/api_client.dart';
 import '../core/secure_store.dart';
@@ -29,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return FutureBuilder(
       future: _userData,
       builder:
@@ -42,49 +44,86 @@ class _HomeScreenState extends State<HomeScreen> {
               snapshot.data?["data"]["phoneNumber"]);
         }
         return Scaffold(
-          backgroundColor: const Color(0xFFFFC709),
-          bottomNavigationBar: NavigationBar(
-            onDestinationSelected: (int index) {
-              setState(() {
-                currentPageIndex = index;
-              });
-            },
-            selectedIndex: currentPageIndex,
-            destinations: [
-              NavigationDestination(
-                selectedIcon: SvgPicture.asset('assets/icons/home.svg'),
-                icon: SvgPicture.asset('assets/icons/home.svg'),
-                label: "Trang chủ",
+          body: Stack(
+            children: [
+              Positioned.fill(
+                child: <Widget>[
+                  InfoScreen(
+                    userData: snapshot.data,
+                    selectedLicensePlate: widget.selectedLicensePlate,
+                  ),
+                  HistoryScreen(
+                      selectedLicensePlate: widget.selectedLicensePlate),
+                  SettingsScreen(userData: snapshot.data),
+                ][currentPageIndex],
               ),
-              const NavigationDestination(
-                selectedIcon: Icon(
-                  Icons.history,
-                  color: Color(0xFF82869E),
-                ),
-                icon: Icon(
-                  Icons.history_outlined,
-                  color: Color(0xFF82869E),
-                ),
-                label: "Lịch sử",
-              ),
-              NavigationDestination(
-                selectedIcon:
-                    SvgPicture.asset("assets/icons/settings_filled.svg"),
-                icon: SvgPicture.asset("assets/icons/settings.svg"),
-                label: "Cài đặt",
+              Positioned(
+                bottom: size.height * 0.06,
+                left: 16,
+                right: 16,
+                child: _buildFloatingNavBar(),
               ),
             ],
           ),
-          body: <Widget>[
-            InfoScreen(
-              userData: snapshot.data,
-              selectedLicensePlate: widget.selectedLicensePlate,
-            ),
-            HistoryScreen(selectedLicensePlate: widget.selectedLicensePlate),
-            SettingsScreen(userData: snapshot.data),
-          ][currentPageIndex],
         );
       },
+    );
+  }
+
+  Widget _buildFloatingNavBar() {
+    return Container(
+      height: 65,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(20),
+            blurRadius: 20,
+            spreadRadius: 10,
+          )
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildNavItem(0, 'assets/icons/home.svg',
+              'assets/icons/home_yellow.svg', 'Trang chủ'),
+          _buildNavItem(1, 'assets/icons/history.svg',
+              'assets/icons/history_yellow.svg', 'Lịch sử'),
+          _buildNavItem(2, 'assets/icons/settings.svg',
+              'assets/icons/settings_filled.svg', 'Cài đặt'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(
+      int index, String iconPath, String selectedIconPath, String label) {
+    bool isSelected = currentPageIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          currentPageIndex = index;
+        });
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          isSelected
+              ? SvgPicture.asset(selectedIconPath)
+              : SvgPicture.asset(iconPath),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? Colors.black : Colors.grey,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

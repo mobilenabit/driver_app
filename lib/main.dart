@@ -1,5 +1,3 @@
-import 'package:driver_app/screens/home.dart';
-import 'package:driver_app/screens/info.dart';
 import 'package:driver_app/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
