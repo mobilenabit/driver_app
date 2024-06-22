@@ -1,6 +1,6 @@
 import 'package:driver_app/screens/gas_station.dart';
 import 'package:driver_app/screens/promotion.dart';
-import 'package:driver_app/screens/qr_code.dart';
+import 'package:driver_app/screens/scan_qr.dart';
 import 'package:driver_app/screens/statistics.dart';
 
 import 'package:flutter/material.dart';
@@ -47,7 +47,7 @@ class _InfoScreenState extends State<InfoScreen> {
       Mainproperty(
         text: 'Quét Qr',
         svgAsset: 'assets/icons/qr_code.svg',
-        screenBuilder: (context) => const ScanQrScreen(),
+        screenBuilder: (context) => ScanQrScreen(userData: widget.userData,),
       ),
       Mainproperty(
         text: 'CHXD',

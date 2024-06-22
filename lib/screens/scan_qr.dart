@@ -1,14 +1,13 @@
-import 'dart:convert';
-
 import 'package:driver_app/screens/qr_result.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:qr_scanner_overlay/qr_scanner_overlay.dart';
 
 class ScanQrScreen extends StatefulWidget {
-  const ScanQrScreen({super.key});
+  final Map<String, dynamic>? userData;
+  const ScanQrScreen({super.key, required this.userData});
 
   @override
   State<ScanQrScreen> createState() => _ScanQrScreenState();
@@ -29,7 +28,9 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     return code.startsWith('000201') &&
         code.contains('A000000727') &&
         code.contains('QRIBFTTA') &&
-        code.contains('5802VN');
+        code.contains('5802VN') &&
+        code.contains('5303704') &&
+        code.contains('0208QRIBFTTA');
   }
 
   // Show alert if QR code is not valid
@@ -42,7 +43,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     );
 
     // Automatically dismiss the alert after 2-3 seconds
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         Navigator.of(context).pop();
         setState(() {
@@ -117,7 +118,6 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                         isScanCompleted = true;
                         String code = barcode.barcodes.first.rawValue ?? "---";
                         // Validate the QR code
-
                         if (isValidQrCode(code)) {
                           Navigator.push(
                             context,
@@ -126,6 +126,13 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                                 return QrResultScreen(
                                   code: code,
                                   closeScreen: closeScreen,
+                                  userData: widget.userData ??
+                                      {
+                                        'data': {
+                                          'avatar':
+                                              'https://example.com/avatar.jpg'
+                                        }
+                                      },
                                 );
                               },
                             ),

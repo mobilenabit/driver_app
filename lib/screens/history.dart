@@ -20,15 +20,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
     super.initState();
     _items = [
       History(
-          numberLicense: widget.selectedLicensePlate,
-          amount: 32,
-          pump: 1,
-          pumpLog: 2,
-          dateTime: '16:20 - 19/06/2024',
-          status: 'Thanh toán thành công',
-          money: 600000,
-          fuel: 'RON 95',
-        ),
+        numberLicense: widget.selectedLicensePlate,
+        amount: 32,
+        pump: 1,
+        pumpLog: 2,
+        dateTime: '16:20 - 19/06/2024',
+        status: 'Thanh toán thành công',
+        money: 600000,
+        fuel: 'RON 95',
+      ),
       History(
         numberLicense: widget.selectedLicensePlate,
         amount: 32,
@@ -262,7 +262,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               Row(
                                 children: [
                                   Text(
-                                    currencyFormat.format(item.money),
+                                    '${currencyFormat.format(item.money)}₫',
                                     style: const TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500),
