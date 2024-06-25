@@ -49,67 +49,79 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        automaticallyImplyLeading: false, // Remove the back button
-        title: const Text(
-          'Chọn biển số xe',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
+    return WillPopScope(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          automaticallyImplyLeading: false, // Remove the back button
+          title: const Text(
+            'Chọn biển số xe',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
           ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            child: TextFormField(
-              controller: _searchController,
-              decoration: const InputDecoration(
-                hintText: "Tìm kiếm",
-                prefixIcon: Icon(Icons.search),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              child: TextFormField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: "Tìm kiếm",
+                  prefixIcon: Icon(Icons.search),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  fillColor: Color(0xFFF3F3F7),
+                  border: InputBorder.none,
+                  filled: true,
                 ),
-                fillColor: Color(0xFFF3F3F7),
-                border: InputBorder.none,
-                filled: true,
+                style: const TextStyle(fontSize: 16),
               ),
-              style: const TextStyle(fontSize: 16),
             ),
-          ),
-          SizedBox(
-            height: size.height * 0.025,
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _filteredLicensePlates.length,
-              itemBuilder: (context, index) {
-                final licensePlate =
-                    _filteredLicensePlates[index]['plateNumber'];
-                return ListTile(
-                  title: Text(licensePlate!),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HomeScreen(
-                          selectedLicensePlate: licensePlate,
-                       
+            SizedBox(
+              height: size.height * 0.025,
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _filteredLicensePlates.length,
+                itemBuilder: (context, index) {
+                  final licensePlate =
+                      _filteredLicensePlates[index]['plateNumber'];
+                  return ListTile(
+                    title: Text(licensePlate!),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeScreen(
+                            selectedLicensePlate: licensePlate,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+      onWillPop: () async {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Không thể quay lại trang trước',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return false;
+      },
     );
   }
 }

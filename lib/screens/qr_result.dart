@@ -93,29 +93,32 @@ class _QrResultScreenState extends State<QrResultScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Loại nhiên liệu',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal,
-                          color: Color.fromRGBO(130, 134, 158, 1),
+                  const Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Loại nhiên liệu',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                            color: Color.fromRGBO(130, 134, 158, 1),
+                          ),
                         ),
-                      ),
-                      Text(
-                        'Xăng RON 95',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF313442),
+                        Text(
+                          'Xăng RON 95',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF313442),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   SizedBox(height: size.height * 0.01),
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
@@ -137,7 +140,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                     ],
                   ),
                   SizedBox(height: size.height * 0.01),
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
@@ -162,7 +165,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Số tiền',
                         style: TextStyle(
                           fontSize: 15,
@@ -172,7 +175,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                       ),
                       Text(
                         '${currentFormat.format(200000)}₫',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                           color: Color.fromRGBO(49, 52, 66, 1),
@@ -184,7 +187,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Số lít',
                         style: TextStyle(
                           fontSize: 15,
@@ -193,8 +196,8 @@ class _QrResultScreenState extends State<QrResultScreen> {
                         ),
                       ),
                       Text(
-                        '${currentFormat.format(32)} lít',
-                        style: TextStyle(
+                        '${currentFormat.format(32)}lít',
+                        style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                           color: Color.fromRGBO(49, 52, 66, 1),
@@ -206,7 +209,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                     const  Text(
                         'Thời gian',
                         style: TextStyle(
                           fontSize: 15,
@@ -215,7 +218,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                         ),
                       ),
                       Text(
-                        '16:20 - 28/07/2022',
+                        '${DateFormat('dd/MM/yyyy').format(DateTime.now())}',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -228,7 +231,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
               ),
             ),
             Positioned(
-              top: -50, 
+              top: -50,
               child: _getAvatarWidget(),
             ),
           ],

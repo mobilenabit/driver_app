@@ -71,11 +71,10 @@ class _GasStationScreenState extends State<GasStationScreen> {
                         _item[index].name,
                         style: const TextStyle(
                             fontSize: 15, fontWeight: FontWeight.w500),
-                        maxLines: 2, // Limit the text to 2 lines
-                        overflow: TextOverflow
-                            .ellipsis, // Add ellipsis if text exceeds 2 lines
                       ),
                     ),
+
+                    // direction 
                     Container(
                       width: 30,
                       height: 30,
@@ -83,9 +82,9 @@ class _GasStationScreenState extends State<GasStationScreen> {
                         shape: BoxShape.circle,
                         border: Border.all(width: 0.75, color: Colors.grey),
                       ),
-                      child: 
-                         SvgPicture.asset(_item[index].iconAsset),
-                      
+                      child: Center(
+                        child: SvgPicture.asset(_item[index].iconAsset),
+                      ),
                     ),
                   ],
                 ),

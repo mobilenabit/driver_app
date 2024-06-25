@@ -42,6 +42,21 @@ extension ChoiceMonthExtension on ChoiceMonth {
         return "";
     }
   }
+
+  String get dateRange {
+    switch (this) {
+      case ChoiceMonth.all:
+        return 'Từ ${DateFormat('dd/MM/yyyy').format(DateTime.now().subtract(const Duration(days: 30)))} - đến ${DateFormat('dd/MM/yyyy').format(DateTime.now())}';
+      case ChoiceMonth.month1:
+        return 'Từ ${DateFormat('dd/MM/yyyy').format(DateTime.now().subtract(const Duration(days: 60)))} - đến ${DateFormat('dd/MM/yyyy').format(DateTime.now())}';
+      case ChoiceMonth.month2:
+        return 'Từ ${DateFormat('dd/MM/yyyy').format(DateTime.now().subtract(const Duration(days: 90)))} - đến ${DateFormat('dd/MM/yyyy').format(DateTime.now())}';
+      case ChoiceMonth.month3:
+        return 'Từ ${DateFormat('dd/MM/yyyy').format(DateTime.now().subtract(const Duration(days: 120)))} - đến ${DateFormat('dd/MM/yyyy').format(DateTime.now())}';
+      default:
+        return '';
+    }
+  }
 }
 
 final dataset = [
@@ -72,6 +87,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   int? chosenIndex;
   List<Map<String, String>> _filteredDataset = [];
   final TextEditingController _searchController = TextEditingController();
+  ChoiceMonth selectedMonth = ChoiceMonth.all;
 
   // set avatar
   Widget _getAvatarWidget() {
@@ -102,10 +118,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         (element) => element['name'] == widget.selectedLicensePlate);
     if (chosenIndex == -1) chosenIndex = 0;
   }
-
-  //change date time when choose month
-  // TODO: later
-  void _changeDateTime() {}
 
   // search
   void _searchDataset() {
@@ -141,29 +153,50 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 children: [
-                  const Center(
-                    child: Text(
-                      "Chọn biển số ",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  Padding(
+                    padding: EdgeInsets.all(5),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(Icons.arrow_back_ios),
+                        ),
+                        const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Chọn biển số ",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  TextFormField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      hintText: "Tìm kiếm",
-                      prefixIcon: Icon(Icons.search),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                      fillColor: Color(0xFFF3F3F7),
-                      border: InputBorder.none,
-                      filled: true,
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
                     ),
-                    style: const TextStyle(fontSize: 16),
+                    child: TextFormField(
+                      controller: _searchController,
+                      decoration: const InputDecoration(
+                        hintText: "Tìm kiếm",
+                        prefixIcon: Icon(Icons.search),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        fillColor: Color(0xFFF3F3F7),
+                        border: InputBorder.none,
+                        filled: true,
+                      ),
+                      style: const TextStyle(fontSize: 16),
+                    ),
                   ),
                   Expanded(
                     child: ListView.builder(
@@ -177,7 +210,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           contentPadding: const EdgeInsets.all(0),
                           title: Text(_filteredDataset[index]["name"]!,
                               style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18)),
+                                  fontWeight: FontWeight.w500, fontSize: 18)),
                           onTap: () {
                             setState(() {
                               chosenIndex = dataset.indexWhere((element) =>
@@ -343,24 +376,27 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         ),
                         initialSelection: ChoiceMonth.all.name,
                         onSelected: (value) {
-                          // TODO: Implement action
-                          DoNothingAction();
+                          setState(() {
+                            selectedMonth = ChoiceMonth.values.firstWhere(
+                              (element) => element.name == value,
+                            );
+                          });
                         },
                         dropdownMenuEntries: ChoiceMonth.values
                             .map((e) => DropdownMenuEntry(
-                                value: e.name, label: e.label))
+                                value: e.name, label: e.label),)
                             .toList(),
                       ),
                     ],
                   ),
                   SizedBox(height: size.height * 0.01),
+
+                  // TODO: fix later
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Từ ${DateFormat("dd/MM/yyyy").format(
-                          DateTime.now().subtract(const Duration(days: 30)),
-                        )} - ${DateFormat("dd/MM/yyyy").format(DateTime.now())}",
+                        selectedMonth.dateRange,
                         style: const TextStyle(
                           fontSize: 11,
                           color: Color(0xFF82869E),
