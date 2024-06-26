@@ -14,14 +14,14 @@ List<GasMap> _item = [
       address: 'Đ. Cầu Bươu',
       station: 'Trạm xăng',
       distance: '550m',
-      iconAsset: 'assets/icons/road.svg',
+      iconAsset: 'assets/icons/direction.svg',
       status: 'Đang mở cửa'),
   GasMap(
       name: 'Trạm Xăng-HV Quân Y',
       address: '143 Đường Trần Phú',
       station: 'Trạm xăng',
       distance: '1.5km',
-      iconAsset: 'assets/icons/road.svg',
+      iconAsset: 'assets/icons/direction.svg',
       status: 'Đóng cửa')
 ];
 
@@ -74,18 +74,8 @@ class _GasStationScreenState extends State<GasStationScreen> {
                       ),
                     ),
 
-                    // direction 
-                    Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(width: 0.75, color: Colors.grey),
-                      ),
-                      child: Center(
-                        child: SvgPicture.asset(_item[index].iconAsset),
-                      ),
-                    ),
+                    // direction
+                    SvgPicture.asset(_item[index].iconAsset),
                   ],
                 ),
                 const SizedBox(height: 4),

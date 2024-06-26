@@ -1,4 +1,7 @@
+import 'package:driver_app/screens/history.dart';
+import 'package:driver_app/screens/history1.dart';
 import 'package:driver_app/screens/login.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -22,7 +25,9 @@ class MyApp extends StatelessWidget {
         Locale('en', ''), // English
       ],
       locale: Locale('vi', ''),
-      home: LoginScreen(),
+      home: Hiatory1(
+        selectedLicensePlate: '',
+      ),
     );
   }
 }

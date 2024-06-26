@@ -88,8 +88,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   // Date picker
   DateTime _startDate = DateTime.now().subtract(const Duration(days: 7));
-  DateTime _endDate = DateTime.now().add(const Duration(days: 1));
-
+  DateTime _endDate = DateTime.now();
 
   // TODO: custome date picker
   Future<void> _selectDate(BuildContext context, bool isStart) async {
@@ -200,40 +199,40 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 width: size.width * 0.18,
               ),
               Container(
-                width: size.width * 0.35,
-                height: size.height * 0.06,
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.black45,
+                  width: size.width * 0.35,
+                  height: size.height * 0.06,
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Colors.black45,
+                      ),
                     ),
                   ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  child: TextButton(
+                    onPressed: () => _selectDate(context, false),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Đến ngày',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Color.fromRGBO(130, 134, 158, 1),
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Đến ngày',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Color.fromRGBO(130, 134, 158, 1),
+                              ),
+                            ),
+                            Text(
+                              DateFormat('dd/MM/yyyy').format(_endDate),
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ],
                         ),
-                        Text(
-                          DateFormat('dd/MM/yyyy').format(_endDate),
-                          style: const TextStyle(fontSize: 14),
-                        ),
+                        Icon(Icons.calendar_month_outlined),
                       ],
                     ),
-                    IconButton(
-                        onPressed: () => _selectDate(context, false),
-                        icon: const Icon(Icons.calendar_month_outlined))
-                  ],
-                ),
-              ),
+                  )),
             ],
           ),
           SizedBox(
