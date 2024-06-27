@@ -23,24 +23,24 @@ class _Hiatory1State extends State<Hiatory1> {
           address: 'CHXD Xa La',
           amount: 32,
           hours: '16:30',
-          time: '19/06/2024',
-          money: 123000),
+          date: '19/06/2024',
+          money: 250000),
       History1(
           numberLicense: widget.selectedLicensePlate,
-          fuel: 'Xăng RON 95',
+          fuel: 'Xăng RON 92',
           address: 'CHXD Xa La',
-          amount: 40,
-          hours: '16:30',
-          time: '19/06/2024',
+          amount: 6,
+          hours: '20:00',
+          date: '19/06/2024',
           money: 123000),
       History1(
           numberLicense: widget.selectedLicensePlate,
-          fuel: 'Xăng RON 95',
+          fuel: 'Xăng RON 92',
           address: 'CHXD Xa La',
           amount: 50,
-          hours: '16:30',
-          time: '20/06/2024',
-          money: 123000),
+          hours: '06:30',
+          date: '20/06/2024',
+          money: 54600),
     ];
   }
 
@@ -54,13 +54,42 @@ class _Hiatory1State extends State<Hiatory1> {
 
   // Custom date picker
   Future<void> _selectDate(BuildContext context, bool isStart) async {
-    final DateTime? pickedDate = await showDatePicker(
+    final DateTime? pickedDate = await showDialog<DateTime>(
       context: context,
-      initialDate: isStart ? _startDate : _endDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-      locale: const Locale('vi', 'VN'), // Set locale to Vietnamese
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            width: 500, // adjust the width of the dialog
+            height: 400, // adjust the height of the dialog
+            child: Theme(
+              data: ThemeData(
+                colorScheme: ColorScheme.light(
+                  primary: Color.fromRGBO(244, 129, 32, 1), // selection color
+                  onPrimary: Colors.white, // text color for selected text
+                  onSurface: Colors.black, // default text color
+                ),
+                // textTheme: TextTheme(
+                //   bodyText2: TextStyle(
+                //     fontSize: 18,
+                //     fontWeight: FontWeight.bold,
+                //     color: Colors.white,
+                //   ),
+                // ),
+              ),
+              child: CalendarDatePicker(
+                initialDate: isStart ? _startDate : _endDate,
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2101),
+                onDateChanged: (DateTime date) {
+                  Navigator.pop(context, date);
+                },
+              ),
+            ),
+          ),
+        );
+      },
     );
+
     if (pickedDate != null) {
       setState(() {
         if (isStart) {
@@ -75,7 +104,7 @@ class _Hiatory1State extends State<Hiatory1> {
   // Filter items in list by date picker
   List<History1> get _filteredItems {
     return _items.where((item) {
-      DateTime itemDate = DateFormat('dd/MM/yyyy').parse(item.time);
+      DateTime itemDate = DateFormat('dd/MM/yyyy').parse(item.date);
       return itemDate.isAfter(_startDate.subtract(const Duration(days: 1))) &&
           itemDate.isBefore(_endDate.add(const Duration(days: 1)));
     }).toList();
@@ -127,7 +156,7 @@ class _Hiatory1State extends State<Hiatory1> {
                 child: TextButton(
                   onPressed: () => _selectDate(context, true),
                   child: Container(
-                    height: size.height * 0.08,
+                    height: size.height * 0.07,
                     width: size.width * 0.413,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -143,8 +172,8 @@ class _Hiatory1State extends State<Hiatory1> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding:
-                                  EdgeInsets.only(left: 10, top: 7, bottom: 2),
+                              padding: const EdgeInsets.only(
+                                  left: 10, top: 7, bottom: 2),
                               child: Text(
                                 'Từ ngày',
                                 style: TextStyle(
@@ -154,7 +183,8 @@ class _Hiatory1State extends State<Hiatory1> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(left: 10, bottom: 7),
+                              padding:
+                                  const EdgeInsets.only(left: 10, bottom: 7),
                               child: Text(
                                 DateFormat('dd/MM/yyyy').format(_startDate),
                                 style: TextStyle(
@@ -177,7 +207,7 @@ class _Hiatory1State extends State<Hiatory1> {
                 child: TextButton(
                   onPressed: () => _selectDate(context, false),
                   child: Container(
-                    height: size.height * 0.08,
+                    height: size.height * 0.07,
                     width: size.width * 0.413,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -193,8 +223,8 @@ class _Hiatory1State extends State<Hiatory1> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding:
-                                  EdgeInsets.only(left: 10, top: 7, bottom: 2),
+                              padding: const EdgeInsets.only(
+                                  left: 10, top: 7, bottom: 2),
                               child: Text(
                                 'Đến ngày',
                                 style: TextStyle(
@@ -204,7 +234,8 @@ class _Hiatory1State extends State<Hiatory1> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(left: 10, bottom: 7),
+                              padding:
+                                  const EdgeInsets.only(left: 10, bottom: 7),
                               child: Text(
                                 DateFormat('dd/MM/yyyy').format(_endDate),
                                 style: TextStyle(
@@ -214,7 +245,7 @@ class _Hiatory1State extends State<Hiatory1> {
                           ],
                         ),
                         Padding(
-                          padding: EdgeInsets.only(right: 7.5),
+                          padding: const EdgeInsets.only(right: 7.5),
                           child: SvgPicture.asset('assets/icons/calender.svg'),
                         )
                       ],
@@ -231,17 +262,17 @@ class _Hiatory1State extends State<Hiatory1> {
               itemCount: _filteredItems.length,
               itemBuilder: (context, index) {
                 final item = _filteredItems[index];
+
+                //check date is similar to show one time
                 bool showHeader = true;
-                if (index > 0 && _filteredItems[index - 1].time == item.time) {
+                if (index > 0 && _filteredItems[index - 1].date == item.date) {
                   showHeader = false;
                 }
 
                 return Container(
-                  margin: EdgeInsets.only(
-                    left: 16.0,
-                    right: 16.0,
-                    top: showHeader ? 12.0 : 0.0,
-                    bottom: 12.0,
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 12.0,
+                    horizontal: 16.0,
                   ),
                   child: Column(
                     children: <Widget>[
@@ -257,17 +288,22 @@ class _Hiatory1State extends State<Hiatory1> {
                               topRight: Radius.circular(5),
                             ),
                           ),
-                          child: Padding(
-                            padding: EdgeInsetsDirectional.symmetric(
-                                horizontal: 12, vertical: 9),
-                            child: Text(
-                              item.time,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                child: Text(
+                                  item.date,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
 
@@ -308,7 +344,7 @@ class _Hiatory1State extends State<Hiatory1> {
                                         ),
                                         Text(' - '),
                                         Text(
-                                          '${currencyFormat.format(item.amount)} lít',
+                                          '${currencyFormat.format(item.amount)}lít',
                                           style: TextStyle(
                                               color: Colors.black,
                                               fontSize: 15,
@@ -316,7 +352,7 @@ class _Hiatory1State extends State<Hiatory1> {
                                         ),
                                         Text(' - '),
                                         Text(
-                                          '${currencyFormat.format(item.money)} ₫',
+                                          '${currencyFormat.format(item.money)}₫',
                                           style: TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.w600,
@@ -328,9 +364,9 @@ class _Hiatory1State extends State<Hiatory1> {
                                     Text(
                                       item.hours,
                                       style: TextStyle(
-                                        fontSize: 15,
+                                        fontSize: 13,
                                         color: Color.fromRGBO(130, 134, 158, 1),
-                                        fontWeight: FontWeight.w100,
+                                        fontWeight: FontWeight.w300,
                                       ),
                                     )
                                   ],
@@ -342,7 +378,7 @@ class _Hiatory1State extends State<Hiatory1> {
                                   item.address,
                                   style: TextStyle(
                                     fontSize: 15,
-                                    fontWeight: FontWeight.w100,
+                                    fontWeight: FontWeight.w300,
                                     color: Color.fromRGBO(130, 134, 158, 1),
                                   ),
                                 ),
@@ -351,7 +387,7 @@ class _Hiatory1State extends State<Hiatory1> {
                                 'Biển số xe: ${item.numberLicense}',
                                 style: TextStyle(
                                   fontSize: 15,
-                                  fontWeight: FontWeight.w100,
+                                  fontWeight: FontWeight.w300,
                                   color: Color.fromRGBO(130, 134, 158, 1),
                                 ),
                               ),
@@ -378,7 +414,7 @@ class History1 {
   final String address;
   final double amount;
   final String hours;
-  final String time;
+  final String date;
 
   History1({
     required this.numberLicense,
@@ -386,7 +422,7 @@ class History1 {
     required this.address,
     required this.amount,
     required this.hours,
-    required this.time,
+    required this.date,
     required this.money,
   });
 }
