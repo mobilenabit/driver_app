@@ -1,6 +1,7 @@
+import 'package:driver_app/screens/history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:driver_app/screens/history.dart';
+
 import 'package:driver_app/screens/info.dart';
 import 'package:driver_app/screens/settings.dart';
 import 'package:get/get.dart';
@@ -31,54 +32,43 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return WillPopScope(
-      child: FutureBuilder(
-        future: _userData,
-        builder: (BuildContext context,
-            AsyncSnapshot<Map<String, dynamic>> snapshot) {
-          if (snapshot.hasData) {
-            SecureStorage().writeSecureData("last_logged_in_user_name",
-                snapshot.data?["data"]["displayName"]);
-            SecureStorage().writeSecureData(
-                "last_logged_in_user_avatar", snapshot.data?["data"]["avatar"]);
-            SecureStorage().writeSecureData("last_logged_in_user_phone_number",
-                snapshot.data?["data"]["phoneNumber"]);
-          }
-          return Scaffold(
-            body: Stack(
-              children: [
-                Positioned.fill(
-                  child: <Widget>[
-                    InfoScreen(
-                      userData: snapshot.data,
-                      selectedLicensePlate: widget.selectedLicensePlate,
-                    ),
-                    HistoryScreen(
-                        selectedLicensePlate: widget.selectedLicensePlate),
-                    SettingsScreen(userData: snapshot.data),
-                  ][currentPageIndex],
-                ),
-                if (currentPageIndex !=
-                    1) // show bottom bar not in history screen
-                  Positioned(
-                    bottom: size.height * 0.06,
-                    left: 16,
-                    right: 16,
-                    child: _buildFloatingNavBar(),
+    return FutureBuilder(
+      future: _userData,
+      builder:
+          (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+        if (snapshot.hasData) {
+          SecureStorage().writeSecureData("last_logged_in_user_name",
+              snapshot.data?["data"]["displayName"]);
+          SecureStorage().writeSecureData(
+              "last_logged_in_user_avatar", snapshot.data?["data"]["avatar"]);
+          SecureStorage().writeSecureData("last_logged_in_user_phone_number",
+              snapshot.data?["data"]["phoneNumber"]);
+        }
+        return Scaffold(
+          body: Stack(
+            children: [
+              Positioned.fill(
+                child: <Widget>[
+                  InfoScreen(
+                    userData: snapshot.data,
+                    selectedLicensePlate: widget.selectedLicensePlate,
                   ),
-              ],
-            ),
-          );
-        },
-      ),
-      onWillPop: () async {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Không thể quay lại màn hình trước'),
-            backgroundColor: Colors.red,
+                  HistoryScreen(
+                      selectedLicensePlate: widget.selectedLicensePlate),
+                  SettingsScreen(userData: snapshot.data),
+                ][currentPageIndex],
+              ),
+              if (currentPageIndex !=
+                  1) // show bottom bar not in history screen
+                Positioned(
+                  bottom: size.height * 0.06,
+                  left: 16,
+                  right: 16,
+                  child: _buildFloatingNavBar(),
+                ),
+            ],
           ),
         );
-        return false;
       },
     );
   }

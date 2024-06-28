@@ -163,18 +163,20 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           },
                           icon: const Icon(Icons.arrow_back_ios),
                         ),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Chọn biển số ",
+                        Expanded(
+                          child: Center(
+                            child: Text(
+                              "Chọn biển số",
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ],
+                          ),
                         ),
+                        // Adding a placeholder to balance the row
+                        SizedBox(
+                            width: 48), // Width similar to IconButton width
                       ],
                     ),
                   ),
@@ -383,8 +385,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           });
                         },
                         dropdownMenuEntries: ChoiceMonth.values
-                            .map((e) => DropdownMenuEntry(
-                                value: e.name, label: e.label),)
+                            .map(
+                              (e) => DropdownMenuEntry(
+                                  value: e.name, label: e.label),
+                            )
                             .toList(),
                       ),
                     ],

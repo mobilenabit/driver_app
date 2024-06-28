@@ -61,7 +61,8 @@ dependencies:
   mobile_scanner: ^5.1.1
   qr_scanner_overlay: ^0.0.2
   qr_code_scanner: ^1.0.1
-  grouped_list: ^5.1.2
+ 
+
   
 
   

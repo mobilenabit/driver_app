@@ -42,7 +42,7 @@ class _GasStationScreenState extends State<GasStationScreen> {
         title: const Text(
           'CHXD gần đây',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),

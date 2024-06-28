@@ -3,82 +3,46 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
+
 class HistoryScreen extends StatefulWidget {
   final String selectedLicensePlate;
   const HistoryScreen({super.key, required this.selectedLicensePlate});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _HistoryScreenState createState() => _HistoryScreenState();
+  State<HistoryScreen> createState() => _HistoryScreenState();
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  late final List<History> _items;
+  late final List<History1> _items;
 
   @override
   void initState() {
     super.initState();
     _items = [
-      History(
-        numberLicense: widget.selectedLicensePlate,
-        amount: 32,
-        pump: 1,
-        pumpLog: 2,
-        dateTime: '16:20 - 19/06/2024',
-        status: 'Thanh toán thành công',
-        money: 600000,
-        fuel: 'RON 95',
-      ),
-      History(
-        numberLicense: widget.selectedLicensePlate,
-        amount: 32,
-        pump: 1,
-        pumpLog: 2,
-        dateTime: '16:20 - 1/06/2024',
-        status: 'Thanh toán thất bại',
-        money: 6000000,
-        fuel: 'RON 92',
-      ),
-      History(
-        numberLicense: widget.selectedLicensePlate,
-        amount: 32,
-        pump: 1,
-        pumpLog: 2,
-        dateTime: '16:20 - 19/06/2024',
-        status: 'Thanh toán thất bại',
-        money: 6000000,
-        fuel: 'RON 92',
-      ),
-      History(
-        numberLicense: widget.selectedLicensePlate,
-        amount: 32,
-        pump: 1,
-        pumpLog: 2,
-        dateTime: '16:20 - 19/06/2024',
-        status: 'Thanh toán thành công',
-        money: 600000,
-        fuel: 'RON 95',
-      ),
-      History(
-        numberLicense: widget.selectedLicensePlate,
-        amount: 32,
-        pump: 1,
-        pumpLog: 2,
-        dateTime: '16:20 - 19/06/2024',
-        status: 'Thanh toán thành công',
-        money: 600000,
-        fuel: 'RON 95',
-      ),
-      History(
-        numberLicense: widget.selectedLicensePlate,
-        amount: 32,
-        pump: 1,
-        pumpLog: 2,
-        dateTime: '16:20 - 19/06/2024',
-        status: 'Thanh toán thành công',
-        money: 600000,
-        fuel: 'RON 95',
-      ),
+      History1(
+          numberLicense: widget.selectedLicensePlate,
+          fuel: 'Xăng RON 95',
+          address: 'CHXD Xa La',
+          amount: 32,
+          hours: '16:30',
+          date: '19/06/2024',
+          money: 250000),
+      History1(
+          numberLicense: widget.selectedLicensePlate,
+          fuel: 'Xăng RON 92',
+          address: 'CHXD Xa La',
+          amount: 6,
+          hours: '20:00',
+          date: '19/06/2024',
+          money: 123000),
+      History1(
+          numberLicense: widget.selectedLicensePlate,
+          fuel: 'Xăng RON 92',
+          address: 'CHXD Xa La',
+          amount: 50,
+          hours: '06:30',
+          date: '20/06/2024',
+          money: 54600),
     ];
   }
 
@@ -86,19 +50,50 @@ class _HistoryScreenState extends State<HistoryScreen> {
   final NumberFormat currencyFormat =
       NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
 
-  // Date picker
+  // start and end DateTime
   DateTime _startDate = DateTime.now().subtract(const Duration(days: 7));
   DateTime _endDate = DateTime.now();
 
-  // TODO: custome date picker
+  // Custom date picker
   Future<void> _selectDate(BuildContext context, bool isStart) async {
-    final DateTime? pickedDate = await showDatePicker(
+    final DateTime? pickedDate = await showDialog<DateTime>(
       context: context,
-      initialDate: isStart ? _startDate : _endDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-      locale: const Locale('vi', 'VN'), // Set locale to Vietnamese
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            width: double.infinity,
+            height: MediaQuery.sizeOf(context).height * 0.4,
+            child: Theme(
+              data: ThemeData(
+                colorScheme: ColorScheme.light(
+                  primary: Color.fromRGBO(244, 129, 32, 1), // selection color
+                  onPrimary: Colors.white, // text color for selected text
+                  onSurface: Colors.black, // default text color
+                ),
+              ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: CalendarDatePicker(
+                      initialDate: isStart ? _startDate : _endDate,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                      onDateChanged: (DateTime date) {
+                        Navigator.pop(context, date);
+                      },
+                      selectableDayPredicate: (DateTime date) => true,
+                      currentDate: DateTime.now(),
+                      initialCalendarMode: DatePickerMode.day,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
+
     if (pickedDate != null) {
       setState(() {
         if (isStart) {
@@ -111,10 +106,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   // Filter items in list by date picker
-  List<History> get _filteredItems {
+  List<History1> get _filteredItems {
     return _items.where((item) {
-      DateTime itemDate = DateFormat('HH:mm - dd/MM/yyyy').parse(item.dateTime);
-      return itemDate.isAfter(_startDate) && itemDate.isBefore(_endDate);
+      DateTime itemDate = DateFormat('dd/MM/yyyy').parse(item.date);
+      return itemDate.isAfter(_startDate.subtract(const Duration(days: 1))) &&
+          itemDate.isBefore(_endDate.add(const Duration(days: 1)));
     }).toList();
   }
 
@@ -123,8 +119,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
     var size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(243, 243, 247, 1),
+      backgroundColor: const Color.fromRGBO(255, 252, 245, 1),
       appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(255, 252, 245, 1),
         leading: IconButton(
           onPressed: () {
             Navigator.push(
@@ -135,20 +132,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
             );
           },
-          icon: Icon(Icons.arrow_back_ios),
+          icon: const Icon(Icons.arrow_back_ios),
         ),
         title: const Text(
           'Hoạt động',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.all(20),
+            padding: EdgeInsets.only(left: 17, top: 18),
             child: Text(
               'Truy vấn lịch sử giao dịch',
               style: TextStyle(
@@ -157,180 +156,256 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
             ),
           ),
+
+          // Pick date
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Container(
-                width: size.width * 0.35,
-                height: size.height * 0.06,
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.black45,
-                    ),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Từ ngày',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Color.fromRGBO(130, 134, 158, 1),
-                          ),
-                        ),
-                        Text(
-                          DateFormat('dd/MM/yyyy').format(_startDate),
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                        onPressed: () => _selectDate(context, true),
-                        icon: const Icon(Icons.calendar_month_outlined))
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: size.width * 0.18,
-              ),
-              Container(
-                  width: size.width * 0.35,
-                  height: size.height * 0.06,
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Colors.black45,
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                child: TextButton(
+                  onPressed: () => _selectDate(context, true),
+                  child: Container(
+                    height: size.height * 0.07,
+                    width: size.width * 0.413,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        color: Color.fromRGBO(255, 199, 9, 1),
                       ),
                     ),
-                  ),
-                  child: TextButton(
-                    onPressed: () => _selectDate(context, false),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Đến ngày',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Color.fromRGBO(130, 134, 158, 1),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10, top: 7, bottom: 2),
+                              child: Text(
+                                'Từ ngày',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Color.fromRGBO(244, 129, 32, 1),
+                                ),
                               ),
                             ),
-                            Text(
-                              DateFormat('dd/MM/yyyy').format(_endDate),
-                              style: const TextStyle(fontSize: 14),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 10, bottom: 7),
+                              child: Text(
+                                DateFormat('dd/MM/yyyy').format(_startDate),
+                                style: TextStyle(
+                                    fontSize: 15, color: Colors.black),
+                              ),
                             ),
                           ],
                         ),
-                        Icon(Icons.calendar_month_outlined),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 7.5),
+                          child: SvgPicture.asset('assets/icons/calender.svg'),
+                        )
                       ],
                     ),
-                  )),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                child: TextButton(
+                  onPressed: () => _selectDate(context, false),
+                  child: Container(
+                    height: size.height * 0.07,
+                    width: size.width * 0.413,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        color: Color.fromRGBO(255, 199, 9, 1),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10, top: 7, bottom: 2),
+                              child: Text(
+                                'Đến ngày',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Color.fromRGBO(244, 129, 32, 1),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 10, bottom: 7),
+                              child: Text(
+                                DateFormat('dd/MM/yyyy').format(_endDate),
+                                style: TextStyle(
+                                    fontSize: 15, color: Colors.black),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 7.5),
+                          child: SvgPicture.asset('assets/icons/calender.svg'),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
-          SizedBox(
-            height: size.height * 0.01,
-          ),
+
+          // List of history
           Expanded(
             child: ListView.builder(
               itemCount: _filteredItems.length,
               itemBuilder: (context, index) {
                 final item = _filteredItems[index];
+
+                //check date is similar to show one time
+                bool showHeader = true;
+                if (index > 0 && _filteredItems[index - 1].date == item.date) {
+                  showHeader = false;
+                }
+
                 return Container(
-                  margin: const EdgeInsets.only(
-                    top: 10,
-                    left: 10,
-                    right: 10,
-                    bottom: 0.25,
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 12.0,
+                    horizontal: 16.0,
                   ),
-                  child: Card(
-                    color: Colors.white,
-                    child: ListTile(
-                      subtitle: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
+                  child: Column(
+                    children: <Widget>[
+                      // Date header
+                      if (showHeader)
+                        Container(
+                          height: 35,
+                          width: size.width * 1,
+                          decoration: BoxDecoration(
+                            color: Color.fromRGBO(255, 247, 172, 1),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              topRight: Radius.circular(5),
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    '${currencyFormat.format(item.money)}₫',
-                                    style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                child: Text(
+                                  item.date,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                  const Text(' - '),
-                                  Text(
-                                    item.fuel,
-                                    style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                'Biển số xe: ${item.numberLicense}',
-                                style: const TextStyle(
-                                    fontSize: 13, fontWeight: FontWeight.w500),
-                              ),
-                              Text(
-                                'Số lít: ${item.amount}',
-                                style: const TextStyle(
-                                    fontSize: 13, fontWeight: FontWeight.w500),
-                              ),
-                              Text(
-                                'Cột bơm: ${item.pump}',
-                                style: const TextStyle(
-                                    fontSize: 13, fontWeight: FontWeight.w500),
-                              ),
-                              Text(
-                                'Vòi bơm: ${item.pumpLog}',
-                                style: const TextStyle(
-                                    fontSize: 13, fontWeight: FontWeight.w500),
-                              ),
-                              Text(
-                                item.dateTime,
-                                style: const TextStyle(
-                                    color: Color.fromRGBO(130, 134, 158, 1),
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500),
+                                ),
                               ),
                             ],
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: item.status == 'Thanh toán thành công'
-                                  ? const Color.fromRGBO(197, 255, 196, 0.36)
-                                      .withOpacity(0.5)
-                                  : const Color.fromRGBO(255, 196, 207, 0.36)
-                                      .withOpacity(0.5),
-                            ),
-                            child: Text(
-                              item.status,
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: item.status == 'Thanh toán thành công'
-                                    ? Colors.green
-                                    : Colors.red,
-                              ),
-                            ),
+                        ),
+
+                      // Content
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(5),
+                            bottomRight: Radius.circular(5),
                           ),
-                        ],
-                      ),
-                    ),
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          boxShadow: [
+                            BoxShadow(
+                              offset: Offset(0, 1),
+                              blurRadius: 8,
+                              color: const Color.fromRGBO(0, 0, 0, 0.08),
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          item.fuel,
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                        Text(' - '),
+                                        Text(
+                                          '${currencyFormat.format(item.amount)}lít',
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                        Text(' - '),
+                                        Text(
+                                          '${currencyFormat.format(item.money)}₫',
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                              color: Color.fromRGBO(
+                                                  244, 129, 32, 1)),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      item.hours,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Color.fromRGBO(130, 134, 158, 1),
+                                        fontWeight: FontWeight.w300,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 10),
+                                child: Text(
+                                  item.address,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w300,
+                                    color: Color.fromRGBO(130, 134, 158, 1),
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                'Biển số xe: ${item.numberLicense}',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w300,
+                                  color: Color.fromRGBO(130, 134, 158, 1),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
                   ),
                 );
               },
@@ -342,24 +417,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 }
 
-class History {
+class History1 {
   final String numberLicense;
-  final double amount;
-  final int pump;
-  final int pumpLog;
-  final String status;
-  final double money;
   final String fuel;
-  final String dateTime;
+  final double money;
+  final String address;
+  final double amount;
+  final String hours;
+  final String date;
 
-  History({
-    required this.amount,
-    required this.dateTime,
-    required this.fuel,
-    required this.money,
+  History1({
     required this.numberLicense,
-    required this.pump,
-    required this.pumpLog,
-    required this.status,
+    required this.fuel,
+    required this.address,
+    required this.amount,
+    required this.hours,
+    required this.date,
+    required this.money,
   });
 }

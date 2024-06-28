@@ -209,7 +209,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                     const  Text(
+                      const Text(
                         'Thời gian',
                         style: TextStyle(
                           fontSize: 15,
