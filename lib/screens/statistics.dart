@@ -174,9 +174,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ),
                           ),
                         ),
-                        // Adding a placeholder to balance the row
-                        SizedBox(
-                            width: 48), // Width similar to IconButton width
+                        SizedBox(width: 48),
                       ],
                     ),
                   ),
@@ -191,7 +189,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         prefixIcon: Icon(Icons.search),
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: 20,
-                          vertical: 10,
+                          vertical: 15,
                         ),
                         fillColor: Color(0xFFF3F3F7),
                         border: InputBorder.none,
