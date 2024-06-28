@@ -1,3 +1,5 @@
+import "dart:convert";
+import 'package:http/http.dart' as http;
 import "package:driver_app/screens/chart/bar_graph.dart";
 import "package:flutter/material.dart";
 import "package:get/get.dart";
@@ -59,35 +61,14 @@ extension ChoiceMonthExtension on ChoiceMonth {
   }
 }
 
-final dataset = [
-  {
-    "name": "30A-123.56",
-  },
-  {
-    "name": "30A-123.45",
-  },
-  {
-    "name": "30A-123.15",
-  },
-  {
-    "name": "30A-123.34",
-  },
-  {
-    "name": "30A-133.45",
-  },
-  {
-    "name": "30A-523.45",
-  },
-  {
-    "name": "30A-163.45",
-  },
-];
-
 class _StatisticsScreenState extends State<StatisticsScreen> {
   int? chosenIndex;
-  List<Map<String, String>> _filteredDataset = [];
   final TextEditingController _searchController = TextEditingController();
   ChoiceMonth selectedMonth = ChoiceMonth.all;
+
+  List<Map<String, String>> _filteredLicensePlates = [];
+  List<Map<String, String>> _licensePlateData = [];
+    bool _isLoading = true;
 
   // set avatar
   Widget _getAvatarWidget() {
@@ -112,20 +93,53 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();
-    _filteredDataset = List.from(dataset);
-    _searchController.addListener(_searchDataset);
-    chosenIndex = dataset.indexWhere(
-        (element) => element['name'] == widget.selectedLicensePlate);
-    if (chosenIndex == -1) chosenIndex = 0;
+    _fetchLicensePlates();
+    _searchController.addListener(_filterLicensePlates);
+  }
+
+  Future<void> _fetchLicensePlates() async {
+    String userId = "30071";
+    String token =
+        'eyJhbGciOiJSUzI1NiIsImtpZCI6IjlEMEM3RUI5RTNDMkNCMEFENDY5NEEyREY3MjJDNkE3IiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MTk1NjcxOTUsImV4cCI6MTcyODIwNzE5NSwiaXNzIjoiaHR0cDovL3B1bXBsb2dhcGkucGV0cm9uZXQudm4vY29yZSIsImNsaWVudF9pZCI6Im5hYml0LWNsaWVudCIsInN1YiI6IjMwMDcwIiwiYXV0aF90aW1lIjoxNzE5NTY3MTk1LCJpZHAiOiJsb2NhbCIsInVzZXJpZCI6IjMwMDcwIiwidXNlcm5hbWUiOiJBTkhUTiIsImRpc3BsYXluYW1lIjoiVOG6oSBOZ-G7jWMgQW5oIiwiZW1haWwiOiJlbWFpbEBuYWJpdC5jb20udm4iLCJwaG9uZW51bWJlciI6IiIsImlzc3VwZXJ1c2VyIjoiIiwiYnJhbmNoSWQiOiIxMTEiLCJzdGFydFBhZ2VJZCI6IiIsInR5cGVJZCI6IjEiLCJqdGkiOiI4REZGMURFQUYyMjQ1MTI3NkFGRTgwODY2MEQ4QTJFNCIsImlhdCI6MTcxOTU2NzE5NSwic2NvcGUiOlsiZW1haWwiLCJvcGVuaWQiLCJwcm9maWxlIl0sImFtciI6WyJwYXNzd29yZCJdfQ.4tLL97o9TlkhF__TIK3fT0q4Nf8WkS_BKjLRpKYMHWouS0txyECig0HVYJs91CfgWU2F2WzIrd7nFOLoVEtjFii15Gz1gPjqdzEwF9Zbb0nHyQAO6-KSqzFVbzBBTVsPCVqBKeAhUa8djq05ulpQhKHADvrmT8Ud7YqkGJ3QZAsgyq8hhxJclqe7nxVx_BgQH8CiGCso0EiqZ7tRPgCNbCcu4oSQXM6iL2E1eSqiCz8A9-6gt5fZG_pfurxtweKRiRNb_qCObngh5yZtssSsP8wvoS8ffpNsM2Y13hvXemdDs1qTf5Y4RZilwOrPE8sOL-JLDvnQPriGAk6uaLKFig';
+    String url =
+        'http://pumplogapi.petronet.vn/MD/Driver2Vehicle/GetByDriverId/$userId';
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['success'] == true) {
+          final data = responseData['data'] as List;
+          setState(() {
+            _licensePlateData = data
+                .map((item) =>
+                    {'plateNumber': item['vehicle']['numberPlate'].toString()})
+                .toList();
+            _filteredLicensePlates = _licensePlateData;
+            _isLoading = false;
+          });
+        } else {
+          throw Exception('Failed to load license plates');
+        }
+      } else {
+        throw Exception('Failed to load license plates');
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   // search
-  void _searchDataset() {
+  void _filterLicensePlates() {
     final query = _searchController.text.toLowerCase();
     setState(() {
-      _filteredDataset = dataset.where((e) {
-        final name = e['name']!.toLowerCase();
-        return name.contains(query);
+      _filteredLicensePlates = _licensePlateData.where((plate) {
+        final plateNumber = plate['plateNumber']!.toLowerCase();
+        return plateNumber.contains(query);
       }).toList();
     });
   }
@@ -201,22 +215,24 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   Expanded(
                     child: ListView.builder(
                       controller: controller,
-                      itemCount: _filteredDataset.length,
+                      itemCount: _filteredLicensePlates.length,
                       itemBuilder: (BuildContext context, int index) {
+                        final plateNumber =
+                            _filteredLicensePlates[index]['plateNumber'];
                         return ListTile(
                           shape: const Border(
                             bottom: BorderSide(color: Colors.grey, width: 0.5),
                           ),
                           contentPadding: const EdgeInsets.all(0),
-                          title: Text(_filteredDataset[index]["name"]!,
+                          title: Text(plateNumber!,
                               style: const TextStyle(
                                   fontWeight: FontWeight.w500, fontSize: 18)),
                           onTap: () {
-                            setState(() {
-                              chosenIndex = dataset.indexWhere((element) =>
-                                  element["name"] ==
-                                  _filteredDataset[index]["name"]);
-                            });
+                            // setState(() {
+                            //   chosenIndex = dataset.indexWhere((element) =>
+                            //       element["name"] ==
+                            //       _filteredDataset[index]["name"]);
+                            // });
                             Navigator.of(context).pop();
                           },
                         );
@@ -251,245 +267,254 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: size.height * 0.03),
-            TextButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.white),
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    children: [
-                      _getAvatarWidget(),
-                      SizedBox(
-                        width: size.width * 0.05,
+                  SizedBox(height: size.height * 0.03),
+                  TextButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          widget.userData == null
-                              ? const CircularProgressIndicator()
-                              : Text(
-                                  widget.userData?['data']['displayName'],
-                                  style: const TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                          Text(
-                            "${dataset[chosenIndex!]["name"]}",
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF82869E),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          children: [
+                            _getAvatarWidget(),
+                            SizedBox(
+                              width: size.width * 0.05,
                             ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                widget.userData == null
+                                    ? const CircularProgressIndicator()
+                                    : Text(
+                                        widget.userData?['data']['displayName'],
+                                        style: const TextStyle(
+                                            fontSize: 15,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                Text(
+                                  widget.selectedLicensePlate,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF82869E),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFF8F8FC),
+                            shape: BoxShape.circle,
                           ),
-                        ],
-                      ),
-                    ],
+                          child: const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 16,
+                            weight: 100,
+                            color: Color(0xFF1B1D29),
+                          ),
+                        ),
+                      ],
+                    ),
+                    onPressed: () {
+                      _handleLocationChoice();
+                    },
                   ),
+                  const SizedBox(height: 15),
                   Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF8F8FC),
-                      shape: BoxShape.circle,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 16,
-                      weight: 100,
-                      color: Color(0xFF1B1D29),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
                     ),
-                  ),
-                ],
-              ),
-              onPressed: () {
-                _handleLocationChoice();
-              },
-            ),
-            const SizedBox(height: 15),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 20,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Text("Tổng số lít"),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "8,286L",
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Text("Tổng số lít"),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "8,286L",
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            DropdownMenu(
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                              selectedTrailingIcon:
+                                  const Icon(Icons.expand_less),
+                              trailingIcon: const Icon(Icons.expand_more),
+                              menuStyle: MenuStyle(
+                                backgroundColor:
+                                    const MaterialStatePropertyAll<Color>(
+                                        Colors.white),
+                                surfaceTintColor:
+                                    const MaterialStatePropertyAll(
+                                        Colors.white),
+                                shape: MaterialStatePropertyAll(
+                                    RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10))),
+                              ),
+                              inputDecorationTheme: const InputDecorationTheme(
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 10),
+                                fillColor: Colors.white,
+                                filled: true,
+                                border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)),
+                                    borderSide:
+                                        BorderSide(color: Colors.black)),
+                              ),
+                              initialSelection: ChoiceMonth.all.name,
+                              onSelected: (value) {
+                                setState(() {
+                                  selectedMonth = ChoiceMonth.values.firstWhere(
+                                    (element) => element.name == value,
+                                  );
+                                });
+                              },
+                              dropdownMenuEntries: ChoiceMonth.values
+                                  .map(
+                                    (e) => DropdownMenuEntry(
+                                        value: e.name, label: e.label),
+                                  )
+                                  .toList(),
+                            ),
+                          ],
                         ),
-                      ),
-                      DropdownMenu(
-                        textStyle: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                        selectedTrailingIcon: const Icon(Icons.expand_less),
-                        trailingIcon: const Icon(Icons.expand_more),
-                        menuStyle: MenuStyle(
-                          backgroundColor:
-                              const MaterialStatePropertyAll<Color>(
-                                  Colors.white),
-                          surfaceTintColor:
-                              const MaterialStatePropertyAll(Colors.white),
-                          shape: MaterialStatePropertyAll(
-                              RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10))),
-                        ),
-                        inputDecorationTheme: const InputDecorationTheme(
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                          fillColor: Colors.white,
-                          filled: true,
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              borderSide: BorderSide(color: Colors.black)),
-                        ),
-                        initialSelection: ChoiceMonth.all.name,
-                        onSelected: (value) {
-                          setState(() {
-                            selectedMonth = ChoiceMonth.values.firstWhere(
-                              (element) => element.name == value,
-                            );
-                          });
-                        },
-                        dropdownMenuEntries: ChoiceMonth.values
-                            .map(
-                              (e) => DropdownMenuEntry(
-                                  value: e.name, label: e.label),
-                            )
-                            .toList(),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: size.height * 0.01),
+                        SizedBox(height: size.height * 0.01),
 
-                  // TODO: fix later
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        selectedMonth.dateRange,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Color(0xFF82869E),
+                        // TODO: fix later
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              selectedMonth.dateRange,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Color(0xFF82869E),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        SizedBox(height: size.height * 0.02),
+                        SizedBox(
+                            //TODO: This bar graph is NOT dynamic, fix later.
+                            height: size.height * 0.4,
+                            child:
+                                const MyBarGraph(gasolineTotal: gasolineTotal))
+                      ],
+                    ),
                   ),
                   SizedBox(height: size.height * 0.02),
-                  SizedBox(
-                      //TODO: This bar graph is NOT dynamic, fix later.
-                      height: size.height * 0.4,
-                      child: const MyBarGraph(gasolineTotal: gasolineTotal))
-                ],
-              ),
-            ),
-            SizedBox(height: size.height * 0.02),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 20,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: size.width * 0.025,
-                        height: size.width * 0.025,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF3A9EFC),
-                          shape: BoxShape.circle,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: size.width * 0.025,
+                              height: size.width * 0.025,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF3A9EFC),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            const Text(
+                              "RON 95",
+                              style: TextStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 5),
-                      const Text(
-                        "RON 95",
-                        style: TextStyle(
-                          fontSize: 12,
+                        Row(
+                          children: [
+                            Container(
+                              width: size.width * 0.025,
+                              height: size.width * 0.025,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF1EBB4D),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            const Text(
+                              "E5 RON 92",
+                              style: TextStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        width: size.width * 0.025,
-                        height: size.width * 0.025,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF1EBB4D),
-                          shape: BoxShape.circle,
+                        Row(
+                          children: [
+                            Container(
+                              width: size.width * 0.025,
+                              height: size.width * 0.025,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFE43434),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            const Text(
+                              "DO 0,05S-II",
+                              style: TextStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 5),
-                      const Text(
-                        "E5 RON 92",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        width: size.width * 0.025,
-                        height: size.width * 0.025,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFE43434),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 5),
-                      const Text(
-                        "DO 0,05S-II",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }

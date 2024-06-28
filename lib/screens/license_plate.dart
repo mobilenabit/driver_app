@@ -21,7 +21,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
     super.initState();
     _fetchLicensePlates();
     _searchController.addListener(_filterLicensePlates);
-  }
+  }                                                  
 
   Future<void> _fetchLicensePlates() async {
     String userId = "30071";
@@ -56,10 +56,10 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
       }
     } catch (e) {
       print(e);
-      // Handle error appropriately here, like showing an error message
     }
   }
 
+  // search
   void _filterLicensePlates() {
     final query = _searchController.text.toLowerCase();
     setState(() {
