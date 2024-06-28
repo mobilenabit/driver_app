@@ -68,7 +68,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   List<Map<String, String>> _filteredLicensePlates = [];
   List<Map<String, String>> _licensePlateData = [];
-    bool _isLoading = true;
+  bool _isLoading = true;
 
   // set avatar
   Widget _getAvatarWidget() {
@@ -182,7 +182,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             child: Text(
                               "Chọn biển số",
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -193,24 +193,35 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     ),
                   ),
                   Container(
+                    width: MediaQuery.sizeOf(context).width * 0.9,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(8),
+                      color: Color(0xFFF3F3F7),
                     ),
                     child: TextFormField(
                       controller: _searchController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: "Tìm kiếm",
+                        hintStyle: TextStyle(
+                          fontWeight: FontWeight.w400
+                        ),
                         prefixIcon: Icon(Icons.search),
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 15,
                         ),
-                        fillColor: Color(0xFFF3F3F7),
-                        border: InputBorder.none,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
                         filled: true,
+                        fillColor: Colors.transparent,
                       ),
                       style: const TextStyle(fontSize: 16),
                     ),
+                  ),
+                  SizedBox(
+                    height: 10,
                   ),
                   Expanded(
                     child: ListView.builder(
@@ -220,19 +231,26 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         final plateNumber =
                             _filteredLicensePlates[index]['plateNumber'];
                         return ListTile(
-                          shape: const Border(
-                            bottom: BorderSide(color: Colors.grey, width: 0.5),
-                          ),
+                          shape: Border(
+                                bottom: BorderSide(
+                                  color: Colors.grey.shade300,
+                                  width: 1,
+                                ),
+                              ),
                           contentPadding: const EdgeInsets.all(0),
                           title: Text(plateNumber!,
                               style: const TextStyle(
                                   fontWeight: FontWeight.w500, fontSize: 18)),
+
+                          // TODO: check later
                           onTap: () {
-                            // setState(() {
-                            //   chosenIndex = dataset.indexWhere((element) =>
-                            //       element["name"] ==
-                            //       _filteredDataset[index]["name"]);
-                            // });
+                            setState(() {
+                              chosenIndex = _filteredLicensePlates.indexWhere(
+                                  (element) =>
+                                      element["plateNumber"] ==
+                                      _filteredLicensePlates[index]
+                                          ["plateNumber"]);
+                            });
                             Navigator.of(context).pop();
                           },
                         );
