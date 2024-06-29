@@ -154,7 +154,11 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                                 width: 1,
                               ),
                             ),
-                            title: Text(licensePlate!),
+                            contentPadding: EdgeInsets.all(0),
+                            title: Text(
+                              licensePlate!,
+                              style: TextStyle(fontWeight: FontWeight.w400),
+                            ),
                             onTap: () {
                               Navigator.push(
                                 context,
