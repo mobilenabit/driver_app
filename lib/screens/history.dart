@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
-
 class HistoryScreen extends StatefulWidget {
   final String selectedLicensePlate;
   const HistoryScreen({super.key, required this.selectedLicensePlate});
@@ -43,14 +42,31 @@ class _HistoryScreenState extends State<HistoryScreen> {
           hours: '06:30',
           date: '20/06/2024',
           money: 54600),
+      History1(
+          numberLicense: widget.selectedLicensePlate,
+          fuel: 'Xăng RON 92',
+          address: 'CHXD Xa La',
+          amount: 50,
+          hours: '06:30',
+          date: '29/06/2024',
+          money: 54600),
     ];
+    
+    _sortDate();
+  }
+
+  // Sort date DESC
+  void _sortDate() {
+    _items.sort((a, b) => DateFormat('dd/MM/yyyy')
+        .parse(b.date)
+        .compareTo(DateFormat('dd/MM/yyyy').parse(a.date)));
   }
 
   // Format type of number
   final NumberFormat currencyFormat =
       NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
 
-  // start and end DateTime
+  // Start and end DateTime
   DateTime _startDate = DateTime.now().subtract(const Duration(days: 7));
   DateTime _endDate = DateTime.now();
 
@@ -77,7 +93,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     child: CalendarDatePicker(
                       initialDate: isStart ? _startDate : _endDate,
                       firstDate: DateTime(2000),
-                      lastDate: DateTime(2101),
+                      lastDate: DateTime.now(),
                       onDateChanged: (DateTime date) {
                         Navigator.pop(context, date);
                       },
@@ -166,7 +182,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 child: TextButton(
                   onPressed: () => _selectDate(context, true),
                   child: Container(
-                    height: size.height * 0.07,
+                    height: size.height * 0.072,
                     width: size.width * 0.413,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -217,7 +233,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 child: TextButton(
                   onPressed: () => _selectDate(context, false),
                   child: Container(
-                    height: size.height * 0.07,
+                    height: size.height * 0.072,
                     width: size.width * 0.413,
                     decoration: BoxDecoration(
                       color: Colors.white,
