@@ -1,10 +1,16 @@
-import "package:dio/dio.dart";
+import "dart:convert";
 
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
 import "secure_store.dart";
 
 class ApiClient {
-  final Dio _dio = Dio();
-  static const String _apiUrl = "http://pumplog.petronet.vn";
+  final Dio _dio = Dio(BaseOptions(
+    connectTimeout: const Duration(seconds: 5),
+    receiveTimeout: const Duration(seconds: 5),
+  ));
+  static const String _apiUrl = "https://pumplogapi.petronet.vn";
 
   Future<Map<String, dynamic>> login(String username, String password) async {
     Map<String, String> details = {
@@ -21,6 +27,7 @@ class ApiClient {
         data: details,
         options: Options(contentType: Headers.formUrlEncodedContentType),
       );
+
       return response.data;
     } on DioException catch (e) {
       return e.response!.data;
@@ -36,7 +43,15 @@ class ApiClient {
           "Authorization": "Bearer $apiToken",
         }),
       );
-
+      //   if (response.statusCode == 200) {
+      //     final data = response.data;
+      //     final userId = data["user"].toString();
+      //     await SecureStorage().writeSecureData("user_id", userId);
+      //   }
+      //   return response.data;
+      // } on DioException catch (e) {
+      //   return e.response!.data;
+      // }
       return response.data;
     } on DioException catch (e) {
       return e.response!.data;
@@ -114,8 +129,10 @@ class ApiClient {
 
   Future<Map<String, dynamic>> getPumpLogs(int branchId, String pumpId) async {
     final apiToken = await SecureStorage().readSecureData("access_token");
-    final now = DateTime.now();
-    final before = now.subtract(const Duration(days: 30));
+    final now = DateTime.now().copyWith(hour: 23, minute: 59, second: 59);
+    final before = now
+        .subtract(const Duration(days: 30))
+        .copyWith(hour: 0, minute: 0, second: 0);
 
     Map<String, dynamic> details = {
       "keyword": "",
@@ -242,7 +259,7 @@ class ApiClient {
       "pumpTranLogId": logData["id"],
       "paymentMethod": "TM/CK",
       "invoiceAcct": userData["taxCode"],
-      "invoiceName": userData["name"],
+      "invoiceName": userData["customerName"],
       "invoiceAddress": userData["address"],
       "invoiceEmail": userData["email"],
       "invoiceBuyer": userData["shortName"],
@@ -407,7 +424,7 @@ class ApiClient {
     }
   }
 
-  Future<Map<String, dynamic>> getOtp() async {
+  Future<dynamic> getOtp() async {
     final apiToken = await SecureStorage().readSecureData("access_token");
 
     try {
@@ -426,7 +443,7 @@ class ApiClient {
     }
   }
 
-  Future<Map<String, dynamic>> getOtpAnonymous(String username) async {
+  Future<dynamic> getOtpAnonymous(String username) async {
     try {
       final response = await _dio.post(
         "$_apiUrl/SMS/Sms/Otp/$username",
@@ -472,6 +489,299 @@ class ApiClient {
             "Authorization": "Bearer $apiToken",
           },
         ),
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getCompanies() async {
+    final apiToken = await SecureStorage().readSecureData("access_token");
+    final Map<String, dynamic> details = {
+      "keyword": "",
+      "status": 1,
+      "pageIndex": 1,
+      "pageSize": 20,
+      "orderColl": "",
+      "isDesc": false
+    };
+
+    try {
+      final response = await _dio.post(
+        "$_apiUrl/MD/OrgUnit/Find",
+        options: Options(headers: {
+          "Authorization": "Bearer $apiToken",
+        }),
+        data: details,
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getSLDT(
+      DateTime fromDate, DateTime toDate, int branchId) async {
+    final apiToken = await SecureStorage().readSecureData("access_token");
+
+    final parameters =
+        "{\"fromDate\":\"${DateFormat("yyyy/MM/dd").format(fromDate).toString()}\",\"toDate\":\"${DateFormat("yyyy/MM/dd").format(toDate).toString()}\",\"BranchId\":$branchId}";
+    final Map<String, dynamic> details = {
+      "reportId": 0,
+      "reportCode": "DASHBOARD.SL.NGAY.TheoLog",
+      "parameters": parameters,
+    };
+
+    try {
+      final response = await _dio.post(
+        "$_apiUrl/RPT/Report/ExportJSON",
+        options: Options(headers: {
+          "Authorization": "Bearer $apiToken",
+        }),
+        data: details,
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getSLDTLastMonth(int branchId) async {
+    final apiToken = await SecureStorage().readSecureData("access_token");
+    final lastMonthFirstDay =
+        DateTime(DateTime.now().year, DateTime.now().month - 1, 1);
+    final lastMonthLastDay =
+        DateTime(DateTime.now().year, DateTime.now().month, 0);
+
+    final parameters =
+        "{\"fromDate\":\"${DateFormat("yyyy/MM/dd").format(lastMonthFirstDay).toString()}\",\"toDate\":\"${DateFormat("yyyy/MM/dd").format(lastMonthLastDay).toString()}\",\"BranchId\":$branchId}";
+    final Map<String, dynamic> details = {
+      "reportId": 0,
+      "reportCode": "DASHBOARD.SL.THANG.TheoLog",
+      "parameters": parameters,
+    };
+
+    try {
+      final response = await _dio.post(
+        "$_apiUrl/RPT/Report/ExportJSON",
+        options: Options(headers: {
+          "Authorization": "Bearer $apiToken",
+        }),
+        data: details,
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      // return full error response
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getTimeStamps() async {
+    final apiToken = await SecureStorage().readSecureData("access_token");
+    try {
+      final response = await _dio.get(
+        "$_apiUrl/MD/PriceList/GetListTime",
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $apiToken",
+          },
+        ),
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getFuelReport(String timeStamp) async {
+    const productCodes = ["1101001", "1103001"];
+    final apiToken = await SecureStorage().readSecureData("access_token");
+    final Map<String, dynamic> details = {
+      "keyword": "",
+      "status": 1,
+      "pageSize": 999999,
+      "orderCol": "",
+      "isDesc": false,
+      "validFrom": timeStamp,
+      "priceRegionId": 1,
+      "productSourceId": 0,
+      "priceCategoryId": 1,
+      "productGroupId": 35,
+    };
+    try {
+      final response = await _dio.post(
+        "$_apiUrl/MD/PriceList/Find",
+        options: Options(headers: {
+          "Authorization": "Bearer $apiToken",
+        }),
+        data: details,
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getTKTBLastMonth(int branchId) async {
+    final apiToken = await SecureStorage().readSecureData("access_token");
+    final lastMonthFirstDay =
+        DateTime(DateTime.now().year, DateTime.now().month - 1, 1);
+    final lastMonthLastDay =
+        DateTime(DateTime.now().year, DateTime.now().month, 0);
+    final parameters =
+        "{\"fromDate\":\"${DateFormat("yyyy/MM/dd").format(lastMonthFirstDay).toString()}\",\"toDate\":\"${DateFormat("yyyy/MM/dd").format(lastMonthLastDay).toString()}\",\"BranchId\":$branchId}";
+    final Map<String, dynamic> details = {
+      "reportId": 0,
+      "reportCode": "DASHBOARD.TonKhoTrongBe",
+      "parameters": parameters,
+    };
+
+    try {
+      final response = await _dio.post(
+        "$_apiUrl/RPT/Report/ExportJSON",
+        options: Options(headers: {
+          "Authorization": "Bearer $apiToken",
+        }),
+        data: details,
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      // return full error response
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getTHCN(int branchId) async {
+    final apiToken = await SecureStorage().readSecureData("access_token");
+    final lastMonthFirstDay =
+        DateTime(DateTime.now().year, DateTime.now().month - 1, 1);
+    final lastMonthLastDay =
+        DateTime(DateTime.now().year, DateTime.now().month, 0);
+    final parameters =
+        "{\"fromDate\":\"${DateFormat("yyyy/MM/dd").format(lastMonthFirstDay).toString()}\",\"toDate\":\"${DateFormat("yyyy/MM/dd").format(lastMonthLastDay).toString()}\",\"BranchId\":$branchId}";
+    final Map<String, dynamic> details = {
+      "reportId": 0,
+      "reportCode": "DASHBOARD.TienHangCongNo",
+      "parameters": parameters,
+    };
+
+    try {
+      final response = await _dio.post(
+        "$_apiUrl/RPT/Report/ExportJSON",
+        options: Options(headers: {
+          "Authorization": "Bearer $apiToken",
+        }),
+        data: details,
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      // return full error response
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getTKTB(int branchId, DateTime now) async {
+    final apiToken = await SecureStorage().readSecureData("access_token");
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+    final toDate = now.subtract(const Duration(days: 1));
+    final parameters =
+        "{\"fromDate\":\"${DateFormat("yyyy/MM/dd").format(firstDayOfMonth).toString()}\",\"toDate\":\"${DateFormat("yyyy/MM/dd").format(toDate).toString()}\",\"BranchId\":$branchId}";
+    final Map<String, dynamic> details = {
+      "reportId": 0,
+      "reportCode": "DASHBOARD.TonKhoTrongBe",
+      "parameters": parameters,
+    };
+
+    try {
+      final response = await _dio.post(
+        "$_apiUrl/RPT/Report/ExportJSON",
+        options: Options(headers: {
+          "Authorization": "Bearer $apiToken",
+        }),
+        data: details,
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      // return full error response
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getLeaderBoards(int type) async {
+    final apiToken = await SecureStorage().readSecureData("access_token");
+    const types = [
+      "DASHBOARD.Top5_DoanhThu",
+      "DASHBOARD.Top5_LuongKhach",
+      "DASHBOARD.Top5_LuongDon"
+    ];
+    final now = DateTime.now();
+    final parameters =
+        "{\"fromDate\":\"${DateFormat("yyyy/MM/dd").format(DateTime(now.year, now.month, 1)).toString()}\",\"toDate\":\"${DateFormat("yyyy/MM/dd").format(now).toString()}\"}";
+    final Map<String, dynamic> details = {
+      "reportId": 0,
+      "reportCode": types[type],
+      "parameters": parameters,
+    };
+
+    try {
+      final response = await _dio.post(
+        "$_apiUrl/RPT/Report/ExportJSON",
+        options: Options(headers: {
+          "Authorization": "Bearer $apiToken",
+        }),
+        data: details,
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      // return full error response
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getDebtsOthers(int branchId) async {
+    final apiToken = await SecureStorage().readSecureData("access_token");
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+    final parameters =
+        "{\"fromDate\":\"${DateFormat("yyyy/MM/dd").format(firstDayOfMonth).toString()}\",\"toDate\":\"${DateFormat("yyyy/MM/dd").format(now).toString()}\",\"BranchId\":$branchId}";
+    final Map<String, dynamic> details = {
+      "reportId": 0,
+      "reportCode": "DASHBOARD.THCN_TheoKhach",
+      "parameters": parameters,
+    };
+
+    try {
+      final response = await _dio.post(
+        "$_apiUrl/RPT/Report/ExportJSON",
+        options: Options(headers: {
+          "Authorization": "Bearer $apiToken",
+        }),
+        data: details,
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      // return full error response
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getTrByInvoiceId(int invoiceId) async {
+    final apiToken = await SecureStorage().readSecureData("access_token");
+
+    try {
+      final response = await _dio.get(
+        "$_apiUrl/TR/TR/$invoiceId",
+        options: Options(headers: {
+          "Authorization": "Bearer $apiToken",
+        }),
       );
 
       return response.data;

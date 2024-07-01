@@ -51,7 +51,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           date: '29/06/2024',
           money: 54600),
     ];
-    
+
     _sortDate();
   }
 
@@ -221,7 +221,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(right: 7.5),
-                          child: SvgPicture.asset('assets/icons/calender.svg'),
+                          child: SvgPicture.asset('assets/icons/calender.svg',
+                              height: 20),
                         )
                       ],
                     ),
@@ -272,7 +273,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(right: 7.5),
-                          child: SvgPicture.asset('assets/icons/calender.svg'),
+                          child: SvgPicture.asset(
+                            'assets/icons/calender.svg',
+                            height: 20,
+                          ),
                         )
                       ],
                     ),

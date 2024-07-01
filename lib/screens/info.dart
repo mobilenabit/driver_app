@@ -34,12 +34,12 @@ class Mainproperty {
 }
 
 class _InfoScreenState extends State<InfoScreen> {
-  Future<Map<String, dynamic>>? _pumpData;
+  //Future<Map<String, dynamic>>? _pumpData;
 
   @override
   void initState() {
     super.initState();
-    _pumpData = ApiClient().getPumps();
+  //  _pumpData = ApiClient().getPumps();
   }
 
   List<Mainproperty> _item(BuildContext context) {
@@ -47,7 +47,9 @@ class _InfoScreenState extends State<InfoScreen> {
       Mainproperty(
         text: 'Quét Qr',
         svgAsset: 'assets/icons/qr_code.svg',
-        screenBuilder: (context) => ScanQrScreen(userData: widget.userData,),
+        screenBuilder: (context) => ScanQrScreen(
+          userData: widget.userData,
+        ),
       ),
       Mainproperty(
         text: 'CHXD',
@@ -115,9 +117,9 @@ class _InfoScreenState extends State<InfoScreen> {
                       margin: EdgeInsets.only(
                           left: size.width * 0.05, top: size.height * 0.05),
                       child: const Text(
-                        'Tính năng chính:',
+                        'Tính năng chính',
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -129,8 +131,8 @@ class _InfoScreenState extends State<InfoScreen> {
                     itemCount: _item(context).length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      mainAxisSpacing: size.width * 0.001,
-                      crossAxisSpacing: size.height * 0.001,
+                      mainAxisSpacing: 0,
+                      crossAxisSpacing: 0,
                     ),
                     itemBuilder: (context, index) {
                       final item = _item(context)[index];

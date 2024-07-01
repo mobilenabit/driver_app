@@ -1,10 +1,13 @@
+import 'package:driver_app/core/api_client.dart';
+import 'package:driver_app/core/secure_store.dart';
 import 'package:driver_app/screens/home.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class LicensePlateScreen extends StatefulWidget {
-  LicensePlateScreen({super.key});
+  const LicensePlateScreen({super.key});
 
   @override
   State<LicensePlateScreen> createState() => _LicensePlateScreenState();
@@ -24,16 +27,32 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
   }
 
   Future<void> _fetchLicensePlates() async {
-    String userId = "30071";
-    String token =
-        'eyJhbGciOiJSUzI1NiIsImtpZCI6IjlEMEM3RUI5RTNDMkNCMEFENDY5NEEyREY3MjJDNkE3IiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MTk1NjcxOTUsImV4cCI6MTcyODIwNzE5NSwiaXNzIjoiaHR0cDovL3B1bXBsb2dhcGkucGV0cm9uZXQudm4vY29yZSIsImNsaWVudF9pZCI6Im5hYml0LWNsaWVudCIsInN1YiI6IjMwMDcwIiwiYXV0aF90aW1lIjoxNzE5NTY3MTk1LCJpZHAiOiJsb2NhbCIsInVzZXJpZCI6IjMwMDcwIiwidXNlcm5hbWUiOiJBTkhUTiIsImRpc3BsYXluYW1lIjoiVOG6oSBOZ-G7jWMgQW5oIiwiZW1haWwiOiJlbWFpbEBuYWJpdC5jb20udm4iLCJwaG9uZW51bWJlciI6IiIsImlzc3VwZXJ1c2VyIjoiIiwiYnJhbmNoSWQiOiIxMTEiLCJzdGFydFBhZ2VJZCI6IiIsInR5cGVJZCI6IjEiLCJqdGkiOiI4REZGMURFQUYyMjQ1MTI3NkFGRTgwODY2MEQ4QTJFNCIsImlhdCI6MTcxOTU2NzE5NSwic2NvcGUiOlsiZW1haWwiLCJvcGVuaWQiLCJwcm9maWxlIl0sImFtciI6WyJwYXNzd29yZCJdfQ.4tLL97o9TlkhF__TIK3fT0q4Nf8WkS_BKjLRpKYMHWouS0txyECig0HVYJs91CfgWU2F2WzIrd7nFOLoVEtjFii15Gz1gPjqdzEwF9Zbb0nHyQAO6-KSqzFVbzBBTVsPCVqBKeAhUa8djq05ulpQhKHADvrmT8Ud7YqkGJ3QZAsgyq8hhxJclqe7nxVx_BgQH8CiGCso0EiqZ7tRPgCNbCcu4oSQXM6iL2E1eSqiCz8A9-6gt5fZG_pfurxtweKRiRNb_qCObngh5yZtssSsP8wvoS8ffpNsM2Y13hvXemdDs1qTf5Y4RZilwOrPE8sOL-JLDvnQPriGAk6uaLKFig';
+    final apiToken = await SecureStorage().readSecureData("access_token");
+
+    final api = ApiClient();
+    final userData = await api.getUserData();
+    final userId = userData["data"]["userId"].toString();
+
+    if (userId == null) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Không tìm thấy dữ liệu biển số xe'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     String url =
         'http://pumplogapi.petronet.vn/MD/Driver2Vehicle/GetByDriverId/$userId';
     try {
       final response = await http.get(
         Uri.parse(url),
         headers: {
-          'Authorization': 'Bearer $token',
+          'Authorization': 'Bearer $apiToken',
         },
       );
       if (response.statusCode == 200) {
@@ -42,8 +61,11 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
           final data = responseData['data'] as List;
           setState(() {
             _licensePlateData = data
-                .map((item) =>
-                    {'plateNumber': item['vehicle']['numberPlate'].toString()})
+                .map(
+                  (item) => {
+                    'plateNumber': item['vehicle']['numberPlate'].toString(),
+                  },
+                )
                 .toList();
             _filteredLicensePlates = _licensePlateData;
             _isLoading = false;
@@ -51,15 +73,17 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
         } else {
           throw Exception('Failed to load license plates');
         }
-      } else {
-        throw Exception('Failed to load license plates');
       }
     } catch (e) {
       print(e);
+      setState(
+        () {
+          _isLoading = false;
+        },
+      );
     }
   }
 
-  // search
   void _filterLicensePlates() {
     final query = _searchController.text.toLowerCase();
     setState(() {
@@ -104,9 +128,9 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
           centerTitle: true,
         ),
         body: _isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : Padding(
-                padding: EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 5,
                 ),
@@ -115,16 +139,17 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: Color.fromRGBO(243, 243, 247, 1),
+                        color: const Color.fromRGBO(243, 243, 247, 1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: TextFormField(
                         controller: _searchController,
                         decoration: InputDecoration(
                           hintText: "Tìm kiếm",
-                          hintStyle: TextStyle(fontWeight: FontWeight.w400),
-                          prefixIcon: Icon(Icons.search),
-                          contentPadding: EdgeInsets.symmetric(
+                          hintStyle:
+                              const TextStyle(fontWeight: FontWeight.w400),
+                          prefixIcon: const Icon(Icons.search),
+                          contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20,
                             vertical: 15,
                           ),
@@ -138,7 +163,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                         style: const TextStyle(fontSize: 16),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Expanded(
@@ -154,10 +179,11 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                                 width: 1,
                               ),
                             ),
-                            contentPadding: EdgeInsets.all(0),
+                            contentPadding: const EdgeInsets.all(0),
                             title: Text(
                               licensePlate!,
-                              style: TextStyle(fontWeight: FontWeight.w400),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w400),
                             ),
                             onTap: () {
                               Navigator.push(

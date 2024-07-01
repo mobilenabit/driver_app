@@ -3,12 +3,12 @@ import 'package:intl/intl.dart';
 
 class QrResultScreen extends StatefulWidget {
   final String code;
-  final Function() closeScreen;
+  // final Function() closeScreen;
   final Map<String, dynamic>? userData;
 
   const QrResultScreen(
       {super.key,
-      required this.closeScreen,
+      // required this.closeScreen,
       required this.code,
       required this.userData});
 
@@ -78,7 +78,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                 right: 15,
               ),
               height: size.height * 0.4,
-              width: size.width * 0.85,
+              margin: EdgeInsets.symmetric(horizontal: 15),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -93,8 +93,8 @@ class _QrResultScreenState extends State<QrResultScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(10),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -117,95 +117,102 @@ class _QrResultScreenState extends State<QrResultScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(height: size.height * 0.01),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Cột bơm',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal,
-                          color: Color(0xFF82869E),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Cột bơm',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                            color: Color.fromRGBO(130, 134, 158, 1),
+                          ),
                         ),
-                      ),
-                      Text(
-                        '2',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Color.fromRGBO(49, 52, 66, 1),
+                        Text(
+                          '2',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Color.fromRGBO(49, 52, 66, 1),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  SizedBox(height: size.height * 0.01),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Vòi bơm',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal,
-                          color: Color(0xFF82869E),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Vòi bơm',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                            color: Color.fromRGBO(130, 134, 158, 1),
+                          ),
                         ),
-                      ),
-                      Text(
-                        '2',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Color.fromRGBO(49, 52, 66, 1),
+                        Text(
+                          '2',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Color.fromRGBO(49, 52, 66, 1),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  SizedBox(height: size.height * 0.01),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Số tiền',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal,
-                          color: Color(0xFF82869E),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Số tiền',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                            color: Color.fromRGBO(130, 134, 158, 1),
+                          ),
                         ),
-                      ),
-                      Text(
-                        '${currentFormat.format(200000)}₫',
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Color.fromRGBO(49, 52, 66, 1),
+                        Text(
+                          '${currentFormat.format(200000)}₫',
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Color.fromRGBO(49, 52, 66, 1),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  SizedBox(height: size.height * 0.01),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Số lít',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal,
-                          color: Color(0xFF82869E),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Số lít',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                            color: Color.fromRGBO(130, 134, 158, 1),
+                          ),
                         ),
-                      ),
-                      Text(
-                        '${currentFormat.format(32)}lít',
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Color.fromRGBO(49, 52, 66, 1),
+                        Text(
+                          '${currentFormat.format(32)}lít',
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Color.fromRGBO(49, 52, 66, 1),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  SizedBox(height: size.height * 0.01),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -214,7 +221,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.normal,
-                          color: Color(0xFF82869E),
+                          color: Color.fromRGBO(130, 134, 158, 1),
                         ),
                       ),
                       Text(

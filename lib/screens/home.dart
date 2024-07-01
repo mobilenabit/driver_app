@@ -105,28 +105,30 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildNavItem(
       int index, String iconPath, String selectedIconPath, String label) {
     bool isSelected = currentPageIndex == index;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          currentPageIndex = index;
-        });
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          isSelected
-              ? SvgPicture.asset(selectedIconPath)
-              : SvgPicture.asset(iconPath),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? Colors.black : Colors.grey,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              fontSize: 12,
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            isSelected
+                ? SvgPicture.asset(selectedIconPath)
+                : SvgPicture.asset(iconPath),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.black : Colors.grey,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                fontSize: 12,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -1,4 +1,6 @@
 import "dart:convert";
+import "package:driver_app/core/api_client.dart";
+import "package:driver_app/core/secure_store.dart";
 import 'package:http/http.dart' as http;
 import "package:driver_app/screens/chart/bar_graph.dart";
 import "package:flutter/material.dart";
@@ -98,16 +100,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Future<void> _fetchLicensePlates() async {
-    String userId = "30071";
-    String token =
-        'eyJhbGciOiJSUzI1NiIsImtpZCI6IjlEMEM3RUI5RTNDMkNCMEFENDY5NEEyREY3MjJDNkE3IiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MTk1NjcxOTUsImV4cCI6MTcyODIwNzE5NSwiaXNzIjoiaHR0cDovL3B1bXBsb2dhcGkucGV0cm9uZXQudm4vY29yZSIsImNsaWVudF9pZCI6Im5hYml0LWNsaWVudCIsInN1YiI6IjMwMDcwIiwiYXV0aF90aW1lIjoxNzE5NTY3MTk1LCJpZHAiOiJsb2NhbCIsInVzZXJpZCI6IjMwMDcwIiwidXNlcm5hbWUiOiJBTkhUTiIsImRpc3BsYXluYW1lIjoiVOG6oSBOZ-G7jWMgQW5oIiwiZW1haWwiOiJlbWFpbEBuYWJpdC5jb20udm4iLCJwaG9uZW51bWJlciI6IiIsImlzc3VwZXJ1c2VyIjoiIiwiYnJhbmNoSWQiOiIxMTEiLCJzdGFydFBhZ2VJZCI6IiIsInR5cGVJZCI6IjEiLCJqdGkiOiI4REZGMURFQUYyMjQ1MTI3NkFGRTgwODY2MEQ4QTJFNCIsImlhdCI6MTcxOTU2NzE5NSwic2NvcGUiOlsiZW1haWwiLCJvcGVuaWQiLCJwcm9maWxlIl0sImFtciI6WyJwYXNzd29yZCJdfQ.4tLL97o9TlkhF__TIK3fT0q4Nf8WkS_BKjLRpKYMHWouS0txyECig0HVYJs91CfgWU2F2WzIrd7nFOLoVEtjFii15Gz1gPjqdzEwF9Zbb0nHyQAO6-KSqzFVbzBBTVsPCVqBKeAhUa8djq05ulpQhKHADvrmT8Ud7YqkGJ3QZAsgyq8hhxJclqe7nxVx_BgQH8CiGCso0EiqZ7tRPgCNbCcu4oSQXM6iL2E1eSqiCz8A9-6gt5fZG_pfurxtweKRiRNb_qCObngh5yZtssSsP8wvoS8ffpNsM2Y13hvXemdDs1qTf5Y4RZilwOrPE8sOL-JLDvnQPriGAk6uaLKFig';
+    final api = ApiClient();
+    final userData = await api.getUserData();
+    final userId = userData['data']['userId'].toString();
+
+    final apiToken = await SecureStorage().readSecureData("access_token");
     String url =
         'http://pumplogapi.petronet.vn/MD/Driver2Vehicle/GetByDriverId/$userId';
     try {
       final response = await http.get(
         Uri.parse(url),
         headers: {
-          'Authorization': 'Bearer $token',
+          'Authorization': 'Bearer $apiToken',
         },
       );
       if (response.statusCode == 200) {
@@ -202,9 +206,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       controller: _searchController,
                       decoration: InputDecoration(
                         hintText: "Tìm kiếm",
-                        hintStyle: TextStyle(
-                          fontWeight: FontWeight.w400
-                        ),
+                        hintStyle: TextStyle(fontWeight: FontWeight.w400),
                         prefixIcon: Icon(Icons.search),
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: 20,
@@ -232,11 +234,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             _filteredLicensePlates[index]['plateNumber'];
                         return ListTile(
                           shape: Border(
-                                bottom: BorderSide(
-                                  color: Colors.grey.shade300,
-                                  width: 1,
-                                ),
-                              ),
+                            bottom: BorderSide(
+                              color: Colors.grey.shade300,
+                              width: 1,
+                            ),
+                          ),
                           contentPadding: const EdgeInsets.all(0),
                           title: Text(plateNumber!,
                               style: const TextStyle(

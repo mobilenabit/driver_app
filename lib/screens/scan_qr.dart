@@ -125,7 +125,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                               builder: (context) {
                                 return QrResultScreen(
                                   code: code,
-                                  closeScreen: closeScreen,
+                                  //closeScreen: closeScreen,
                                   userData: widget.userData ??
                                       {
                                         'data': {
