@@ -390,7 +390,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             BoxShadow(
                               offset: Offset(0, 1),
                               blurRadius: 8,
-                              color: const Color.fromRGBO(0, 0, 0, 0.08),
+                              color: Color.fromRGBO(0, 0, 0, 0.08),
                             ),
                           ],
                         ),
@@ -422,38 +422,45 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                               fontWeight: FontWeight.w500),
                                         ),
                                         const Text(' - '),
-                                        Text(
-                                          '${currencyFormat.format(item.money)}₫',
-                                          style: const TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color.fromRGBO(
-                                                  244, 129, 32, 1)),
-                                        ),
                                       ],
                                     ),
                                     Text(
-                                      item.hours,
+                                      '${currencyFormat.format(item.money)}₫',
                                       style: const TextStyle(
-                                        fontSize: 13,
-                                        color: Color.fromRGBO(130, 134, 158, 1),
-                                        fontWeight: FontWeight.w300,
-                                      ),
-                                    )
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          color:
+                                              Color.fromRGBO(244, 129, 32, 1)),
+                                    ),
                                   ],
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(bottom: 10),
-                                child: Text(
-                                  item.address,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w300,
-                                    color: Color.fromRGBO(130, 134, 158, 1),
-                                  ),
-                                ),
-                              ),
+                                  padding: EdgeInsets.only(bottom: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        item.address,
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w300,
+                                          color:
+                                              Color.fromRGBO(130, 134, 158, 1),
+                                        ),
+                                      ),
+                                      Text(
+                                        item.hours,
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          color:
+                                              Color.fromRGBO(130, 134, 158, 1),
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                      ),
+                                    ],
+                                  )),
                               Text(
                                 'Biển số xe: ${item.numberLicense}',
                                 style: const TextStyle(
