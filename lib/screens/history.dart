@@ -1,7 +1,9 @@
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:driver_app/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import "package:calendar_date_picker2/calendar_date_picker2.dart";
 
 class HistoryScreen extends StatefulWidget {
   final String selectedLicensePlate;
@@ -57,9 +59,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   // Sort date DESC
   void _sortDate() {
-    _items.sort((a, b) => DateFormat('dd/MM/yyyy')
-        .parse(b.date)
-        .compareTo(DateFormat('dd/MM/yyyy').parse(a.date)));
+    _items.sort(
+      (a, b) => DateFormat('dd/MM/yyyy').parse(b.date).compareTo(
+            DateFormat('dd/MM/yyyy').parse(a.date),
+          ),
+    );
   }
 
   // Format type of number
@@ -67,7 +71,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
       NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
 
   // Start and end DateTime
-  DateTime _startDate = DateTime.now().subtract(const Duration(days: 7));
+  DateTime _startDate = DateTime.now().subtract(
+    const Duration(days: 7),
+  );
   DateTime _endDate = DateTime.now();
 
   // Custom date picker
@@ -79,31 +85,66 @@ class _HistoryScreenState extends State<HistoryScreen> {
           child: Container(
             width: double.infinity,
             height: MediaQuery.sizeOf(context).height * 0.4,
-            child: Theme(
-              data: ThemeData(
-                colorScheme: ColorScheme.light(
-                  primary: Color.fromRGBO(244, 129, 32, 1), // selection color
-                  onPrimary: Colors.white, // text color for selected text
-                  onSurface: Colors.black, // default text color
-                ),
-              ),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: CalendarDatePicker(
-                      initialDate: isStart ? _startDate : _endDate,
-                      firstDate: DateTime(2000),
+            child: Column(
+              children: [
+                Expanded(
+                  child: CalendarDatePicker2(
+                    config: CalendarDatePicker2Config(
+                      calendarType: CalendarDatePicker2Type.single,
+                      firstDate: DateTime(2024),
                       lastDate: DateTime.now(),
-                      onDateChanged: (DateTime date) {
-                        Navigator.pop(context, date);
-                      },
-                      selectableDayPredicate: (DateTime date) => true,
-                      currentDate: DateTime.now(),
-                      initialCalendarMode: DatePickerMode.day,
+                      customModePickerIcon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: Color(0xFFFFF48120),
+                        size: 25,
+                      ),
+                      dayTextStyle: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                      ),
+                      selectedDayTextStyle: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                      selectedDayHighlightColor: Color(0xFFFFF48120),
+                      lastMonthIcon: const Icon(
+                        Icons.arrow_back_ios,
+                        color: Color(0xFFFFF48120),
+                        size: 18,
+                      ),
+                      nextMonthIcon: const Icon(
+                        Icons.arrow_forward_ios,
+                        color: Color(0xFFFFF48120),
+                        size: 18,
+                      ),
+                      disableMonthPicker: true,
+                      controlsTextStyle: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      weekdayLabelTextStyle: const TextStyle(
+                        color: Color(0x4D3C3C43),
+                        fontSize: 16,
+                      ),
                     ),
+                    value: [
+                      isStart ? _startDate : _endDate,
+                    ],
+                    onValueChanged: (value) {
+                      setState(() {
+                        if (isStart) {
+                          _startDate =
+                              value[0]!.copyWith(hour: 0, minute: 0, second: 0);
+                        } else {
+                          _endDate = value[0]!.copyWith(hour: 0, minute: 0);
+                        }
+                      });
+                      Navigator.pop(context);
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
@@ -197,7 +238,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
+                            const Padding(
                               padding: const EdgeInsets.only(
                                   left: 10, top: 7, bottom: 2),
                               child: Text(
@@ -213,7 +254,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   const EdgeInsets.only(left: 10, bottom: 7),
                               child: Text(
                                 DateFormat('dd/MM/yyyy').format(_startDate),
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 15, color: Colors.black),
                               ),
                             ),
@@ -240,7 +281,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
-                        color: Color.fromRGBO(255, 199, 9, 1),
+                        color: const Color.fromRGBO(255, 199, 9, 1),
                       ),
                     ),
                     child: Row(
@@ -249,9 +290,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 10, top: 7, bottom: 2),
+                            const Padding(
+                              padding:
+                                  EdgeInsets.only(left: 10, top: 7, bottom: 2),
                               child: Text(
                                 'Đến ngày',
                                 style: TextStyle(
@@ -265,7 +306,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   const EdgeInsets.only(left: 10, bottom: 7),
                               child: Text(
                                 DateFormat('dd/MM/yyyy').format(_endDate),
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 15, color: Colors.black),
                               ),
                             ),
@@ -311,7 +352,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         Container(
                           height: 35,
                           width: size.width * 1,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Color.fromRGBO(255, 247, 172, 1),
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(5),
@@ -326,7 +367,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 padding: EdgeInsets.symmetric(horizontal: 12),
                                 child: Text(
                                   item.date,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.black,
                                     fontWeight: FontWeight.w600,
@@ -339,7 +380,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                       // Content
                       Container(
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           borderRadius: BorderRadius.only(
                             bottomLeft: Radius.circular(5),
                             bottomRight: Radius.circular(5),
@@ -367,7 +408,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                       children: [
                                         Text(
                                           item.fuel,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 15,
                                               fontWeight: FontWeight.w500),
@@ -375,15 +416,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         Text(' - '),
                                         Text(
                                           '${currencyFormat.format(item.amount)}lít',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 15,
                                               fontWeight: FontWeight.w500),
                                         ),
-                                        Text(' - '),
+                                        const Text(' - '),
                                         Text(
                                           '${currencyFormat.format(item.money)}₫',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.w600,
                                               color: Color.fromRGBO(
@@ -393,7 +434,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     ),
                                     Text(
                                       item.hours,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 13,
                                         color: Color.fromRGBO(130, 134, 158, 1),
                                         fontWeight: FontWeight.w300,
@@ -406,7 +447,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 padding: EdgeInsets.only(bottom: 10),
                                 child: Text(
                                   item.address,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w300,
                                     color: Color.fromRGBO(130, 134, 158, 1),
@@ -415,7 +456,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               ),
                               Text(
                                 'Biển số xe: ${item.numberLicense}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w300,
                                   color: Color.fromRGBO(130, 134, 158, 1),

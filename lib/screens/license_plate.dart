@@ -18,11 +18,11 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
   List<Map<String, String>> _filteredLicensePlates = [];
   List<Map<String, String>> _licensePlateData = [];
   bool _isLoading = true;
-
+ 
   @override
   void initState() {
     super.initState();
-    _fetchLicensePlates();
+     _fetchLicensePlates();
     _searchController.addListener(_filterLicensePlates);
   }
 
@@ -83,6 +83,8 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
       );
     }
   }
+
+
 
   void _filterLicensePlates() {
     final query = _searchController.text.toLowerCase();
