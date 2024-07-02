@@ -1,10 +1,11 @@
 import "dart:convert";
+
 import "package:driver_app/core/api_client.dart";
 import "package:driver_app/core/secure_store.dart";
 import 'package:http/http.dart' as http;
 import "package:driver_app/screens/chart/bar_graph.dart";
 import "package:flutter/material.dart";
-import "package:get/get.dart";
+
 import "package:intl/intl.dart";
 
 class StatisticsScreen extends StatefulWidget {
@@ -99,6 +100,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     _searchController.addListener(_filterLicensePlates);
   }
 
+  // Get API licensePlates
   Future<void> _fetchLicensePlates() async {
     final api = ApiClient();
     final userData = await api.getUserData();
@@ -129,8 +131,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         } else {
           throw Exception('Failed to load license plates');
         }
-      } else {
-        throw Exception('Failed to load license plates');
       }
     } catch (e) {
       print(e);
@@ -172,7 +172,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(5),
                     child: Row(
                       children: [
                         IconButton(
@@ -181,18 +181,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           },
                           icon: const Icon(Icons.arrow_back_ios),
                         ),
-                        Expanded(
+                        const Expanded(
                           child: Center(
                             child: Text(
-                              "Chọn biển số",
+                              "Chọn biển số xe",
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(width: 48),
+                        const SizedBox(width: 48),
                       ],
                     ),
                   ),
@@ -206,9 +206,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       controller: _searchController,
                       decoration: InputDecoration(
                         hintText: "Tìm kiếm",
-                        hintStyle: TextStyle(fontWeight: FontWeight.w400),
-                        prefixIcon: Icon(Icons.search),
-                        contentPadding: EdgeInsets.symmetric(
+                        hintStyle: const TextStyle(fontWeight: FontWeight.w400),
+                        prefixIcon: const Icon(Icons.search),
+                        contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 15,
                         ),
@@ -222,7 +222,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Expanded(
@@ -240,16 +240,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ),
                           ),
                           contentPadding: const EdgeInsets.all(0),
-                          title: Text(plateNumber!,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w500, fontSize: 18)),
-
-                          // TODO: check later
+                          title: Text(
+                            plateNumber!,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w500, fontSize: 18),
+                          ),
                           onTap: () {
                             setState(() {
-                              chosenIndex = _filteredLicensePlates.indexWhere(
+                              chosenIndex = _licensePlateData.indexWhere(
                                   (element) =>
-                                      element["plateNumber"] ==
+                                      element['plateNumber'] ==
                                       _filteredLicensePlates[index]
                                           ["plateNumber"]);
                             });
@@ -330,14 +330,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                             color: Colors.black,
                                             fontWeight: FontWeight.w600),
                                       ),
-                                Text(
-                                  widget.selectedLicensePlate,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF82869E),
-                                  ),
-                                ),
+                                chosenIndex == null
+                                    ? Text(widget.selectedLicensePlate)
+                                    : Text(
+                                        '${_licensePlateData[chosenIndex!]['plateNumber']}',
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF82869E),
+                                        ),
+                                      ),
                               ],
                             ),
                           ],
@@ -436,8 +438,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           ],
                         ),
                         SizedBox(height: size.height * 0.01),
-
-                        // TODO: fix later
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
