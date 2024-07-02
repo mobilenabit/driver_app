@@ -194,7 +194,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         title: const Text(
           'Hoạt động',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -215,13 +215,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
 
           // Pick date
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
-                child: TextButton(
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
                   onPressed: () => _selectDate(context, true),
                   child: Container(
                     height: size.height * 0.072,
@@ -270,11 +269,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
-                child: TextButton(
+                TextButton(
                   onPressed: () => _selectDate(context, false),
                   child: Container(
                     height: size.height * 0.072,
@@ -325,8 +320,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
           // List of history

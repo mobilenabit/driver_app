@@ -289,7 +289,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         title: const Text(
           "Lịch sử đổ xăng",
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
         ),

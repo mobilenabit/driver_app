@@ -28,7 +28,6 @@ List<GasMap> _item = [
 class _GasStationScreenState extends State<GasStationScreen> {
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: const Color.fromRGBO(243, 243, 247, 1),
       appBar: AppBar(
@@ -42,8 +41,8 @@ class _GasStationScreenState extends State<GasStationScreen> {
         title: const Text(
           'CHXD gần đây',
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,

@@ -59,8 +59,8 @@ class _QrResultScreenState extends State<QrResultScreen> {
         title: const Text(
           'Thông tin mã QR',
           style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,

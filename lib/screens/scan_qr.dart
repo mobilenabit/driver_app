@@ -63,8 +63,8 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
         title: const Text(
           'Quét mã QR',
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,

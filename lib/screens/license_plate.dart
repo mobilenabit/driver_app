@@ -122,7 +122,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
           title: const Text(
             'Chọn biển số xe',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
           ),
