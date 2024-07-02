@@ -83,7 +83,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       builder: (BuildContext context) {
         return Dialog(
           child: Container(
-            width: double.infinity,
+            width: MediaQuery.sizeOf(context).width * 1,
             height: MediaQuery.sizeOf(context).height * 0.4,
             child: Column(
               children: [
@@ -178,7 +178,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(255, 252, 245, 1),
       appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(255, 252, 245, 1),
+        backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
             Navigator.push(
@@ -194,7 +194,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         title: const Text(
           'Hoạt động',
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -204,11 +204,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.only(left: 17, top: 18),
+            padding: EdgeInsets.only(left: 18, top: 18),
             child: Text(
               'Truy vấn lịch sử giao dịch',
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -216,10 +216,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
           // Pick date
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
                 child: TextButton(
                   onPressed: () => _selectDate(context, true),
                   child: Container(
@@ -229,7 +230,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
-                        color: Color.fromRGBO(255, 199, 9, 1),
+                        color: const Color.fromRGBO(255, 199, 9, 1),
                       ),
                     ),
                     child: Row(
@@ -271,7 +272,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
                 child: TextButton(
                   onPressed: () => _selectDate(context, false),
                   child: Container(
@@ -368,7 +370,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 child: Text(
                                   item.date,
                                   style: const TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 16,
                                     color: Colors.black,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -421,7 +423,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                               fontSize: 15,
                                               fontWeight: FontWeight.w500),
                                         ),
-                                        const Text(' - '),
                                       ],
                                     ),
                                     Text(

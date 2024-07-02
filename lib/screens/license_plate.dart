@@ -18,11 +18,11 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
   List<Map<String, String>> _filteredLicensePlates = [];
   List<Map<String, String>> _licensePlateData = [];
   bool _isLoading = true;
- 
+
   @override
   void initState() {
     super.initState();
-     _fetchLicensePlates();
+    _fetchLicensePlates();
     _searchController.addListener(_filterLicensePlates);
   }
 
@@ -84,8 +84,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
     }
   }
 
-
-
+  // search
   void _filterLicensePlates() {
     final query = _searchController.text.toLowerCase();
     setState(() {
@@ -123,8 +122,8 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
           title: const Text(
             'Chọn biển số xe',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
           ),
           centerTitle: true,
@@ -184,8 +183,8 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                             contentPadding: const EdgeInsets.all(0),
                             title: Text(
                               licensePlate!,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.w400),
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 16),
                             ),
                             onTap: () {
                               Navigator.push(

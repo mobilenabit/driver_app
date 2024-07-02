@@ -11,7 +11,7 @@ import "package:intl/intl.dart";
 class StatisticsScreen extends StatefulWidget {
   final Map<String, dynamic>? userData;
   final String selectedLicensePlate;
-  const StatisticsScreen(
+  StatisticsScreen(
       {super.key, required this.selectedLicensePlate, required this.userData});
 
   @override
@@ -68,7 +68,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   int? chosenIndex;
   final TextEditingController _searchController = TextEditingController();
   ChoiceMonth selectedMonth = ChoiceMonth.all;
-
   List<Map<String, String>> _filteredLicensePlates = [];
   List<Map<String, String>> _licensePlateData = [];
   bool _isLoading = true;
@@ -91,13 +90,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     } else {
       return const Icon(Icons.account_circle, size: 40);
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchLicensePlates();
-    _searchController.addListener(_filterLicensePlates);
   }
 
   // Get API licensePlates
@@ -148,6 +140,19 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchLicensePlates();
+    _searchController.addListener(_filterLicensePlates);
+  }
+
+  void dispose() {
+    _searchController.removeListener(_filterLicensePlates);
+    _searchController.dispose();
+    super.dispose();
+  }
+
   // show modal bottom
   void _handleLocationChoice() {
     showModalBottomSheet(
@@ -186,13 +191,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             child: Text(
                               "Chọn biển số xe",
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 17,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 48),
+                        const SizedBox(width: 50),
                       ],
                     ),
                   ),
@@ -243,7 +248,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           title: Text(
                             plateNumber!,
                             style: const TextStyle(
-                                fontWeight: FontWeight.w500, fontSize: 18),
+                                fontWeight: FontWeight.w400, fontSize: 16),
                           ),
                           onTap: () {
                             setState(() {
@@ -283,7 +288,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         ),
         title: const Text(
           "Lịch sử đổ xăng",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
       ),
@@ -292,7 +300,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               child: CircularProgressIndicator(),
             )
           : SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -331,12 +338,19 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                             fontWeight: FontWeight.w600),
                                       ),
                                 chosenIndex == null
-                                    ? Text(widget.selectedLicensePlate)
+                                    ? Text(
+                                        widget.selectedLicensePlate,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xFF82869E),
+                                        ),
+                                      )
                                     : Text(
                                         '${_licensePlateData[chosenIndex!]['plateNumber']}',
                                         style: const TextStyle(
                                           fontSize: 15,
-                                          fontWeight: FontWeight.w600,
+                                          fontWeight: FontWeight.w500,
                                           color: Color(0xFF82869E),
                                         ),
                                       ),
@@ -391,7 +405,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ),
                             DropdownMenu(
                               textStyle: const TextStyle(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w500,
                                 fontSize: 16,
                               ),
                               selectedTrailingIcon:

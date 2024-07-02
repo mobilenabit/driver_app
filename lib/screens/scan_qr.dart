@@ -58,7 +58,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     var size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFFBF0),
+        backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         title: const Text(
           'Quét mã QR',

@@ -49,7 +49,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(255, 252, 245, 1),
       appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(255, 252, 245, 1),
+        backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
