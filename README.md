@@ -6,7 +6,6 @@ A new Flutter project.
 
 - A working copy of Flutter SDK and Android SDK (for Android builds).
 - Xcode (for iOS builds).
-- (optional, but recommended) [`just`](https://github.com/casey/just) command runner. You will need to run the full commands by yourself if you don't use `just`, so it's highly recommended.
 
 ## Getting Started
 

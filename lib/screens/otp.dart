@@ -5,10 +5,9 @@ import "package:flutter_otp_text_field/flutter_otp_text_field.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:intl/intl.dart";
 import "package:driver_app/core/helpers.dart";
-import "package:driver_app/screens/change_password.dart";
+import 'package:driver_app/screens/change_password.dart';
 import "package:timer_count_down/timer_controller.dart";
 import "package:timer_count_down/timer_count_down.dart";
-
 
 import "../core/api_client.dart";
 

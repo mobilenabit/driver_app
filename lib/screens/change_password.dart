@@ -28,51 +28,36 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   String _oldPassword = "";
   String _newPassword = "";
   String _confirmPassword = "";
+  bool _isError = false;
 
   final _formKey = GlobalKey<FormState>();
   var newPasswordController = TextEditingController();
 
-  void _handlePasswordChange() async {
-    if (widget.changePassword) {
-      if (widget.userData["data"]["phoneNumber"] == null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Tài khoản chưa cấu hình số điện thoại!"),
-          backgroundColor: Colors.red,
-        ));
-
-        return;
-      }
-
-      if (_formKey.currentState!.validate()) {
-        final otp = await ApiClient().getOtp();
-        if (otp["success"]) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => OtpScreen(
-                userData: widget.userData,
-                oldPassword: _oldPassword,
-                newPassword: _newPassword,
-                changePassword: true,
+  void _handleConfirm() async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Dialog(
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            child: Center(
+              widthFactor: 0.5,
+              heightFactor: 0.5,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                ],
               ),
             ),
           );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Có lỗi trong lúc gửi yêu cầu tạo OTP."),
-            backgroundColor: Colors.red,
-          ));
-        }
-      }
+        });
+
+    if (widget.changePassword) {
+      _handleChangePassword();
     } else {
       _handleForgotPassword();
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => const LoginScreen(),
-        ),
-        (route) => false,
-      );
     }
   }
 
@@ -118,14 +103,86 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         !_validateConsecutiveCharacters();
   }
 
-  void _handleForgotPassword() async {
-    SecureStorage().deleteSecureData("last_logged_in_user_name");
-    SecureStorage().deleteSecureData("last_logged_in_user_avatar");
-    SecureStorage().deleteSecureData("last_logged_in_user_phone_number");
-    SecureStorage().deleteSecureData("last_logged_in_username");
+  void _handleChangePassword() async {
+    if (widget.userData["data"]["phoneNumber"] == null) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Tài khoản chưa cấu hình số điện thoại!"),
+        backgroundColor: Colors.red,
+      ));
 
-    // TODO: api route
-    return;
+      return;
+    }
+
+    final validatePassword = await ApiClient()
+        .verifyOldPassword(widget.userData["data"], _oldPassword);
+    print(validatePassword.toString());
+    Navigator.pop(context);
+
+    if (validatePassword["error"] == "Error_PASSWORD_IDENTICAL" ||
+        validatePassword["error"] == null) {
+      if (_formKey.currentState!.validate()) {
+        final otp = await ApiClient().getOtp();
+        Navigator.pop(context);
+
+        if (otp is String) {
+          FocusManager.instance.primaryFocus?.unfocus();
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Có lỗi trong lúc gửi yêu cầu tạo OTP."),
+            backgroundColor: Colors.red,
+          ));
+
+          return;
+        }
+
+        if (otp["success"]) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpScreen(
+                userData: widget.userData,
+                oldPassword: _oldPassword,
+                newPassword: _newPassword,
+                changePassword: true,
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Có lỗi trong lúc gửi yêu cầu tạo OTP."),
+            backgroundColor: Colors.red,
+          ));
+        }
+      }
+    } else {
+      setState(() {
+        _isError = true;
+      });
+      return;
+    }
+  }
+
+  void _handleForgotPassword() async {
+    if (_formKey.currentState!.validate()) {
+      SecureStorage().deleteSecureData("last_logged_in_user_name");
+      SecureStorage().deleteSecureData("last_logged_in_user_avatar");
+      SecureStorage().deleteSecureData("last_logged_in_user_phone_number");
+      SecureStorage().deleteSecureData("last_logged_in_username");
+
+      final res = await ApiClient().resetPassword(widget.userData["data"],
+          _newPassword, widget.userData["data"]["otp"]);
+      Navigator.pop(context);
+
+      if (res["success"]) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => const LoginScreen(),
+          ),
+          (route) => false,
+        );
+      }
+    }
   }
 
   @override
@@ -135,6 +192,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     _oldPassword = "";
     _newPassword = "";
     _confirmPassword = "";
+    _isError = false;
   }
 
   @override
@@ -166,9 +224,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         extendBodyBehindAppBar: true,
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: const Text(
-            "Đổi mật khẩu",
-            style: TextStyle(
+          title: Text(
+            widget.changePassword ? "Đổi mật khẩu" : "Quên mật khẩu",
+            style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
               color: Colors.black,
@@ -222,15 +280,35 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 children: [
                                   if (widget.changePassword)
                                     CustomTextField(
-                                        label: "Mật khẩu cũ",
-                                        hintText: "Nhập mật khẩu cũ",
-                                        isPasswordField: true,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _oldPassword = value;
-                                          });
-                                        }),
+                                      autovalidateMode:
+                                          AutovalidateMode.onUserInteraction,
+                                      label: "Mật khẩu cũ",
+                                      hintText: "Nhập mật khẩu cũ",
+                                      isPasswordField: true,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (_isError) {
+                                            _isError = false;
+                                          }
+
+                                          _oldPassword = value;
+                                        });
+                                      },
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return "Mật khẩu cũ không được để trống!";
+                                        }
+
+                                        if (_isError) {
+                                          return "Mật khẩu cũ không chính xác!";
+                                        }
+
+                                        return null;
+                                      },
+                                    ),
                                   CustomTextField(
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
                                     label: "Mật khẩu mới",
                                     hintText: "Nhập mật khẩu mới",
                                     isPasswordField: true,
@@ -272,6 +350,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                   ),
                                   SizedBox(height: size.height * 0.01),
                                   CustomTextField(
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
                                     label: "Xác nhận mật khẩu mới",
                                     hintText: "Nhập lại mật khẩu mới",
                                     isPasswordField: true,
@@ -297,7 +377,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                         Expanded(
                                           child: ElevatedButton(
                                             onPressed: _checkFields()
-                                                ? _handlePasswordChange
+                                                ? _handleConfirm
                                                 : null,
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor:
@@ -311,9 +391,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                               ),
                                               shadowColor: Colors.transparent,
                                             ),
-                                            child: const Text(
-                                              "Xác nhận",
-                                              style: TextStyle(
+                                            child: Text(
+                                              widget.changePassword
+                                                  ? "Xác nhận"
+                                                  : "Tiếp tục",
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                               ),
                                             ),

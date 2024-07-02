@@ -1,3 +1,4 @@
+import 'package:driver_app/screens/scan_qr.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -52,7 +53,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context, true);
           },
           icon: const Icon(Icons.arrow_back_ios),
         ),

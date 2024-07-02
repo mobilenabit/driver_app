@@ -2,11 +2,11 @@ import 'package:driver_app/screens/qr_result.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter/material.dart';
-
 import 'package:qr_scanner_overlay/qr_scanner_overlay.dart';
 
 class ScanQrScreen extends StatefulWidget {
   final Map<String, dynamic>? userData;
+
   const ScanQrScreen({super.key, required this.userData});
 
   @override
@@ -119,13 +119,12 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                         String code = barcode.barcodes.first.rawValue ?? "---";
                         // Validate the QR code
                         if (isValidQrCode(code)) {
-                          Navigator.push(
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) {
                                 return QrResultScreen(
                                   code: code,
-                                  //closeScreen: closeScreen,
                                   userData: widget.userData ??
                                       {
                                         'data': {
@@ -137,6 +136,13 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                               },
                             ),
                           );
+
+                          // Reset scan state based on the result
+                          if (result == true) {
+                            setState(() {
+                              isScanCompleted = false;
+                            });
+                          }
                         } else {
                           showInvalidQrAlert();
                         }
