@@ -147,8 +147,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     _searchController.addListener(_filterLicensePlates);
   }
 
+  @override
   void dispose() {
-    _searchController.removeListener(_filterLicensePlates);
     _searchController.dispose();
     super.dispose();
   }
@@ -231,38 +231,43 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     height: 10,
                   ),
                   Expanded(
-                    child: ListView.builder(
-                      controller: controller,
-                      itemCount: _filteredLicensePlates.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final plateNumber =
-                            _filteredLicensePlates[index]['plateNumber'];
-                        return ListTile(
-                          shape: Border(
-                            bottom: BorderSide(
-                              color: Colors.grey.shade300,
-                              width: 1,
-                            ),
+                    child: _isLoading
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : ListView.builder(
+                            controller: controller,
+                            itemCount: _filteredLicensePlates.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final plateNumber =
+                                  _filteredLicensePlates[index]['plateNumber'];
+                              return ListTile(
+                                shape: Border(
+                                  bottom: BorderSide(
+                                    color: Colors.grey.shade300,
+                                    width: 1,
+                                  ),
+                                ),
+                                contentPadding: const EdgeInsets.all(0),
+                                title: Text(
+                                  plateNumber!,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16),
+                                ),
+                                onTap: () {
+                                  setState(() {
+                                    chosenIndex = _licensePlateData.indexWhere(
+                                        (element) =>
+                                            element['plateNumber'] ==
+                                            _filteredLicensePlates[index]
+                                                ["plateNumber"]);
+                                  });
+                                  Navigator.pop(context);
+                                },
+                              );
+                            },
                           ),
-                          contentPadding: const EdgeInsets.all(0),
-                          title: Text(
-                            plateNumber!,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w400, fontSize: 16),
-                          ),
-                          onTap: () {
-                            setState(() {
-                              chosenIndex = _licensePlateData.indexWhere(
-                                  (element) =>
-                                      element['plateNumber'] ==
-                                      _filteredLicensePlates[index]
-                                          ["plateNumber"]);
-                            });
-                            Navigator.of(context).pop();
-                          },
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),

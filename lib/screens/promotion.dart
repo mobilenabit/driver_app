@@ -7,7 +7,7 @@ class PromotionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(255, 252, 245, 1),
+      //backgroundColor: const Color.fromRGBO(255, 252, 245, 1),
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
@@ -23,21 +23,34 @@ class PromotionScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          children: [
-            SizedBox(
-              height: MediaQuery.sizeOf(context).height * 0.1,
-            ),
-            SvgPicture.asset('assets/icons/message.svg'),
-            SizedBox(
-              height: MediaQuery.sizeOf(context).height * 0.05,
-            ),
-            Text(
-              'Bạn chưa có thông báo',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-            )
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color.fromRGBO(255, 252, 245, 1),
+              Color.fromRGBO(255, 244, 219, 1),
+            ],
+            stops: [29 / 100, 100 / 100],
+          ),
+        ),
+        child: Center(
+          child: Column(
+            children: [
+              SizedBox(
+                height: MediaQuery.sizeOf(context).height * 0.1,
+              ),
+              SvgPicture.asset('assets/icons/message.svg'),
+              SizedBox(
+                height: MediaQuery.sizeOf(context).height * 0.05,
+              ),
+              Text(
+                'Bạn chưa có thông báo',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+              )
+            ],
+          ),
         ),
       ),
     );

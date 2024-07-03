@@ -42,8 +42,8 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
       },
     );
 
-    // Automatically dismiss the alert after 2-3 seconds
-    Future.delayed(const Duration(seconds: 2), () {
+    // Automatically dismiss the alert after 1 seconds
+    Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
         Navigator.of(context).pop();
         setState(() {
@@ -223,7 +223,7 @@ class CustomAlertDialog extends StatelessWidget {
           color: Colors.transparent,
           child: Container(
             width: size.width * 0.9,
-            height: size.height * 0.12,
+            height: size.height * 0.14,
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
               color: Colors.white,

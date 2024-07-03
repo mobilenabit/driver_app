@@ -18,13 +18,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
   List<Map<String, String>> _filteredLicensePlates = [];
   List<Map<String, String>> _licensePlateData = [];
   bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchLicensePlates();
-    _searchController.addListener(_filterLicensePlates);
-  }
+  bool _noDataFound = false;
 
   Future<void> _fetchLicensePlates() async {
     final apiToken = await SecureStorage().readSecureData("access_token");
@@ -32,19 +26,6 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
     final api = ApiClient();
     final userData = await api.getUserData();
     final userId = userData["data"]["userId"].toString();
-
-    if (userId == null) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Không tìm thấy dữ liệu biển số xe'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
 
     String url =
         'http://pumplogapi.petronet.vn/MD/Driver2Vehicle/GetByDriverId/$userId';
@@ -69,6 +50,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                 .toList();
             _filteredLicensePlates = _licensePlateData;
             _isLoading = false;
+            _noDataFound = _licensePlateData.isEmpty;
           });
         } else {
           throw Exception('Failed to load license plates');
@@ -79,6 +61,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
       setState(
         () {
           _isLoading = false;
+          _noDataFound = true;
         },
       );
     }
@@ -93,6 +76,13 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
         return plateNumber.contains(query);
       }).toList();
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLicensePlates();
+    _searchController.addListener(_filterLicensePlates);
   }
 
   @override
@@ -129,80 +119,85 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
           centerTitle: true,
         ),
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 5,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(243, 243, 247, 1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: TextFormField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          hintText: "Tìm kiếm",
-                          hintStyle:
-                              const TextStyle(fontWeight: FontWeight.w400),
-                          prefixIcon: const Icon(Icons.search),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 15,
-                          ),
-                          border: OutlineInputBorder(
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : _noDataFound
+                ? Center(child: Text('Không có dữ liệu biển số xe'))
+                : Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 5,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color.fromRGBO(243, 243, 247, 1),
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
                           ),
-                          filled: true,
-                          fillColor: Colors.transparent,
-                        ),
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: _filteredLicensePlates.length,
-                        itemBuilder: (context, index) {
-                          final licensePlate =
-                              _filteredLicensePlates[index]['plateNumber'];
-                          return ListTile(
-                            shape: Border(
-                              bottom: BorderSide(
-                                color: Colors.grey.shade300,
-                                width: 1,
+                          child: TextFormField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              hintText: "Tìm kiếm",
+                              hintStyle:
+                                  const TextStyle(fontWeight: FontWeight.w400),
+                              prefixIcon: const Icon(Icons.search),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 15,
                               ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              fillColor: Colors.transparent,
                             ),
-                            contentPadding: const EdgeInsets.all(0),
-                            title: Text(
-                              licensePlate!,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w400, fontSize: 16),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => HomeScreen(
-                                    selectedLicensePlate: licensePlate,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: _filteredLicensePlates.length,
+                            itemBuilder: (context, index) {
+                              final licensePlate =
+                                  _filteredLicensePlates[index]['plateNumber'];
+                              return ListTile(
+                                shape: Border(
+                                  bottom: BorderSide(
+                                    color: Colors.grey.shade300,
+                                    width: 1,
                                   ),
                                 ),
+                                contentPadding: const EdgeInsets.all(0),
+                                title: Text(
+                                  licensePlate!,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16),
+                                ),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeScreen(
+                                        selectedLicensePlate: licensePlate,
+                                      ),
+                                    ),
+                                  );
+                                },
                               );
                             },
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
       ),
     );
   }
