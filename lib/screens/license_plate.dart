@@ -18,7 +18,6 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
   List<Map<String, String>> _filteredLicensePlates = [];
   List<Map<String, String>> _licensePlateData = [];
   bool _isLoading = true;
-  bool _noDataFound = false;
 
   Future<void> _fetchLicensePlates() async {
     final apiToken = await SecureStorage().readSecureData("access_token");
@@ -50,7 +49,6 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                 .toList();
             _filteredLicensePlates = _licensePlateData;
             _isLoading = false;
-            _noDataFound = _licensePlateData.isEmpty;
           });
         } else {
           throw Exception('Failed to load license plates');
@@ -61,7 +59,6 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
       setState(
         () {
           _isLoading = false;
-          _noDataFound = true;
         },
       );
     }
@@ -122,8 +119,10 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
             ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : _noDataFound
-                ? Center(child: Text('Không có dữ liệu biển số xe'))
+            : _licensePlateData.isEmpty
+                ? const Center(
+                    child: Text('Không có dữ liệu biển số xe'),
+                  )
                 : Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,

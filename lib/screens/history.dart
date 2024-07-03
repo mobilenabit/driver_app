@@ -216,7 +216,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
           // Pick date
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -233,14 +233,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       ),
                     ),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 10, top: 7, bottom: 2),
+                              padding:
+                                  const EdgeInsets.only(left: 10, bottom: 2),
                               child: Text(
                                 'Từ ngày',
                                 style: TextStyle(
@@ -250,8 +252,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               ),
                             ),
                             Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 10, bottom: 7),
+                              padding: const EdgeInsets.only(left: 10),
                               child: Text(
                                 DateFormat('dd/MM/yyyy').format(_startDate),
                                 style: const TextStyle(
@@ -272,7 +273,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 TextButton(
                   onPressed: () => _selectDate(context, false),
                   child: Container(
-                    height: size.height * 0.072,
+                    height: size.height * 0.07,
                     width: size.width * 0.413,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -282,14 +283,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       ),
                     ),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Padding(
-                              padding:
-                                  EdgeInsets.only(left: 10, top: 7, bottom: 2),
+                              padding: EdgeInsets.only(left: 10, bottom: 2),
                               child: Text(
                                 'Đến ngày',
                                 style: TextStyle(
@@ -299,8 +301,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               ),
                             ),
                             Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 10, bottom: 7),
+                              padding: const EdgeInsets.only(left: 10),
                               child: Text(
                                 DateFormat('dd/MM/yyyy').format(_endDate),
                                 style: const TextStyle(
