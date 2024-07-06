@@ -67,7 +67,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
           centerTitle: true,
         ),
         body: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -90,8 +90,8 @@ class _QrResultScreenState extends State<QrResultScreen> {
                     bottom: 25,
                     right: 15,
                   ),
-                  height: size.height * 0.5,
-                  margin: EdgeInsets.symmetric(horizontal: 15),
+                  height: size.height * 0.4,
+                  margin: const EdgeInsets.symmetric(horizontal: 15),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
@@ -104,6 +104,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                     ],
                   ),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       const Padding(

@@ -164,7 +164,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           expand: false,
           initialChildSize: 0.6,
           maxChildSize: 0.6,
-          minChildSize: 0.2,
+          minChildSize: 0.6,
           builder: (_, controller) {
             return Container(
               decoration: const BoxDecoration(
@@ -173,11 +173,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   topRight: Radius.circular(16),
                 ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(5),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Row(
                       children: [
                         IconButton(
@@ -191,7 +192,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             child: Text(
                               "Chọn biển số xe",
                               style: TextStyle(
-                                fontSize: 17,
+                                fontSize: 15,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -205,7 +206,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     width: MediaQuery.sizeOf(context).width * 0.9,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Color(0xFFF3F3F7),
+                      color: const Color(0xFFF3F3F7),
                     ),
                     child: TextFormField(
                       controller: _searchController,
@@ -227,9 +228,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Expanded(
                     child: _isLoading
                         ? const Center(

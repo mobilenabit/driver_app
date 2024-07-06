@@ -127,7 +127,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 5,
-                    ),
+                    ),    
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

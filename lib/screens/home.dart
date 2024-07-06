@@ -103,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildNavItem(
-      int index, String iconPath, String selectedIconPath, String label) {
+    int index, String iconPath, String selectedIconPath, String label) {
     bool isSelected = currentPageIndex == index;
     return Expanded(
       child: GestureDetector(
