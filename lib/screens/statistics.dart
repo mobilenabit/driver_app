@@ -1,7 +1,9 @@
+import "dart:async";
 import "dart:convert";
 
 import "package:driver_app/core/api_client.dart";
 import "package:driver_app/core/secure_store.dart";
+import "package:flutter_svg/svg.dart";
 import 'package:http/http.dart' as http;
 import "package:driver_app/screens/chart/bar_graph.dart";
 import "package:flutter/material.dart";
@@ -10,7 +12,8 @@ import "package:intl/intl.dart";
 
 class StatisticsScreen extends StatefulWidget {
   final Map<String, dynamic>? userData;
-  final String selectedLicensePlate;
+  String selectedLicensePlate;
+
   StatisticsScreen(
       {super.key, required this.selectedLicensePlate, required this.userData});
 
@@ -71,6 +74,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   List<Map<String, String>> _filteredLicensePlates = [];
   List<Map<String, String>> _licensePlateData = [];
   bool _isLoading = true;
+  Map<String, dynamic>? filteredData;
+  String? searchText;
+  late final StreamController<Map<String, dynamic>> _streamController =
+      StreamController<Map<String, dynamic>>.broadcast();
 
   // set avatar
   Widget _getAvatarWidget() {
@@ -130,21 +137,21 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   // search
-  void _filterLicensePlates() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredLicensePlates = _licensePlateData.where((plate) {
-        final plateNumber = plate['plateNumber']!.toLowerCase();
-        return plateNumber.contains(query);
-      }).toList();
-    });
-  }
+  // void _filterLicensePlates() {
+  //   final query = _searchController.text.toLowerCase();
+  //   setState(() {
+  //     _filteredLicensePlates = _licensePlateData.where((plate) {
+  //       final plateNumber = plate['plateNumber']!.toLowerCase();
+  //       return plateNumber.contains(query);
+  //     }).toList();
+  //   });
+  // }
 
   @override
   void initState() {
     super.initState();
     _fetchLicensePlates();
-    _searchController.addListener(_filterLicensePlates);
+    //_searchController.addListener(_filterLicensePlates);
   }
 
   @override
@@ -156,6 +163,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   // show modal bottom
   void _handleLocationChoice() {
     showModalBottomSheet(
+      elevation: 0,
+      showDragHandle: true,
       context: context,
       backgroundColor: Colors.white,
       isScrollControlled: true,
@@ -164,7 +173,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           expand: false,
           initialChildSize: 0.6,
           maxChildSize: 0.6,
-          minChildSize: 0.6,
+          minChildSize: 0.2,
           builder: (_, controller) {
             return Container(
               decoration: const BoxDecoration(
@@ -173,100 +182,122 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   topRight: Radius.circular(16),
                 ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+              ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(Icons.arrow_back_ios),
-                        ),
-                        const Expanded(
-                          child: Center(
-                            child: Text(
-                              "Chọn biển số xe",
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 50),
-                      ],
+                  AppBar(
+                    centerTitle: true,
+                    toolbarHeight: 20,
+                    titleSpacing: 0,
+                    backgroundColor: Colors.transparent,
+                    leading: IconButton(
+                      padding: const EdgeInsets.all(0),
+                      icon: Icon(Icons.arrow_back_ios),
+                      onPressed: () {
+                        Navigator.pop(context, {});
+                      },
                     ),
-                  ),
-                  Container(
-                    width: MediaQuery.sizeOf(context).width * 0.9,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: const Color(0xFFF3F3F7),
-                    ),
-                    child: TextFormField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: "Tìm kiếm",
-                        hintStyle: const TextStyle(fontWeight: FontWeight.w400),
-                        prefixIcon: const Icon(Icons.search),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 15,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.transparent,
-                      ),
-                      style: const TextStyle(fontSize: 16),
+                    title: const Text(
+                      "Chọn biển số xe",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 10),
+                  TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        searchText = value;
+
+                        filteredData = {};
+                        filteredData?["data"] = _licensePlateData
+                            .where((plate) => plate["plateNumber"]!
+                                .toLowerCase()
+                                .contains(searchText!.toLowerCase()))
+                            .toList();
+                        if (filteredData != null) {
+                          _streamController.sink
+                              .add({'data': filteredData!['data']});
+                        } else {
+                          _streamController.sink
+                              .add({'data': _licensePlateData});
+                        }
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: "Tìm kiếm",
+                      hintStyle: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFFA7ABC3)),
+                      prefixIcon: Container(
+                        width: 24,
+                        height: 24,
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.all(15),
+                        child: SvgPicture.asset(
+                          "assets/icons/search.svg",
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      fillColor: const Color(0xFFF3F3F7),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                    ),
+                    style: const TextStyle(fontSize: 16),
+                  ),
                   Expanded(
-                    child: _isLoading
-                        ? const Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : ListView.builder(
-                            controller: controller,
-                            itemCount: _filteredLicensePlates.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              final plateNumber =
-                                  _filteredLicensePlates[index]['plateNumber'];
-                              return ListTile(
-                                shape: Border(
-                                  bottom: BorderSide(
-                                    color: Colors.grey.shade300,
-                                    width: 1,
-                                  ),
-                                ),
-                                contentPadding: const EdgeInsets.all(0),
-                                title: Text(
-                                  plateNumber!,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 16),
-                                ),
-                                onTap: () {
-                                  setState(() {
-                                    chosenIndex = _licensePlateData.indexWhere(
-                                        (element) =>
-                                            element['plateNumber'] ==
-                                            _filteredLicensePlates[index]
-                                                ["plateNumber"]);
-                                  });
+                    child: StreamBuilder(
+                      initialData: {'data': _licensePlateData},
+                      stream: _streamController.stream,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                        if (snapshot.hasError) {
+                          return const Center(
+                            child: Text("Error loading data"),
+                          );
+                        }
+                        if (!snapshot.hasData ||
+                            snapshot.data!['data'] == null) {
+                          return const Center(
+                            child: Text("No data available"),
+                          );
+                        }
+                        final dataList = List<Map<String, String>>.from(
+                            snapshot.data!['data']);
+                        return ListView.separated(
+                          separatorBuilder: (context, index) {
+                            return const Divider(
+                              height: 1,
+                              color: Color(0xFFE0E0E0),
+                            );
+                          },
+                          controller: controller,
+                          itemCount: dataList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final plate = dataList[index];
+                            return ListTile(
+                              title: Text(plate["plateNumber"] ?? ""),
+                              onTap: () {
+                                setState(() {
+                                  widget.selectedLicensePlate =
+                                      plate["plateNumber"]!;
                                   Navigator.pop(context);
-                                },
-                              );
-                            },
-                          ),
+                                });
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),

@@ -91,7 +91,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   child: CalendarDatePicker2(
                     config: CalendarDatePicker2Config(
                       calendarType: CalendarDatePicker2Type.single,
-                      firstDate: DateTime(2024),
+                      firstDate: DateTime(2020),
                       lastDate: DateTime.now(),
                       customModePickerIcon: const Icon(
                         Icons.arrow_drop_down,
