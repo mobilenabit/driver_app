@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: Container(
           color: Colors.transparent,
-          padding: EdgeInsets.all(5),
+          padding: const EdgeInsets.all(2),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -24,13 +24,22 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
   }
 
   // Validate the scanned QR code
+
   bool isValidQrCode(String code) {
-    return code.startsWith('000201') &&
+    // Format 1
+    bool format1 = code.startsWith('000201') &&
         code.contains('A000000727') &&
         code.contains('QRIBFTTA') &&
         code.contains('5802VN') &&
         code.contains('5303704') &&
         code.contains('0208QRIBFTTA');
+
+    // Format 2
+    bool format2 = code.contains('00020101021') &&
+        code.contains('53037045') &&
+        code.contains('802VN59');
+
+    return format1 || format2;
   }
 
   // Show alert if QR code is not valid
@@ -223,8 +232,7 @@ class CustomAlertDialog extends StatelessWidget {
           color: Colors.transparent,
           child: Container(
             width: size.width * 0.9,
-            height: size.height * 0.14,
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10.0),
