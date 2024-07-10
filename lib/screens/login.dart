@@ -291,7 +291,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (value == null || value.isEmpty) {
                                   return "Số điện thoại không được để trống.";
                                 }
-
                                 return null;
                               },
                               keyboardType: TextInputType.text,

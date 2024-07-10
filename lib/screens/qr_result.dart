@@ -1,15 +1,12 @@
-import 'package:driver_app/screens/scan_qr.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class QrResultScreen extends StatefulWidget {
   final String code;
-  // final Function() closeScreen;
   final Map<String, dynamic>? userData;
 
   const QrResultScreen(
       {super.key,
-      // required this.closeScreen,
       required this.code,
       required this.userData});
 
@@ -48,7 +45,6 @@ class _QrResultScreenState extends State<QrResultScreen> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
-        // backgroundColor: const Color.fromRGBO(255, 252, 245, 1),
         appBar: AppBar(
           backgroundColor: Colors.white,
           leading: IconButton(
@@ -108,7 +104,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 15),
+                        padding: EdgeInsets.symmetric(vertical: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -131,7 +127,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                           ],
                         ),
                       ),
-                      Padding(
+                      const Padding(
                         padding: EdgeInsets.only(bottom: 15),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -155,7 +151,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                           ],
                         ),
                       ),
-                      Padding(
+                     const  Padding(
                         padding: EdgeInsets.only(bottom: 15),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -180,7 +176,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(bottom: 15),
+                        padding: const EdgeInsets.only(bottom: 15),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -204,7 +200,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(bottom: 15),
+                        padding: const EdgeInsets.only(bottom: 15),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -240,7 +236,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                           ),
                           Text(
                             '${DateFormat('dd/MM/yyyy').format(DateTime.now())}',
-                            style: TextStyle(
+                            style:const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                               color: Color.fromRGBO(49, 52, 66, 1),

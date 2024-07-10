@@ -10,6 +10,7 @@ import "package:flutter/material.dart";
 
 import "package:intl/intl.dart";
 
+// ignore: must_be_immutable
 class StatisticsScreen extends StatefulWidget {
   final Map<String, dynamic>? userData;
   String selectedLicensePlate;
@@ -136,22 +137,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     }
   }
 
-  // search
-  // void _filterLicensePlates() {
-  //   final query = _searchController.text.toLowerCase();
-  //   setState(() {
-  //     _filteredLicensePlates = _licensePlateData.where((plate) {
-  //       final plateNumber = plate['plateNumber']!.toLowerCase();
-  //       return plateNumber.contains(query);
-  //     }).toList();
-  //   });
-  // }
-
   @override
   void initState() {
     super.initState();
     _fetchLicensePlates();
-    //_searchController.addListener(_filterLicensePlates);
   }
 
   @override
@@ -173,7 +162,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           expand: false,
           initialChildSize: 0.6,
           maxChildSize: 0.6,
-          minChildSize: 0.2,
+          minChildSize: 0.3,
           builder: (_, controller) {
             return Container(
               decoration: const BoxDecoration(
@@ -194,7 +183,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     backgroundColor: Colors.transparent,
                     leading: IconButton(
                       padding: const EdgeInsets.all(0),
-                      icon: Icon(Icons.arrow_back_ios),
+                      icon: const Icon(Icons.arrow_back_ios),
                       onPressed: () {
                         Navigator.pop(context, {});
                       },
@@ -228,19 +217,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     },
                     decoration: InputDecoration(
                       hintText: "Tìm kiếm",
-                      hintStyle: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFFA7ABC3)),
-                      prefixIcon: Container(
-                        width: 24,
-                        height: 24,
-                        alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.all(15),
-                        child: SvgPicture.asset(
-                          "assets/icons/search.svg",
-                        ),
-                      ),
+                      hintStyle: const TextStyle(fontWeight: FontWeight.w400),
+                      prefixIcon: const Icon(Icons.search),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 20,
                         vertical: 10,
@@ -343,8 +321,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   SizedBox(height: size.height * 0.03),
                   TextButton(
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.white),
-                      shape: MaterialStateProperty.all(
+                      backgroundColor: WidgetStateProperty.all(Colors.white),
+                      shape: WidgetStateProperty.all(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -375,7 +353,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                 chosenIndex == null
                                     ? Text(
                                         widget.selectedLicensePlate,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w500,
                                           color: Color(0xFF82869E),
@@ -441,22 +419,22 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             DropdownMenu(
                               textStyle: const TextStyle(
                                 fontWeight: FontWeight.w500,
-                                fontSize: 16,
+                                fontSize: 15,
                               ),
                               selectedTrailingIcon:
                                   const Icon(Icons.expand_less),
                               trailingIcon: const Icon(Icons.expand_more),
                               menuStyle: MenuStyle(
                                 backgroundColor:
-                                    const MaterialStatePropertyAll<Color>(
+                                    const WidgetStatePropertyAll<Color>(
                                         Colors.white),
                                 surfaceTintColor:
-                                    const MaterialStatePropertyAll(
-                                        Colors.white),
-                                shape: MaterialStatePropertyAll(
-                                    RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10))),
+                                    const WidgetStatePropertyAll(Colors.white),
+                                shape: WidgetStatePropertyAll(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
                               ),
                               inputDecorationTheme: const InputDecorationTheme(
                                 contentPadding: EdgeInsets.symmetric(

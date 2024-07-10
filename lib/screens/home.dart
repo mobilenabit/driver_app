@@ -1,10 +1,11 @@
 import 'package:driver_app/screens/history.dart';
+import 'package:driver_app/screens/test.dart';
+import 'package:driver_app/screens/test1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:driver_app/screens/info.dart';
 import 'package:driver_app/screens/settings.dart';
-import 'package:get/get.dart';
 
 import '../core/api_client.dart';
 import '../core/secure_store.dart';
@@ -53,13 +54,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     userData: snapshot.data,
                     selectedLicensePlate: widget.selectedLicensePlate,
                   ),
-                  HistoryScreen(
+                Test1(
                       selectedLicensePlate: widget.selectedLicensePlate),
                   SettingsScreen(userData: snapshot.data),
                 ][currentPageIndex],
               ),
-              if (currentPageIndex !=
-                  1) // show bottom bar not in history screen
+              if (currentPageIndex != 1)
                 Positioned(
                   bottom: size.height * 0.06,
                   left: 16,
@@ -103,14 +103,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildNavItem(
-    int index, String iconPath, String selectedIconPath, String label) {
+      int index, String iconPath, String selectedIconPath, String label) {
     bool isSelected = currentPageIndex == index;
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          setState(() {
-            currentPageIndex = index;
-          });
+          setState(
+            () {
+              currentPageIndex = index;
+            },
+          );
         },
         child: Column(
           mainAxisSize: MainAxisSize.min,

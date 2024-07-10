@@ -105,7 +105,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          automaticallyImplyLeading: false, // Remove the back button
+          automaticallyImplyLeading: false, 
           title: const Text(
             'Chọn biển số xe',
             style: TextStyle(

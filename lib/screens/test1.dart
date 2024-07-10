@@ -1,21 +1,18 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:driver_app/screens/home.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import "package:calendar_date_picker2/calendar_date_picker2.dart";
 
-class HistoryScreen extends StatefulWidget {
+class Test1 extends StatefulWidget {
   final String selectedLicensePlate;
-  const HistoryScreen({super.key, required this.selectedLicensePlate});
+  const Test1({super.key, required this.selectedLicensePlate});
 
   @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
+  State<Test1> createState() => _Test1State();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> {
+class _Test1State extends State<Test1> {
   late final List<History1> _items;
 
   @override
@@ -84,12 +81,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          child: Container(
+          child: SizedBox(
             width: MediaQuery.sizeOf(context).width * 1,
             height: MediaQuery.sizeOf(context).height * 0.4,
             child: Column(
               children: [
                 Expanded(
+                  flex: 3,
                   child: CalendarDatePicker2(
                     config: CalendarDatePicker2Config(
                       calendarType: CalendarDatePicker2Type.single,
@@ -173,10 +171,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }).toList();
   }
 
+  // Group items by date
+  Map<String, List<History1>> get _groupedItems {
+    final Map<String, List<History1>> groupedItems = {};
+    for (final item in _filteredItems) {
+      if (!groupedItems.containsKey(item.date)) {
+        groupedItems[item.date] = [];
+      }
+      groupedItems[item.date]!.add(item);
+    }
+    return groupedItems;
+  }
+
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: const Color.fromRGBO(255, 252, 245, 1),
       appBar: AppBar(
@@ -218,207 +226,219 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
           // Pick date
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 12),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
               children: [
-                TextButton(
-                  onPressed: () => _selectDate(context, true),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(
-                        color: const Color.fromRGBO(255, 199, 9, 1),
+                Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    onPressed: () => _selectDate(context, true),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                          color: const Color.fromRGBO(255, 199, 9, 1),
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: MediaQuery.sizeOf(context).width * 0.02,
-                                  top: MediaQuery.sizeOf(context).width * 0.02,
-                                  bottom:
-                                      MediaQuery.sizeOf(context).width * 0.005),
-                              child: Text(
-                                'Từ ngày',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color.fromRGBO(244, 129, 32, 1),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: MediaQuery.sizeOf(context).width *
+                                          0.02,
+                                      top: MediaQuery.sizeOf(context).width *
+                                          0.02,
+                                      bottom: MediaQuery.sizeOf(context).width *
+                                          0.005),
+                                  child: const Text(
+                                    'Từ ngày',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Color.fromRGBO(244, 129, 32, 1),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: MediaQuery.sizeOf(context).width *
+                                          0.02,
+                                      bottom: MediaQuery.sizeOf(context).width *
+                                          0.02),
+                                  child: Text(
+                                    DateFormat('dd/MM/yyyy').format(_startDate),
+                                    style: const TextStyle(
+                                        fontSize: 15, color: Colors.black),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Padding(
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
                               padding: EdgeInsets.only(
-                                  left: MediaQuery.sizeOf(context).width * 0.02,
-                                  bottom:
+                                  right:
                                       MediaQuery.sizeOf(context).width * 0.02),
-                              child: Text(
-                                DateFormat('dd/MM/yyyy').format(_startDate),
-                                style: const TextStyle(
-                                    fontSize: 15, color: Colors.black),
-                              ),
+                              child: SvgPicture.asset(
+                                  'assets/icons/calender.svg',
+                                  height: 20),
                             ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: MediaQuery.sizeOf(context).width * 0.1,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              right: MediaQuery.sizeOf(context).width * 0.02),
-                          child: SvgPicture.asset('assets/icons/calender.svg',
-                              height: 20),
-                        )
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                TextButton(
-                  onPressed: () => _selectDate(context, false),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(
-                        color: const Color.fromRGBO(255, 199, 9, 1),
+                Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    onPressed: () => _selectDate(context, false),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                          color: const Color.fromRGBO(255, 199, 9, 1),
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: MediaQuery.sizeOf(context).width * 0.02,
-                                  top: MediaQuery.sizeOf(context).width * 0.02,
-                                  bottom:
-                                      MediaQuery.sizeOf(context).width * 0.005),
-                              child: Text(
-                                'Đến ngày',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color.fromRGBO(244, 129, 32, 1),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: MediaQuery.sizeOf(context).width *
+                                          0.02,
+                                      top: MediaQuery.sizeOf(context).width *
+                                          0.02,
+                                      bottom: MediaQuery.sizeOf(context).width *
+                                          0.005),
+                                  child: const Text(
+                                    'Đến ngày',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Color.fromRGBO(244, 129, 32, 1),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: MediaQuery.sizeOf(context).width *
+                                          0.02,
+                                      bottom: MediaQuery.sizeOf(context).width *
+                                          0.02),
+                                  child: Text(
+                                    DateFormat('dd/MM/yyyy').format(_endDate),
+                                    style: const TextStyle(
+                                        fontSize: 15, color: Colors.black),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: MediaQuery.sizeOf(context).width * 0.02,
-                                  bottom:
-                                      MediaQuery.sizeOf(context).width * 0.02),
-                              child: Text(
-                                DateFormat('dd/MM/yyyy').format(_endDate),
-                                style: const TextStyle(
-                                    fontSize: 15, color: Colors.black),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: size.width * 0.1,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              right: MediaQuery.sizeOf(context).width * 0.02),
-                          child: SvgPicture.asset(
-                            'assets/icons/calender.svg',
-                            height: 20,
                           ),
-                        )
-                      ],
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  right:
+                                      MediaQuery.sizeOf(context).width * 0.02),
+                              child: SvgPicture.asset(
+                                  'assets/icons/calender.svg',
+                                  height: 20),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
           ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+          ),
 
-          // List of history
+          // List items after filter
           Expanded(
             child: ListView.builder(
-              itemCount: _filteredItems.length,
+              itemCount: _groupedItems.length,
               itemBuilder: (context, index) {
-                final item = _filteredItems[index];
+                String date = _groupedItems.keys.elementAt(index);
+                List<History1> items = _groupedItems[date]!;
 
-                //check date is similar to show one time
-                bool showHeader = true;
-                if (index > 0 && _filteredItems[index - 1].date == item.date) {
-                  showHeader = false;
-                }
-
-                return Container(
-                  margin: const EdgeInsets.symmetric(
-                    vertical: 12.0,
-                    horizontal: 16.0,
-                  ),
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Date header
-                      if (showHeader)
-                        Container(
-                          height: 35,
-                          width: size.width * 1,
-                          decoration: const BoxDecoration(
-                            color: Color.fromRGBO(255, 247, 172, 1),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(5),
-                              topRight: Radius.circular(5),
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 12),
-                                child: Text(
-                                  item.date,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
+                      // header
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        width: MediaQuery.sizeOf(context).width * 1,
+                        decoration: const BoxDecoration(
+                          color: Color.fromRGBO(255, 247, 172, 1),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(5),
+                            topRight: Radius.circular(5),
                           ),
                         ),
-
-                      // Content
-                      Container(
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(5),
-                            bottomRight: Radius.circular(5),
-                          ),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          boxShadow: [
-                            BoxShadow(
-                              offset: Offset(0, 1),
-                              blurRadius: 8,
-                              color: Color.fromRGBO(0, 0, 0, 0.08),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              date,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ],
                         ),
-                        child: ListTile(
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 10),
-                                child: Row(
+                      ),
+
+                      // content
+                      Column(
+                        children: items.map((item) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 10),
+                            decoration: const BoxDecoration(
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(5),
+                                bottomRight: Radius.circular(5),
+                              ),
+                              color: Color.fromARGB(255, 255, 255, 255),
+                              boxShadow: [
+                                BoxShadow(
+                                  offset: Offset(0, 1),
+                                  blurRadius: 8,
+                                  color: Color.fromRGBO(0, 0, 0, 0.08),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
@@ -451,9 +471,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     ),
                                   ],
                                 ),
-                              ),
-                              Padding(
-                                  padding: EdgeInsets.only(bottom: 10),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 5),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -478,19 +497,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                       ),
                                     ],
                                   ),
-                                  ),
-                              Text(
-                                'Biển số xe: ${item.numberLicense}',
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w300,
-                                  color: Color.fromRGBO(130, 134, 158, 1),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
+                                Text(
+                                  'Biển số xe: ${item.numberLicense}',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w300,
+                                    color: Color.fromRGBO(130, 134, 158, 1),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ],
                   ),
                 );
@@ -506,11 +526,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
 class History1 {
   final String numberLicense;
   final String fuel;
-  final double money;
   final String address;
   final double amount;
   final String hours;
   final String date;
+  final double money;
 
   History1({
     required this.numberLicense,
