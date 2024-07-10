@@ -228,7 +228,6 @@ class _Test1State extends State<Test1> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 12),
             child: Row(
-
               children: [
                 Expanded(
                   flex: 1,
@@ -246,7 +245,6 @@ class _Test1State extends State<Test1> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Expanded(
-                            flex: 3,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,16 +280,12 @@ class _Test1State extends State<Test1> {
                               ],
                             ),
                           ),
-                          Expanded(
-                            flex: 1,
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                  right:
-                                      MediaQuery.sizeOf(context).width * 0.02),
-                              child: SvgPicture.asset(
-                                  'assets/icons/calender.svg',
-                                  height: 20),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              right: MediaQuery.sizeOf(context).width * 0.02,
                             ),
+                            child: SvgPicture.asset('assets/icons/calender.svg',
+                                height: 20),
                           ),
                         ],
                       ),
@@ -314,7 +308,6 @@ class _Test1State extends State<Test1> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Expanded(
-                            flex: 3,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,16 +343,12 @@ class _Test1State extends State<Test1> {
                               ],
                             ),
                           ),
-                          Expanded(
-                            flex: 1,
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                  right:
-                                      MediaQuery.sizeOf(context).width * 0.02),
-                              child: SvgPicture.asset(
-                                  'assets/icons/calender.svg',
-                                  height: 20),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              right: MediaQuery.sizeOf(context).width * 0.02,
                             ),
+                            child: SvgPicture.asset('assets/icons/calender.svg',
+                                height: 20),
                           ),
                         ],
                       ),
@@ -380,7 +369,6 @@ class _Test1State extends State<Test1> {
               itemBuilder: (context, index) {
                 String date = _groupedItems.keys.elementAt(index);
                 List<History1> items = _groupedItems[date]!;
-
                 return Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
@@ -389,8 +377,8 @@ class _Test1State extends State<Test1> {
                     children: [
                       // header
                       Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
                         width: MediaQuery.sizeOf(context).width * 1,
                         decoration: const BoxDecoration(
                           color: Color.fromRGBO(255, 247, 172, 1),
@@ -417,99 +405,116 @@ class _Test1State extends State<Test1> {
 
                       // content
                       Column(
-                        children: items.map((item) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 10),
-                            decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(5),
-                                bottomRight: Radius.circular(5),
+                        children: items.map(
+                          (item) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 10),
+                              decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(5),
+                                  bottomRight: Radius.circular(5),
+                                ),
+                                color: Color.fromARGB(255, 255, 255, 255),
+                                boxShadow: [
+                                  BoxShadow(
+                                    offset: Offset(0, 1),
+                                    blurRadius: 8,
+                                    color: Color.fromRGBO(0, 0, 0, 0.08),
+                                  ),
+                                ],
                               ),
-                              color: Color.fromARGB(255, 255, 255, 255),
-                              boxShadow: [
-                                BoxShadow(
-                                  offset: Offset(0, 1),
-                                  blurRadius: 8,
-                                  color: Color.fromRGBO(0, 0, 0, 0.08),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          item.fuel,
-                                          style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w500),
-                                        ),
-                                        const Text(' - '),
-                                        Text(
-                                          '${currencyFormat.format(item.amount)}lít',
-                                          style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w500),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      '${currencyFormat.format(item.money)}₫',
-                                      style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          color:
-                                              Color.fromRGBO(244, 129, 32, 1)),
-                                    ),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 5),
-                                  child: Row(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        item.address,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w300,
-                                          color:
-                                              Color.fromRGBO(130, 134, 158, 1),
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              item.fuel,
+                                              style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                            const Text(' - '),
+                                            Text(
+                                              '${currencyFormat.format(item.amount)}lít',
+                                              style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      Text(
-                                        item.hours,
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          color:
-                                              Color.fromRGBO(130, 134, 158, 1),
-                                          fontWeight: FontWeight.w300,
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 12,
+                                        ),
+                                        child: Text(
+                                          '${currencyFormat.format(item.money)}₫',
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color:
+                                                Color.fromRGBO(244, 129, 32, 1),
+                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                                Text(
-                                  'Biển số xe: ${item.numberLicense}',
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w300,
-                                    color: Color.fromRGBO(130, 134, 158, 1),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 5),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            item.address,
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w300,
+                                              color: Color.fromRGBO(
+                                                  130, 134, 158, 1),
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 12),
+                                          child: Text(
+                                            item.hours,
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              color: Color.fromRGBO(
+                                                  130, 134, 158, 1),
+                                              fontWeight: FontWeight.w300,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
+                                  Text(
+                                    'Biển số xe: ${item.numberLicense}',
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w300,
+                                      color: Color.fromRGBO(130, 134, 158, 1),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ).toList(),
                       ),
                     ],
                   ),

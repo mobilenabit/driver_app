@@ -1,5 +1,3 @@
-import 'package:driver_app/screens/history.dart';
-import 'package:driver_app/screens/test.dart';
 import 'package:driver_app/screens/test1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -54,8 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     userData: snapshot.data,
                     selectedLicensePlate: widget.selectedLicensePlate,
                   ),
-                Test1(
-                      selectedLicensePlate: widget.selectedLicensePlate),
+                  Test1(selectedLicensePlate: widget.selectedLicensePlate),
                   SettingsScreen(userData: snapshot.data),
                 ][currentPageIndex],
               ),
@@ -108,28 +105,30 @@ class _HomeScreenState extends State<HomeScreen> {
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          setState(
-            () {
-              currentPageIndex = index;
-            },
-          );
+          setState(() {
+            currentPageIndex = index;
+          });
         },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            isSelected
-                ? SvgPicture.asset(selectedIconPath)
-                : SvgPicture.asset(iconPath),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.black : Colors.grey,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                fontSize: 12,
+        child: Container(
+          color: Colors.transparent,
+          padding: EdgeInsets.all(5),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              isSelected
+                  ? SvgPicture.asset(selectedIconPath)
+                  : SvgPicture.asset(iconPath),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isSelected ? Colors.black : Colors.grey,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  fontSize: 12,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
