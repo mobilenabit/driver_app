@@ -40,10 +40,16 @@ class SettingsScreen extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0xFFFFC923),
-            Color(0xFFFFF2CC),
-            Color(0xFFFFFFFF),
-            Color(0xFFFFFFFF),
+            Color(0xFF4e86af),
+            Color(0xFFbcd1e1),
+            Colors.white,
+            Colors.white,
+          ],
+          stops: [
+            0.01 / 100,
+            72.27 / 100,
+            100.79 / 100,
+            100.79 / 100,
           ],
         ),
       ),
@@ -154,7 +160,7 @@ class SettingsScreen extends StatelessWidget {
                           ),
                         ),
                         leading: SvgPicture.asset(
-                            "assets/icons/change_password.svg"),
+                            "assets/icons/changed_password.svg"),
                         trailing: Icon(
                           Icons.arrow_forward_ios_rounded,
                           weight: 100,

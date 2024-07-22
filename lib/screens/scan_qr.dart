@@ -1,3 +1,4 @@
+import 'package:driver_app/components/label_button.dart';
 import 'package:driver_app/screens/qr_result.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -24,22 +25,21 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
   }
 
   // Validate the scanned QR code
-
   bool isValidQrCode(String code) {
-    // Format 1
-    bool format1 = code.startsWith('000201') &&
+    // vietQr
+    bool vietQr = code.startsWith('000201') &&
         code.contains('A000000727') &&
         code.contains('QRIBFTTA') &&
         code.contains('5802VN') &&
         code.contains('5303704') &&
         code.contains('0208QRIBFTTA');
 
-    // Format 2
-    bool format2 = code.contains('00020101021') &&
+    // Vnpay
+    bool vnPay = code.contains('00020101021') &&
         code.contains('53037045') &&
         code.contains('802VN59');
 
-    return format1 || format2;
+    return vietQr || vnPay;
   }
 
   // Show alert if QR code is not valid
@@ -52,14 +52,19 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     );
 
     // Automatically dismiss the alert after 1 seconds
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) {
-        Navigator.of(context).pop();
-        setState(() {
-          isScanCompleted = false;
-        });
-      }
-    });
+    Future.delayed(
+      const Duration(seconds: 1),
+      () {
+        if (mounted) {
+          Navigator.of(context).pop();
+          setState(
+            () {
+              isScanCompleted = false;
+            },
+          );
+        }
+      },
+    );
   }
 
   @override
@@ -95,6 +100,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
               setState(() {
                 isFrontCamera = !isFrontCamera;
               });
+
               cameraController.switchCamera();
             },
             icon: Icon(
@@ -106,18 +112,27 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
       ),
       body: Container(
         decoration: const BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-              Color(0xFFFFFFFF),
-              Color(0xFFFFF7DD),
-              Color(0xFFFFFBF0),
-            ])),
+          gradient: LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [
+              Color(0xFF4e86af),
+              Color(0xFFbcd1e1),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [
+              0.01 / 100,
+              72.27 / 100,
+              100.79 / 100,
+              100.79 / 100,
+            ],
+          ),
+        ),
         child: Column(
           children: [
             Expanded(
-              flex: 3,
+              flex: 2,
               child: Stack(
                 children: [
                   MobileScanner(
@@ -170,45 +185,48 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
               ),
             ),
             Expanded(
+              flex: 1,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(
-                        left: size.width * 0.08, bottom: size.height * 0.02),
+                    padding: EdgeInsets.only(bottom: size.height * 0.03),
                     child: const Text(
                       'Chấp nhận mã QR:',
                       style:
                           TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  const Wrap(
+                    alignment: WrapAlignment.center,
+                    direction: Axis.horizontal,
+                    spacing: 40,
                     children: [
-                      SvgPicture.asset('assets/icons/vietqr.svg'),
-                      SvgPicture.asset('assets/icons/vnpay.svg'),
-                      SvgPicture.asset('assets/icons/napas.svg'),
+                      Image(
+                        image: AssetImage("assets/images/vietqr.png"),
+                        height: 20,
+                      ),
+                      Image(
+                        image: AssetImage("assets/images/vnpay.png"),
+                        height: 20,
+                      ),
+                      Image(
+                        image: AssetImage("assets/images/napas.png"),
+                        height: 20,
+                      ),
                     ],
                   )
                 ],
               ),
             ),
-            IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: SvgPicture.asset(
-                'assets/icons/cancel.svg',
-                width: 75,
-                height: 75,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(bottom: size.height * 0.03),
-              child: const Text(
-                'Hủy quét mã',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            Center(
+              child: LabelButton(
+                label: "Hủy quét mã",
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
             ),
           ],
@@ -219,7 +237,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
 }
 
 class CustomAlertDialog extends StatelessWidget {
-  const CustomAlertDialog({Key? key}) : super(key: key);
+  const CustomAlertDialog({super.key});
 
   @override
   Widget build(BuildContext context) {

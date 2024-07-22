@@ -44,6 +44,7 @@ class _OtpScreenState extends State<OtpScreen> {
           .getOtpAnonymous(widget.userData["data"]["username"]);
     }
     if (!otp["success"]) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Có lỗi trong lúc gửi yêu cầu tạo OTP."),
         backgroundColor: Colors.red,
@@ -54,12 +55,16 @@ class _OtpScreenState extends State<OtpScreen> {
   void _handleResetPassword(Map<String, dynamic> userData, String newPassword,
       String verificationCode) async {
     final res = await ApiClient().verifyOtp(userData["data"], verificationCode);
-    print(res.toString());
+    if (kDebugMode) {
+      print(res.toString());
+    }
 
     if (context.mounted) {
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
       if (res["success"]) {
         Navigator.pushAndRemoveUntil(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => ChangePasswordScreen(
@@ -70,6 +75,7 @@ class _OtpScreenState extends State<OtpScreen> {
           (route) => false,
         );
       } else {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Mã OTP không chính xác!"),
@@ -87,10 +93,13 @@ class _OtpScreenState extends State<OtpScreen> {
         userData["data"], oldPassword, newPassword, verificationCode);
 
     if (context.mounted) {
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
       if (!res["success"]) {
+        // ignore: use_build_context_synchronously
         Navigator.pop(context);
         SystemChannels.textInput.invokeMethod("TextInput.hide");
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Thay đổi mật khẩu thất bại!"),
@@ -100,6 +109,7 @@ class _OtpScreenState extends State<OtpScreen> {
       } else {
         showDialog(
           barrierDismissible: false,
+          // ignore: use_build_context_synchronously
           context: context,
           builder: (BuildContext context) {
             return Dialog(

@@ -2,13 +2,15 @@ import 'package:driver_app/screens/gas_station.dart';
 import 'package:driver_app/screens/promotion.dart';
 import 'package:driver_app/screens/scan_qr.dart';
 import 'package:driver_app/screens/statistics.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../components/user_info_card.dart';
-import '../core/api_client.dart';
 
 class InfoScreen extends StatefulWidget {
   final String selectedLicensePlate;
@@ -39,31 +41,31 @@ class _InfoScreenState extends State<InfoScreen> {
   @override
   void initState() {
     super.initState();
-  //  _pumpData = ApiClient().getPumps();
+    //  _pumpData = ApiClient().getPumps();
   }
 
   List<Mainproperty> _item(BuildContext context) {
     return [
       Mainproperty(
         text: 'Quét Qr',
-        svgAsset: 'assets/icons/qr_code.svg',
+        svgAsset: 'assets/icons/qrCode.png',
         screenBuilder: (context) => ScanQrScreen(
           userData: widget.userData,
         ),
       ),
       Mainproperty(
         text: 'CHXD',
-        svgAsset: 'assets/icons/map.svg',
+        svgAsset: 'assets/icons/maps.png',
         screenBuilder: (context) => const GasStationScreen(),
       ),
       Mainproperty(
         text: 'Thông báo',
-        svgAsset: 'assets/icons/notifications.svg',
+        svgAsset: 'assets/icons/notifications.png',
         screenBuilder: (context) => const PromotionScreen(),
       ),
       Mainproperty(
         text: 'Thống kê',
-        svgAsset: 'assets/icons/thống_kê.svg',
+        svgAsset: 'assets/icons/line_chart.png',
         screenBuilder: (context) => StatisticsScreen(
           selectedLicensePlate: widget.selectedLicensePlate,
           userData: widget.userData,
@@ -83,12 +85,17 @@ class _InfoScreenState extends State<InfoScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFFFFC923),
-              Color(0xFFFFF2CC),
-              Color(0xFFFFFFFF),
-              Color(0xFFFFFFFF),
+              Color(0xFF4e86af),
+              Color(0xFFbcd1e1),
+              Colors.white,
+              Colors.white,
             ],
-            stops: [0.01 / 100, 72.27 / 100, 100.79 / 100, 100.79 / 100],
+            stops: [
+              0.01 / 100,
+              72.27 / 100,
+              100.79 / 100,
+              100.79 / 100,
+            ],
           ),
         ),
         child: Align(
@@ -129,7 +136,8 @@ class _InfoScreenState extends State<InfoScreen> {
                     shrinkWrap:
                         true, // This is needed to avoid layout issues with GridView inside SingleChildScrollView
                     itemCount: _item(context).length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       mainAxisSpacing: 0,
                       crossAxisSpacing: 0,
@@ -164,7 +172,9 @@ class _InfoScreenState extends State<InfoScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                SvgPicture.asset(item.svgAsset),
+                                Image.asset(
+                                  item.svgAsset,
+                                ),
                                 Text(item.text),
                               ],
                             ),

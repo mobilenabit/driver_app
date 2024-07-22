@@ -1,4 +1,4 @@
-import 'package:driver_app/screens/test1.dart';
+import 'package:driver_app/screens/history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -23,9 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    super.initState();
-
     _userData = ApiClient().getUserData();
+    super.initState();
   }
 
   @override
@@ -47,12 +46,13 @@ class _HomeScreenState extends State<HomeScreen> {
           body: Stack(
             children: [
               Positioned.fill(
-                child: <Widget>[
+                child: [
                   InfoScreen(
                     userData: snapshot.data,
                     selectedLicensePlate: widget.selectedLicensePlate,
                   ),
-                  Test1(selectedLicensePlate: widget.selectedLicensePlate),
+                  HistoryScreen(
+                      selectedLicensePlate: widget.selectedLicensePlate),
                   SettingsScreen(userData: snapshot.data),
                 ][currentPageIndex],
               ),
@@ -89,11 +89,11 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildNavItem(0, 'assets/icons/home.svg',
-              'assets/icons/home_yellow.svg', 'Trang chủ'),
+              'assets/icons/home_fill.svg', 'Trang chủ'),
           _buildNavItem(1, 'assets/icons/history.svg',
               'assets/icons/history_yellow.svg', 'Lịch sử'),
           _buildNavItem(2, 'assets/icons/settings.svg',
-              'assets/icons/settings_filled.svg', 'Cài đặt'),
+              'assets/icons/setting_fill.svg', 'Cài đặt'),
         ],
       ),
     );

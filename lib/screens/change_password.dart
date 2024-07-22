@@ -117,16 +117,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final validatePassword = await ApiClient()
         .verifyOldPassword(widget.userData["data"], _oldPassword);
     print(validatePassword.toString());
+    // ignore: use_build_context_synchronously
     Navigator.pop(context);
 
     if (validatePassword["error"] == "Error_PASSWORD_IDENTICAL" ||
         validatePassword["error"] == null) {
       if (_formKey.currentState!.validate()) {
         final otp = await ApiClient().getOtp();
+        // ignore: use_build_context_synchronously
         Navigator.pop(context);
 
         if (otp is String) {
           FocusManager.instance.primaryFocus?.unfocus();
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Có lỗi trong lúc gửi yêu cầu tạo OTP."),
             backgroundColor: Colors.red,
@@ -137,6 +140,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
         if (otp["success"]) {
           Navigator.push(
+            // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(
               builder: (context) => OtpScreen(
@@ -148,6 +152,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
           );
         } else {
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Có lỗi trong lúc gửi yêu cầu tạo OTP."),
             backgroundColor: Colors.red,
@@ -171,10 +176,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
       final res = await ApiClient().resetPassword(widget.userData["data"],
           _newPassword, widget.userData["data"]["otp"]);
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
 
       if (res["success"]) {
         Navigator.pushAndRemoveUntil(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => const LoginScreen(),

@@ -62,13 +62,19 @@ class _QrResultScreenState extends State<QrResultScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
             colors: [
-              Color.fromRGBO(255, 252, 245, 1),
-              Color.fromRGBO(255, 244, 219, 1),
+              Color(0xFFbcd1e1),
+              Colors.white,
+              Colors.white,
             ],
-            stops: [29 / 100, 100 / 100],
+            stops: [
+              0.01 / 100,
+              72.27 / 100,
+              100.79 / 100,
+              100.79 / 100,
+            ],
           ),
         ),
         child: Center(
@@ -101,7 +107,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                   children: [
                     const Padding(
                       padding: EdgeInsets.symmetric(
-                        vertical: 15,
+                        vertical: 20,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

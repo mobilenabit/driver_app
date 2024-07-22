@@ -1,13 +1,10 @@
 import "dart:async";
 import "dart:convert";
-
 import "package:driver_app/core/api_client.dart";
 import "package:driver_app/core/secure_store.dart";
-import "package:flutter_svg/svg.dart";
 import 'package:http/http.dart' as http;
 import "package:driver_app/screens/chart/bar_graph.dart";
 import "package:flutter/material.dart";
-
 import "package:intl/intl.dart";
 
 // ignore: must_be_immutable
@@ -199,7 +196,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     onChanged: (value) {
                       setState(() {
                         searchText = value;
-
                         filteredData = {};
                         filteredData?["data"] = _licensePlateData
                             .where((plate) => plate["plateNumber"]!

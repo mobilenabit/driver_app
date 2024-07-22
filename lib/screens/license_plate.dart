@@ -2,7 +2,7 @@ import 'package:driver_app/core/api_client.dart';
 import 'package:driver_app/core/secure_store.dart';
 import 'package:driver_app/screens/home.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -68,11 +68,14 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
   void _filterLicensePlates() {
     final query = _searchController.text.toLowerCase();
     setState(() {
-      _filteredLicensePlates = _licensePlateData.where((plate) {
+      _filteredLicensePlates = _licensePlateData.where(
+        (plate) {
         final plateNumber = plate['plateNumber']!.toLowerCase();
         return plateNumber.contains(query);
-      }).toList();
-    });
+      },
+      ).toList();
+    },
+    );
   }
 
   @override
@@ -90,7 +93,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -100,10 +100,10 @@ class UserInfoCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFF7DF),
+                      color: const Color(0xFFbcd1e1),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: const Color(0xFFFFDD7B),
+                        color: const Color(0xFF4e86af),
                       ),
                     ),
                     child: Center(

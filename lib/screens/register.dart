@@ -1,122 +1,38 @@
-import "package:driver_app/screens/license_plate.dart";
-import "package:driver_app/screens/register.dart";
 import "package:flutter/material.dart";
-import "package:flutter_svg/flutter_svg.dart";
+import "package:flutter_svg/svg.dart";
 
-import "../../core/api_client.dart";
-import "../../core/secure_store.dart";
-import "home.dart";
+import "login.dart";
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-
+class RegisterScreen extends StatefulWidget {
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
+  var _fullName = "";
+  var _dateOfBirth = DateTime.now();
+  var _phoneNumber = "";
+  var _refCode = "";
   var _username = "";
   var _password = "";
-  var _lastUserName = "";
-  var _lastUserAvatar = "";
-  var _lastUserPhoneNumber = "";
+  var _passwordConfirmation = "";
+  var _passwordVisible = false;
 
   final _formKey = GlobalKey<FormState>();
   final _focusNode = FocusNode();
-  final _apiClient = ApiClient();
-
-  final usernameFocus = FocusNode();
-  final passwordFocus = FocusNode();
-
-  var _passwordVisible = false;
-  var _saveAccount = false;
-
-  void _readLastLoggedInData() async {
-    final name =
-        await SecureStorage().readSecureData("last_logged_in_user_name");
-    final avatar =
-        await SecureStorage().readSecureData("last_logged_in_user_avatar");
-    final number = await SecureStorage()
-        .readSecureData("last_logged_in_user_phone_number");
-    final username =
-        await SecureStorage().readSecureData("last_logged_in_username");
-
-    if (name != null && number != null && username != null && mounted) {
-      setState(() {
-        _lastUserName = name;
-        _lastUserAvatar = avatar ?? "";
-        _lastUserPhoneNumber = number;
-        _username = username;
-      });
-    }
-  }
-
-  bool _checkLastLoggedInData() {
-    return _lastUserName.isNotEmpty && _lastUserPhoneNumber.isNotEmpty;
-  }
-
-  Future<void> _handleLogin() async {
-    FocusManager.instance.primaryFocus?.unfocus();
-    if (_formKey.currentState!.validate()) {
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return const Dialog(
-              backgroundColor: Colors.transparent,
-              surfaceTintColor: Colors.transparent,
-              child: Center(
-                widthFactor: 0.5,
-                heightFactor: 0.5,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                  ],
-                ),
-              ),
-            );
-          });
-
-      dynamic res = await _apiClient.login(_username, _password);
-      if (context.mounted) {
-        if (res["error"] != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(res["error_description"]),
-              backgroundColor: Colors.red,
-            ),
-          );
-
-          Navigator.pop(context);
-        } else {
-          await SecureStorage()
-              .writeSecureData("access_token", res["access_token"]);
-          await SecureStorage().writeSecureData("logged_in", "true");
-          await SecureStorage()
-              .writeSecureData("last_logged_in_username", _username);
-
-          Navigator.push(
-            // ignore: use_build_context_synchronously
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return const LicensePlateScreen();
-              },
-            ),
-          );
-        }
-      }
-    }
-  }
 
   @override
   void initState() {
-    super.initState();
-
-    _readLastLoggedInData();
+    _fullName = "";
+    _dateOfBirth = DateTime.now();
+    _phoneNumber = "";
+    _refCode = "";
+    _username = "";
+    _password = "";
+    _passwordConfirmation = "";
     _passwordVisible = false;
-    _saveAccount = false;
+
+    super.initState();
   }
 
   @override
@@ -145,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
           appBar: AppBar(
             automaticallyImplyLeading: false,
             title: const Text(
-              "Đăng nhập",
+              "Đăng ký",
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -165,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Column(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(vertical: 48),
+                        padding: const EdgeInsets.symmetric(vertical: 30),
                         child: Image.asset(
                           "assets/images/logo.png",
                           scale: 3.0,
@@ -177,6 +93,89 @@ class _LoginScreenState extends State<LoginScreen> {
                           key: _formKey,
                           child: Column(
                             children: [
+                              TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Họ và tên không được để trống.";
+                                  }
+
+                                  return null;
+                                },
+                                textInputAction: TextInputAction.next,
+                                decoration: const InputDecoration(
+                                  hintText: "Họ và tên",
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF22689B),
+                                    ),
+                                  ),
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _fullName = value;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 24),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      keyboardType: TextInputType.datetime,
+                                      decoration: const InputDecoration(
+                                        hintText: "Ngày sinh",
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0xFF22689B),
+                                          ),
+                                        ),
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _password = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: TextFormField(
+                                      keyboardType: TextInputType.phone,
+                                      decoration: const InputDecoration(
+                                        hintText: "Số điện thoại",
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0xFF22689B),
+                                          ),
+                                        ),
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _phoneNumber = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 24),
+                              TextFormField(
+                                textInputAction: TextInputAction.next,
+                                decoration: const InputDecoration(
+                                  hintText: "Mã người giới thiệu",
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF22689B),
+                                    ),
+                                  ),
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _refCode = value;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 24),
                               TextFormField(
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -261,34 +260,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Checkbox(
-                                        visualDensity: const VisualDensity(
-                                          horizontal: -4,
-                                        ),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _saveAccount = value!;
-                                          });
-                                        },
-                                        value: _saveAccount,
-                                      ),
-                                      const Text("Lưu tài khoản"),
-                                    ],
-                                  ),
-                                  const Row(
-                                    children: [
-                                      Text("Quên mật khẩu?"),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 24),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
                                   Expanded(
                                     child: Container(
                                       decoration: BoxDecoration(
@@ -312,9 +283,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                           backgroundColor: Colors.transparent,
                                           shadowColor: Colors.transparent,
                                         ),
-                                        onPressed: _handleLogin,
+                                        onPressed: () {},
                                         child: const Text(
-                                          "Đăng nhập",
+                                          "Đăng ký",
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -323,8 +294,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 16),
-                                  Image.asset('assets/icons/ic_faceid.png'),
                                 ],
                               ),
                             ],
@@ -356,26 +325,25 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text("Bạn chưa có tài khoản?"),
+                            const Text("Bạn đã có tài khoản?"),
                             TextButton(
                               style: TextButton.styleFrom(
                                 foregroundColor: const Color(0xFF346890),
                               ),
                               child: const Text(
-                                "Đăng ký",
+                                "Đăng nhập",
                                 style: TextStyle(
                                   decoration: TextDecoration.underline,
                                 ),
                               ),
                               onPressed: () {
                                 Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        RegisterScreen(),
-                                  ),
-                                  (route) => false,
-                                );
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          const LoginScreen(),
+                                    ),
+                                    (route) => false);
                               },
                             )
                           ],
@@ -390,10 +358,5 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ],
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }

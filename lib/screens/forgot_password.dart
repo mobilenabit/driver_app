@@ -38,10 +38,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           );
         });
     final res = await ApiClient().getOtpAnonymous(_phoneNumber);
+    // ignore: use_build_context_synchronously
     Navigator.pop(context);
 
     if (res is String) {
       FocusManager.instance.primaryFocus?.unfocus();
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Có lỗi trong lúc gửi yêu cầu tạo OTP."),
         backgroundColor: Colors.red,
@@ -52,6 +54,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     if (res["success"]) {
       Navigator.push(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(
           builder: (BuildContext context) => OtpScreen(
@@ -66,6 +69,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       );
     } else {
       FocusManager.instance.primaryFocus?.unfocus();
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Có lỗi trong lúc gửi yêu cầu tạo OTP."),
         backgroundColor: Colors.red,
