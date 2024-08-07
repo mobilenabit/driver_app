@@ -164,11 +164,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   void _handleForgotPassword() async {
     if (_formKey.currentState!.validate()) {
-       SecureStorage().deleteSecureData("last_logged_in_user_name");
-       SecureStorage().deleteSecureData("last_logged_in_user_avatar");
-       SecureStorage()
-          .deleteSecureData("last_logged_in_user_phone_number");
-       SecureStorage().deleteSecureData("last_logged_in_username");
+      SecureStorage().deleteSecureData("last_logged_in_user_name");
+      SecureStorage().deleteSecureData("last_logged_in_user_avatar");
+      SecureStorage().deleteSecureData("last_logged_in_user_phone_number");
+      SecureStorage().deleteSecureData("last_logged_in_username");
 
       final res = await ApiClient().resetPassword(widget.userData["data"],
           _newPassword, widget.userData["data"]["otp"]);

@@ -1,20 +1,28 @@
+import "dart:async";
+
 import "package:driver_app/screens/license_plate.dart";
-import "package:driver_app/screens/register.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_svg/flutter_svg.dart";
+import "package:local_auth/local_auth.dart";
+import "package:store_redirect/store_redirect.dart";
 
 import "../../core/api_client.dart";
 import "../../core/secure_store.dart";
 import "home.dart";
+import "register.dart";
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final bool? isLoggedOut;
+  const LoginScreen({super.key, this.isLoggedOut});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  Timer? timer;
+  bool hasUpdate = false;
   var _username = "";
   var _password = "";
   var _lastUserName = "";
@@ -30,6 +38,78 @@ class _LoginScreenState extends State<LoginScreen> {
 
   var _passwordVisible = false;
   var _saveAccount = false;
+
+  bool isBiometricAvailable = false;
+  bool newAvailableUpdate = false;
+  bool isLoggedOut = false;
+  bool biometricSetting = false;
+  bool popOnce = true;
+
+  final LocalAuthentication localAuth = LocalAuthentication();
+
+  void _checkBiometric() async {
+    isBiometricAvailable = await localAuth.canCheckBiometrics;
+
+    List<BiometricType> availableBiometrics =
+        await localAuth.getAvailableBiometrics();
+    if (availableBiometrics.isNotEmpty) {
+      isBiometricAvailable = true;
+    } else {
+      isBiometricAvailable = false;
+    }
+  }
+
+  void _checkBiometricSettings() async {
+    var result = await SecureStorage().readSecureData("save_password");
+    if (result != null) {
+      setState(() {
+        biometricSetting = result == "true";
+      });
+    }
+  }
+
+  void _showUpdatePopUp() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Cập nhật ứng dụng"),
+          content: const Text(
+              "Đã có phiên bản mới của ứng dụng. Vui lòng cập nhật để sử dụng."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                StoreRedirect.redirect();
+                Navigator.pop(context);
+              },
+              child: const Text("Đóng"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _notifyNoBiometric() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Thông báo"),
+          content: const Text(
+              "Thiết bị không hỗ trợ xác thực bằng vân tay hoặc FaceID"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Đóng"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void _readLastLoggedInData() async {
     final name =
@@ -92,18 +172,20 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           await SecureStorage()
               .writeSecureData("access_token", res["access_token"]);
-          await SecureStorage().writeSecureData("logged_in", "true");
+          if (_saveAccount) {
+            await SecureStorage().writeSecureData("logged_in", "true");
+          }
           await SecureStorage()
               .writeSecureData("last_logged_in_username", _username);
 
-          Navigator.push(
-            // ignore: use_build_context_synchronously
+          Navigator.pop(context);
+
+          Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(
-              builder: (context) {
-                return const LicensePlateScreen();
-              },
-            ),
+            MaterialPageRoute(builder: (context) {
+              return const LicensePlateScreen();
+            }),
+            (route) => false,
           );
         }
       }
@@ -112,11 +194,56 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    super.initState();
+    if (widget.isLoggedOut != null) {
+      isLoggedOut = widget.isLoggedOut!;
+    }
 
+    super.initState();
+    _checkBiometric();
+    _checkBiometricSettings();
+    timer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      if (newAvailableUpdate && popOnce) {
+        _showUpdatePopUp();
+        setState(() {
+          popOnce = false;
+        });
+      }
+    });
     _readLastLoggedInData();
     _passwordVisible = false;
     _saveAccount = false;
+  }
+
+  void _handleBiometricAuth() async {
+    bool auth = false;
+    try {
+      auth = await localAuth.authenticate(
+          localizedReason:
+              "Vui lòng xác thực bằng vân tay hoặc FaceID để tiếp tục.",
+          options: const AuthenticationOptions(biometricOnly: true));
+    } on PlatformException {
+      const SnackBar(
+        content: Text("Xác thực không thành công."),
+        backgroundColor: Colors.red,
+      );
+    } finally {
+      if (auth) {
+        await SecureStorage().writeSecureData("logged_in", "true");
+        var result = await SecureStorage().readSecureData("held_access_token");
+        await SecureStorage().writeSecureData("access_token", result);
+        if (mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) {
+              return const HomeScreen(
+                selectedLicensePlate: '',
+              );
+            }),
+            (route) => false,
+          );
+        }
+      }
+    }
   }
 
   @override
@@ -312,7 +439,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                           backgroundColor: Colors.transparent,
                                           shadowColor: Colors.transparent,
                                         ),
-                                        onPressed: _handleLogin,
+                                        onPressed: () {
+                                          if (newAvailableUpdate) {
+                                            _showUpdatePopUp();
+                                          } else {
+                                            _handleLogin();
+                                          }
+                                        },
                                         child: const Text(
                                           "Đăng nhập",
                                           style: TextStyle(
@@ -324,7 +457,76 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 16),
-                                  Image.asset('assets/icons/ic_faceid.png'),
+                                  GestureDetector(
+                                    onTap: () {
+                                      if (isLoggedOut) {
+                                        if (biometricSetting == false) {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: const Text("Xác thực"),
+                                                content: const Text(
+                                                    "Tài khoản chưa bật chế độ xác thực bằng sinh trắc học"),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: const Text("Đóng"),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        } else if (isBiometricAvailable &&
+                                            biometricSetting) {
+                                          // showDialog(
+                                          //   context: context,
+                                          //   builder: (BuildContext context) {
+                                          //     return AlertDialog(
+                                          //       title: const Text("Xác thực"),
+                                          //       content: const Text(
+                                          //           "Vui lòng sử dụng vân tay hoặc FaceID để xác thực."),
+                                          //       actions: [
+                                          //         TextButton(
+                                          //           onPressed: () {
+                                          //             Navigator.pop(context);
+                                          //           },
+                                          //           child: const Text("Đóng"),
+                                          //         ),
+                                          //       ],
+                                          //     );
+                                          //   },
+                                          // );
+                                          _handleBiometricAuth();
+                                        } else {
+                                          _notifyNoBiometric();
+                                        }
+                                      } else {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text("Xác thực"),
+                                              content: const Text(
+                                                  "Vui lòng đăng nhập trước khi sử dụng xác thực bằng sinh trắc học."),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: const Text("Đóng"),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    },
+                                    child: Image.asset(
+                                        'assets/icons/ic_faceid.png'),
+                                  ),
                                 ],
                               ),
                             ],
@@ -377,9 +579,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                   (route) => false,
                                 );
                               },
-                            )
+                            ),
                           ],
                         ),
+                        // TextButton(
+                        //   onPressed: () {
+                        //     setState(() {
+                        //       newAvailableUpdate = !newAvailableUpdate;
+                        //     });
+                        //   },
+                        //   child: Text("Debug"),
+                        // )
                       ],
                     ),
                   ),
@@ -394,6 +604,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
+    timer?.cancel();
     super.dispose();
   }
 }
