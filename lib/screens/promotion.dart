@@ -42,7 +42,7 @@ class PromotionScreen extends StatelessWidget {
               SizedBox(
                 height: MediaQuery.sizeOf(context).height * 0.1,
               ),
-              Image.asset('assets/icons/chat_bubble.png'),
+              Image.asset('assets/icons/chat.png'),
               SizedBox(
                 height: MediaQuery.sizeOf(context).height * 0.05,
               ),

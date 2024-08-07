@@ -2,13 +2,13 @@ import "dart:convert";
 
 import "package:conditional_wrap/conditional_wrap.dart";
 import "package:flutter/material.dart";
-import "package:driver_app/components/password_validator.dart";
-import "package:driver_app/components/text_field.dart";
-import "package:driver_app/core/api_client.dart";
-import "package:driver_app/screens/login.dart";
-import "package:driver_app/screens/otp.dart";
 
-import "../core/secure_store.dart";
+import "../../components/password_validator.dart";
+import "../../components/text_field.dart";
+import "../../core/api_client.dart";
+import "../../core/secure_store.dart";
+import "login.dart";
+import "otp.dart";
 
 class ChangePasswordScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -114,74 +114,68 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       return;
     }
 
-    final validatePassword = await ApiClient()
-        .verifyOldPassword(widget.userData["data"], _oldPassword);
-    print(validatePassword.toString());
-    // ignore: use_build_context_synchronously
-    Navigator.pop(context);
+    if (_formKey.currentState!.validate()) {
+      final validatePassword = await ApiClient()
+          .verifyOldPassword(widget.userData["data"], _oldPassword);
+      if (validatePassword["error"] == "Error_PASSWORD_IDENTICAL" ||
+          validatePassword["error"] == null) {
+        if (_formKey.currentState!.validate()) {
+          final otp = await ApiClient().getOtp();
+          Navigator.pop(context);
 
-    if (validatePassword["error"] == "Error_PASSWORD_IDENTICAL" ||
-        validatePassword["error"] == null) {
-      if (_formKey.currentState!.validate()) {
-        final otp = await ApiClient().getOtp();
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
+          if (otp is String) {
+            FocusManager.instance.primaryFocus?.unfocus();
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Có lỗi trong lúc gửi yêu cầu tạo OTP."),
+              backgroundColor: Colors.red,
+            ));
 
-        if (otp is String) {
-          FocusManager.instance.primaryFocus?.unfocus();
-          // ignore: use_build_context_synchronously
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Có lỗi trong lúc gửi yêu cầu tạo OTP."),
-            backgroundColor: Colors.red,
-          ));
+            return;
+          }
 
-          return;
-        }
-
-        if (otp["success"]) {
-          Navigator.push(
-            // ignore: use_build_context_synchronously
-            context,
-            MaterialPageRoute(
-              builder: (context) => OtpScreen(
-                userData: widget.userData,
-                oldPassword: _oldPassword,
-                newPassword: _newPassword,
-                changePassword: true,
+          if (otp["success"]) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OtpScreen(
+                  userData: widget.userData,
+                  oldPassword: _oldPassword,
+                  newPassword: _newPassword,
+                  changePassword: true,
+                ),
               ),
-            ),
-          );
-        } else {
-          // ignore: use_build_context_synchronously
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Có lỗi trong lúc gửi yêu cầu tạo OTP."),
-            backgroundColor: Colors.red,
-          ));
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Có lỗi trong lúc gửi yêu cầu tạo OTP."),
+              backgroundColor: Colors.red,
+            ));
+          }
         }
+      } else {
+        Navigator.pop(context);
+        setState(() {
+          _isError = true;
+        });
+        return;
       }
-    } else {
-      setState(() {
-        _isError = true;
-      });
-      return;
     }
   }
 
   void _handleForgotPassword() async {
     if (_formKey.currentState!.validate()) {
-      SecureStorage().deleteSecureData("last_logged_in_user_name");
-      SecureStorage().deleteSecureData("last_logged_in_user_avatar");
-      SecureStorage().deleteSecureData("last_logged_in_user_phone_number");
-      SecureStorage().deleteSecureData("last_logged_in_username");
+       SecureStorage().deleteSecureData("last_logged_in_user_name");
+       SecureStorage().deleteSecureData("last_logged_in_user_avatar");
+       SecureStorage()
+          .deleteSecureData("last_logged_in_user_phone_number");
+       SecureStorage().deleteSecureData("last_logged_in_username");
 
       final res = await ApiClient().resetPassword(widget.userData["data"],
           _newPassword, widget.userData["data"]["otp"]);
-      // ignore: use_build_context_synchronously
       Navigator.pop(context);
 
       if (res["success"]) {
         Navigator.pushAndRemoveUntil(
-          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => const LoginScreen(),
@@ -388,7 +382,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                                 : null,
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor:
-                                                  const Color(0xFFFFC709),
+                                                  const Color(0xFF4e86af),
                                               disabledForegroundColor:
                                                   Colors.grey,
                                               foregroundColor: Colors.black,

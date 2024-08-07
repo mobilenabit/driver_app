@@ -92,7 +92,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
             },
             icon: Icon(
               Icons.flashlight_on_outlined,
-              color: isFlashOn ? Colors.amber : Colors.black,
+              color: isFlashOn ? const Color(0xFF4e86af) : Colors.black,
             ),
           ),
           IconButton(
@@ -105,7 +105,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
             },
             icon: Icon(
               Icons.flip_camera_android,
-              color: isFrontCamera ? Colors.amber : Colors.black,
+              color: isFrontCamera ? const Color(0xFF4e86af) : Colors.black,
             ),
           ),
         ],
@@ -175,7 +175,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                   ),
                   QRScannerOverlay(
                     overlayColor: Colors.black26,
-                    borderColor: Colors.amber.shade900,
+                    borderColor: const Color(0xFF4e86af),
                     borderRadius: 10,
                     borderStrokeWidth: 3,
                     scanAreaHeight: 250,

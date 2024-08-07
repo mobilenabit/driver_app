@@ -23,7 +23,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
     final apiToken = await SecureStorage().readSecureData("access_token");
 
     final api = ApiClient();
-    final userData = await api.getUserData();
+    final userData = await api.getUserData(); 
     final userId = userData["data"]["userId"].toString();
 
     String url =
