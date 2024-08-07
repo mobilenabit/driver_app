@@ -37,6 +37,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
           money: 123000),
       History1(
           numberLicense: widget.selectedLicensePlate,
+          fuel: 'Xăng RON 95',
+          address: 'CHXD Xa La',
+          amount: 1000,
+          hours: '06:10',
+          date: '19/06/2024',
+          money: 156000),
+      History1(
+          numberLicense: widget.selectedLicensePlate,
           fuel: 'Xăng RON 92',
           address: 'CHXD Xa La',
           amount: 50,
@@ -51,6 +59,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
           hours: '06:30',
           date: '29/06/2024',
           money: 54600),
+      History1(
+          numberLicense: widget.selectedLicensePlate,
+          fuel: 'Xăng RON 92',
+          address: 'CHXD Xa La',
+          amount: 65,
+          hours: '06:30',
+          date: '29/06/2024',
+          money: 45600),
     ];
 
     _sortDate();
@@ -106,7 +122,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         color: Colors.white,
                         fontSize: 16,
                       ),
-                      selectedDayHighlightColor: Color(0xFF4e86af),
+                      selectedDayHighlightColor: const Color(0xFF4e86af),
                       lastMonthIcon: const Icon(
                         Icons.arrow_back_ios,
                         color: Color(0xFF4e86af),
@@ -186,7 +202,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFbcd1e1),
+      backgroundColor: const Color(0xFFbcd1e1),
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
@@ -239,7 +255,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(5),
                         border: Border.all(
-                          color: Color(0xFF4e86af),
+                          color: const Color(0xFF4e86af),
                         ),
                       ),
                       child: Row(
@@ -302,7 +318,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(5),
                         border: Border.all(
-                          color: Color(0xFF4e86af),
+                          color: const Color(0xFF4e86af),
                         ),
                       ),
                       child: Row(
@@ -360,7 +376,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ),
           ),
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+            padding: EdgeInsets.symmetric(
+              horizontal: 18,
+            ),
           ),
 
           // List items after filter
@@ -412,19 +430,25 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 10),
                               decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(5),
-                                  bottomRight: Radius.circular(5),
-                                ),
-                                color: Color.fromARGB(255, 255, 255, 255),
-                                boxShadow: [
-                                  BoxShadow(
-                                    offset: Offset(0, 1),
-                                    blurRadius: 8,
-                                    color: Color.fromRGBO(0, 0, 0, 0.08),
+                                  // borderRadius: BorderRadius.only(
+                                  //   bottomLeft: Radius.circular(5),
+                                  //   bottomRight: Radius.circular(5),
+                                  // ),
+                                  color: Color.fromARGB(255, 255, 255, 255),
+                                  border: Border(
+                                    top: BorderSide(
+                                      color: Color.fromARGB(255, 101, 177, 235),
+                                      width: 0.25,
+                                    ),
+                                  )
+                                  // boxShadow: [
+                                  //   BoxShadow(
+                                  //     offset: Offset(0, 1),
+                                  //     blurRadius: 8,
+                                  //     color: Color.fromRGBO(0, 0, 0, 0.08),
+                                  //   ),
+                                  // ],
                                   ),
-                                ],
-                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
