@@ -1,75 +1,71 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
-import 'package:driver_app/screens/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class HistoryScreen extends StatefulWidget {
-  final String selectedLicensePlate;
-  const HistoryScreen({super.key, required this.selectedLicensePlate});
+  const HistoryScreen({
+    super.key,
+  });
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  late final List<History1> _items;
+  late final List<History> _items;
 
   @override
   void initState() {
     super.initState();
     _items = [
-      History1(
-          numberLicense: widget.selectedLicensePlate,
-          fuel: 'Xăng RON 95',
-          address: 'CHXD Xa La',
+      History(
+          status: 'Thành công',
+          code: '12345',
           amount: 32,
           hours: '16:30',
-          date: '19/06/2024',
+          date: '19/08/2024',
           money: 250000),
-      History1(
-          numberLicense: widget.selectedLicensePlate,
-          fuel: 'Xăng RON 92',
-          address: 'CHXD Xa La',
+      History(
+          status: 'Đã hủy',
+          code: '12345',
           amount: 6,
           hours: '20:00',
-          date: '19/06/2024',
+          date: '19/08/2024',
           money: 123000),
-      History1(
-          numberLicense: widget.selectedLicensePlate,
-          fuel: 'Xăng RON 95',
-          address: 'CHXD Xa La',
+      History(
+          status: 'Thành công',
+          code: '12345',
           amount: 1000,
           hours: '06:10',
-          date: '19/06/2024',
+          date: '19/08/2024',
           money: 156000),
-      History1(
-          numberLicense: widget.selectedLicensePlate,
-          fuel: 'Xăng RON 92',
-          address: 'CHXD Xa La',
+      History(
+          status: 'Đã hủy',
+          code: '12345',
           amount: 50,
           hours: '06:30',
-          date: '20/06/2024',
+          date: '20/08/2024',
           money: 54600),
-      History1(
-          numberLicense: widget.selectedLicensePlate,
-          fuel: 'Xăng RON 92',
-          address: 'CHXD Xa La',
+      History(
+          status: 'Thành công',
+          code: '12345',
           amount: 50,
-          hours: '06:30',
-          date: '29/06/2024',
+          hours: '05:30',
+          date: '21/08/2024',
           money: 54600),
-      History1(
-          numberLicense: widget.selectedLicensePlate,
-          fuel: 'Xăng RON 92',
-          address: 'CHXD Xa La',
+      History(
+          status: 'Thành công',
+          code: '12345',
           amount: 65,
           hours: '06:30',
-          date: '29/06/2024',
+          date: '21/08/2024',
           money: 45600),
     ];
 
     _sortDate();
+    _sortTime();
   }
 
   // Sort date DESC
@@ -81,6 +77,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
+  // sort time DESC
+  void _sortTime() {
+    _items.sort((a, b) => DateFormat('HH:mm').parse(b.hours).compareTo(
+          DateFormat('HH:mm').parse(a.hours),
+        ));
+  }
+
   // Format type of number
   final NumberFormat currencyFormat =
       NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
@@ -90,6 +93,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
     const Duration(days: 7),
   );
   DateTime _endDate = DateTime.now();
+
+  // list date
+  final List<String> date = [
+    '7 ngày',
+    '15 ngày',
+    '30 ngày',
+  ];
+
+  int? _dateSelected;
 
   // Custom date picker
   Future<void> _selectDate(BuildContext context, bool isStart) async {
@@ -106,12 +118,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   flex: 3,
                   child: CalendarDatePicker2(
                     config: CalendarDatePicker2Config(
-                      calendarType: CalendarDatePicker2Type.single,
+                      calendarType: CalendarDatePicker2Type.range,
                       firstDate: DateTime(2020),
                       lastDate: DateTime.now(),
                       customModePickerIcon: const Icon(
                         Icons.arrow_drop_down,
-                        color: Color(0xFF4e86af),
+                        color: Color.fromRGBO(204, 204, 204, 1),
                         size: 25,
                       ),
                       dayTextStyle: const TextStyle(
@@ -122,25 +134,26 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         color: Colors.white,
                         fontSize: 16,
                       ),
-                      selectedDayHighlightColor: const Color(0xFF4e86af),
+                      selectedDayHighlightColor:
+                          const Color.fromRGBO(99, 96, 255, 1),
                       lastMonthIcon: const Icon(
                         Icons.arrow_back_ios,
-                        color: Color(0xFF4e86af),
+                        color: Color.fromRGBO(204, 204, 204, 1),
                         size: 18,
                       ),
                       nextMonthIcon: const Icon(
                         Icons.arrow_forward_ios,
-                        color: Color(0xFF4e86af),
+                        color: Color.fromRGBO(204, 204, 204, 1),
                         size: 18,
                       ),
                       disableMonthPicker: true,
                       controlsTextStyle: const TextStyle(
-                        color: Colors.black,
+                        color: Color.fromRGBO(115, 115, 115, 1),
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                       weekdayLabelTextStyle: const TextStyle(
-                        color: Color(0x4D3C3C43),
+                        color: Color.fromRGBO(115, 115, 115, 1),
                         fontSize: 16,
                       ),
                     ),
@@ -178,8 +191,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
+  // Group items by date
+  Map<String, List<History>> get _groupedItems {
+    Map<String, List<History>> groupedItems = {};
+
+    for (var item in _filteredItems) {
+      if (groupedItems[item.date] == null) {
+        groupedItems[item.date] = [];
+      }
+      groupedItems[item.date]!.add(item);
+    }
+
+    return groupedItems;
+  }
+
   // Filter items in list by date picker
-  List<History1> get _filteredItems {
+  List<History> get _filteredItems {
     return _items.where((item) {
       DateTime itemDate = DateFormat('dd/MM/yyyy').parse(item.date);
       return itemDate.isAfter(_startDate.subtract(const Duration(days: 1))) &&
@@ -187,387 +214,445 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }).toList();
   }
 
-  // Group items by date
-  Map<String, List<History1>> get _groupedItems {
-    final Map<String, List<History1>> groupedItems = {};
-    for (final item in _filteredItems) {
-      if (!groupedItems.containsKey(item.date)) {
-        groupedItems[item.date] = [];
-      }
-      groupedItems[item.date]!.add(item);
-    }
-    return groupedItems;
-  }
-
   @override
   Widget build(BuildContext context) {
+    var color = const Color.fromRGBO(99, 96, 255, 1);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFbcd1e1),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (BuildContext context) => HomeScreen(
-                    selectedLicensePlate: widget.selectedLicensePlate),
-              ),
-            );
-          },
-          icon: const Icon(Icons.arrow_back_ios),
-        ),
-        title: const Text(
-          'Hoạt động',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
+        backgroundColor: color,
+        appBar: AppBar(
+          backgroundColor: color,
+          toolbarHeight: 80,
+          title: const Text(
+            'Lịch sử giao dịch',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
-        centerTitle: true,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 18, top: 18),
-            child: Text(
-              'Truy vấn giao dịch',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
+        body: Container(
+          decoration: const BoxDecoration(
+            color: Color.fromRGBO(241, 241, 250, 1),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
             ),
           ),
-
-          // Pick date
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 12),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: TextButton(
-                    onPressed: () => _selectDate(context, true),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(
-                          color: const Color(0xFF4e86af),
-                        ),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      left: MediaQuery.sizeOf(context).width *
-                                          0.02,
-                                      top: MediaQuery.sizeOf(context).width *
-                                          0.02,
-                                      bottom: MediaQuery.sizeOf(context).width *
-                                          0.005),
-                                  child: const Text(
-                                    'Từ ngày',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xFF4e86af),
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      left: MediaQuery.sizeOf(context).width *
-                                          0.02,
-                                      bottom: MediaQuery.sizeOf(context).width *
-                                          0.02),
-                                  child: Text(
-                                    DateFormat('dd/MM/yyyy').format(_startDate),
-                                    style: const TextStyle(
-                                        fontSize: 15, color: Colors.black),
-                                  ),
-                                ),
-                              ],
-                            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Pick date
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(
+                            top: 35,
+                            left: 15,
+                            bottom: 5,
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              right: MediaQuery.sizeOf(context).width * 0.02,
+                          child: Text(
+                            'Từ ngày',
+                            style: TextStyle(
+                              color: Colors.black,
                             ),
-                            child: SvgPicture.asset('assets/icons/calender.svg',
-                                height: 20),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: TextButton(
-                    onPressed: () => _selectDate(context, false),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(
-                          color: const Color(0xFF4e86af),
-                        ),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      left: MediaQuery.sizeOf(context).width *
-                                          0.02,
-                                      top: MediaQuery.sizeOf(context).width *
-                                          0.02,
-                                      bottom: MediaQuery.sizeOf(context).width *
-                                          0.005),
-                                  child: const Text(
-                                    'Đến ngày',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xFF4e86af),
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      left: MediaQuery.sizeOf(context).width *
-                                          0.02,
-                                      bottom: MediaQuery.sizeOf(context).width *
-                                          0.02),
-                                  child: Text(
-                                    DateFormat('dd/MM/yyyy').format(_endDate),
-                                    style: const TextStyle(
-                                        fontSize: 15, color: Colors.black),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              right: MediaQuery.sizeOf(context).width * 0.02,
-                            ),
-                            child: SvgPicture.asset('assets/icons/calender.svg',
-                                height: 20),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 18,
-            ),
-          ),
-
-          // List items after filter
-          Expanded(
-            child: ListView.builder(
-              itemCount: _groupedItems.length,
-              itemBuilder: (context, index) {
-                String date = _groupedItems.keys.elementAt(index);
-                List<History1> items = _groupedItems[date]!;
-                return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // header
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 10),
-                        width: MediaQuery.sizeOf(context).width * 1,
-                        decoration: const BoxDecoration(
-                          color: Color.fromARGB(255, 101, 177, 235),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(5),
-                            topRight: Radius.circular(5),
                           ),
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              date,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
+                        TextButton(
+                          onPressed: () => _selectDate(context, true),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: color,
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-
-                      // content
-                      Column(
-                        children: items.map(
-                          (item) {
-                            return Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 10),
-                              decoration: const BoxDecoration(
-                                  // borderRadius: BorderRadius.only(
-                                  //   bottomLeft: Radius.circular(5),
-                                  //   bottomRight: Radius.circular(5),
-                                  // ),
-                                  color: Color.fromARGB(255, 255, 255, 255),
-                                  border: Border(
-                                    top: BorderSide(
-                                      color: Color.fromARGB(255, 101, 177, 235),
-                                      width: 0.25,
-                                    ),
-                                  )
-                                  // boxShadow: [
-                                  //   BoxShadow(
-                                  //     offset: Offset(0, 1),
-                                  //     blurRadius: 8,
-                                  //     color: Color.fromRGBO(0, 0, 0, 0.08),
-                                  //   ),
-                                  // ],
-                                  ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              item.fuel,
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                            const Text(' - '),
-                                            Text(
-                                              '${currencyFormat.format(item.amount)}lít',
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                          right: 12,
+                                          top: 12,
+                                          left: 12,
+                                          bottom: 12,
                                         ),
                                         child: Text(
-                                          '${currencyFormat.format(item.money)}₫',
+                                          DateFormat('dd/MM/yyyy')
+                                              .format(_startDate),
                                           style: const TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                            color: Color(0xFF4e86af),
-                                          ),
+                                              fontSize: 15,
+                                              color: Colors.black),
                                         ),
                                       ),
                                     ],
                                   ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 5),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            item.address,
-                                            style: const TextStyle(
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    right: 14.5,
+                                  ),
+                                  child: SvgPicture.asset(
+                                      'assets/icons/calender.svg',
+                                      height: 20),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(
+                            left: 12,
+                            top: 35,
+                            bottom: 5,
+                          ),
+                          child: Text(
+                            'Đến ngày',
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => _selectDate(context, false),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: color,
+                              ),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: 12,
+                                          top: 12,
+                                          bottom: 12,
+                                        ),
+                                        child: Text(
+                                          DateFormat('dd/MM/yyyy')
+                                              .format(_endDate),
+                                          style: const TextStyle(
                                               fontSize: 15,
-                                              fontWeight: FontWeight.w300,
-                                              color: Color.fromRGBO(
-                                                  130, 134, 158, 1),
+                                              color: Colors.black),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    right: 14.5,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    'assets/icons/calender.svg',
+                                    height: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              const Padding(
+                padding: EdgeInsets.only(
+                  left: 15,
+                  top: 10,
+                  bottom: 10,
+                ),
+                child: Text(
+                  'Hệ thống hỗ trợ truy vấn lịch sử giao dịch trong vòng 30 ngày gần nhất',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Color.fromRGBO(145, 145, 159, 1),
+                  ),
+                ),
+              ),
+
+              // choose days
+              SizedBox(
+                height: 60,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: date.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    bool isSelected = _dateSelected == index;
+                    return TextButton(
+                      onPressed: () {
+                        setState(
+                          () {
+                            _dateSelected = isSelected ? null : index;
+                            if (date[index] == '7 ngày') {
+                              _startDate = DateTime.now()
+                                  .subtract(const Duration(days: 7));
+                            } else if (date[index] == '15 ngày') {
+                              _startDate = DateTime.now()
+                                  .subtract(const Duration(days: 15));
+                            } else {
+                              _startDate = DateTime.now()
+                                  .subtract(const Duration(days: 30));
+                            }
+                          },
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: isSelected
+                                ? color
+                                : const Color.fromRGBO(208, 213, 221, 1),
+                          ),
+                          color: isSelected ? color : Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 9,
+                          ),
+                          child: Text(
+                            date[index],
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: isSelected
+                                  ? Colors.white
+                                  : const Color.fromRGBO(52, 64, 85, 1),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              // List items after filter
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _groupedItems.keys.length,
+                  itemBuilder: (context, index) {
+                    String date = _groupedItems.keys.elementAt(index);
+                    List<History> historyList = _groupedItems[date]!;
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                        vertical: 10,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Date header
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: 12,
+                            ),
+                            child: Text(
+                              date,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color.fromRGBO(145, 145, 159, 1),
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+
+                          // Content
+                          GestureDetector(
+                            onTap: () {},
+                            child: Column(
+                              children: historyList.map((item) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: 12,
+                                  ),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                'Thời gian: ${item.hours}',
+                                                style: const TextStyle(
+                                                  color: Color.fromRGBO(
+                                                      145, 145, 159, 1),
+                                                  fontSize: 15,
+                                                ),
+                                              ),
                                             ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 10,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    item.status == 'Thành công'
+                                                        ? const Color.fromRGBO(
+                                                            219, 255, 225, 1)
+                                                        : const Color.fromRGBO(
+                                                            255, 219, 219, 1),
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                              ),
+                                              child: Text(
+                                                item.status,
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w300,
+                                                  color: item.status ==
+                                                          'Thành công'
+                                                      ? const Color.fromRGBO(
+                                                          76, 217, 100, 1)
+                                                      : const Color.fromRGBO(
+                                                          255, 99, 99, 1),
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                'Mã giao dịch: ${item.code}',
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {},
+                                              child: const Row(
+                                                children: [
+                                                  Text(
+                                                    'Chi tiết',
+                                                    style: TextStyle(
+                                                        color: Color.fromRGBO(
+                                                            145, 145, 159, 1),
+                                                        fontSize: 15),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Icon(
+                                                    LucideIcons.chevron_right,
+                                                    size: 18,
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          'Số lượng: ${currencyFormat.format(item.amount)} lít',
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 15,
                                           ),
                                         ),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 12),
-                                          child: Text(
-                                            item.hours,
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                              color: Color.fromRGBO(
-                                                  130, 134, 158, 1),
-                                              fontWeight: FontWeight.w300,
-                                            ),
+                                        RichText(
+                                          text: TextSpan(
+                                            children: [
+                                              const TextSpan(
+                                                text: 'Số tiền: ',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    '${currencyFormat.format(item.money)}₫',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: color,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                  Text(
-                                    'Biển số xe: ${item.numberLicense}',
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(130, 134, 158, 1),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ).toList(),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 }
 
-class History1 {
-  final String numberLicense;
-  final String fuel;
-  final String address;
+class History {
+  final String status;
+  final String code;
   final double amount;
   final String hours;
   final String date;
   final double money;
 
-  History1({
-    required this.numberLicense,
-    required this.fuel,
-    required this.address,
+  History({
     required this.amount,
-    required this.hours,
+    required this.code,
     required this.date,
+    required this.hours,
     required this.money,
+    required this.status,
   });
 }

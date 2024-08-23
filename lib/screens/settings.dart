@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";
-import "package:driver_app/screens/change_password.dart";
 
 import "../core/helpers.dart";
 
@@ -148,37 +147,6 @@ class SettingsScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(0),
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
-                      // FIXME: icons are not aligned vertically center
-                      ListTile(
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 16),
-                        title: const Text(
-                          "Đổi mật khẩu",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        leading: SvgPicture.asset(
-                            "assets/icons/changed_password.svg"),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          weight: 100,
-                          color: Colors.grey.withOpacity(0.5),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext builder) =>
-                                  ChangePasswordScreen(
-                                userData: userData!,
-                                changePassword: true,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
                       Divider(
                         height: 0,
                         indent: 15,

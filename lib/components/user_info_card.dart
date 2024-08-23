@@ -3,15 +3,15 @@ import "package:intl/intl.dart";
 
 class UserInfoCard extends StatelessWidget {
   final String userName;
-  final String selectedLicensePlate;
-  //final int? userId;
+  //final String selectedLicensePlate;
+  final int? userId;
   final String avatar;
 
   const UserInfoCard({
     super.key,
     required this.userName,
-    required this.selectedLicensePlate,
-    //required this.userId,
+    //required this.selectedLicensePlate,
+    required this.userId,
     required this.avatar,
   });
 
@@ -68,24 +68,24 @@ class UserInfoCard extends StatelessWidget {
                                 ),
                               )
                             : const CircularProgressIndicator(),
-                        // if (userId != null)
-                        //   Text(
-                        //     userId.toString(),
-                        //     style: const TextStyle(
-                        //       fontSize: 13,
-                        //       fontWeight: FontWeight.w400,
-                        //       color: Color(0xFF82869E),
-                        //     ),
-                        //   ),
-                        if (selectedLicensePlate != null)
+                        if (userId != null)
                           Text(
-                            selectedLicensePlate,
+                            userId.toString(),
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w400,
                               color: Color(0xFF82869E),
                             ),
                           ),
+                        // if (selectedLicensePlate != null)
+                        //   Text(
+                        //     selectedLicensePlate,
+                        //     style: const TextStyle(
+                        //       fontSize: 13,
+                        //       fontWeight: FontWeight.w400,
+                        //       color: Color(0xFF82869E),
+                        //     ),
+                        //   ),
                       ],
                     ),
                   ],
