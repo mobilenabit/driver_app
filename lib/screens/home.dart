@@ -1,9 +1,12 @@
 import 'package:driver_app/components/nav__bar.dart';
+import 'package:driver_app/screens/account.dart';
+import 'package:driver_app/screens/flutterMap.dart';
 import 'package:driver_app/screens/gas_station.dart';
 import 'package:driver_app/screens/history.dart';
 import 'package:driver_app/screens/map.dart';
+import 'package:driver_app/screens/qr.dart';
 import 'package:driver_app/screens/qr_result.dart';
-import 'package:driver_app/screens/scan_qr.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -30,7 +33,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         PersistentTabConfig(
-          screen: MapScreen(),
+          screen: MapScreen2(),
           item: ItemConfig(
             icon: SvgPicture.asset('assets/icons/map_selected.svg'),
             inactiveIcon: SvgPicture.asset('assets/icons/map.svg'),
@@ -40,15 +43,13 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         PersistentTabConfig(
-          screen: ScanQrScreen(userData: {}),
+          screen: QrScreen(),
           item: ItemConfig(
             icon: SvgPicture.asset('assets/icons/qr.svg'),
           ),
         ),
         PersistentTabConfig(
-          screen: HistoryScreen(
-           
-          ),
+          screen: const HistoryScreen(),
           item: ItemConfig(
             icon: SvgPicture.asset('assets/icons/history_selected.svg'),
             inactiveIcon: SvgPicture.asset('assets/icons/history.svg'),
@@ -58,9 +59,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         PersistentTabConfig(
-          screen: SettingsScreen(
-            userData: {},
-          ),
+          screen: const AccountScreen(),
           item: ItemConfig(
             icon: SvgPicture.asset('assets/icons/user_selected.svg'),
             inactiveIcon: SvgPicture.asset('assets/icons/user.svg'),

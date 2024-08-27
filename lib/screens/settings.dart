@@ -1,178 +1,217 @@
-import "package:flutter/material.dart";
-import "package:flutter_svg/flutter_svg.dart";
+import 'package:driver_app/core/secure_store.dart';
+import 'package:driver_app/core/user_data.dart';
+import 'package:driver_app/screens/change_password.dart';
+import 'package:driver_app/screens/home.dart';
+import 'package:driver_app/screens/login.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
+import 'package:provider/provider.dart';
 
-import "../core/helpers.dart";
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
 
-class SettingsScreen extends StatelessWidget {
-  final Map<String, dynamic>? userData;
-  const SettingsScreen({super.key, required this.userData});
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
 
-  Widget _getAvatarWidget() {
-    if (userData?["data"]["avatar"] != null &&
-        userData?["data"]["avatar"].isNotEmpty) {
-      return Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: NetworkImage(
-              userData?["data"]["avatar"],
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool savePassword = false;
+  bool isBiometricAvailable = false;
+  final LocalAuthentication localAuth = LocalAuthentication();
+
+  void _checkBiometric() async {
+    isBiometricAvailable = await localAuth.canCheckBiometrics;
+
+    List<BiometricType> availableBiometrics =
+        await localAuth.getAvailableBiometrics();
+    setState(() {
+      isBiometricAvailable = availableBiometrics.isNotEmpty;
+    });
+  }
+
+  void _notifyNoBiometric() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Thông báo"),
+          content: const Text(
+              "Thiết bị không hỗ trợ xác thực bằng vân tay hoặc FaceID"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Đóng"),
             ),
-          ),
-        ),
-      );
-    } else {
-      return const Icon(Icons.account_circle, size: 40);
+          ],
+        );
+      },
+    );
+  }
+
+  void _handleSavePassword() async {
+    await SecureStorage()
+        .writeSecureData("save_password", savePassword.toString());
+  }
+
+  void _handleSavePasswordState() async {
+    final savePasswordState =
+        await SecureStorage().readSecureData("save_password");
+    if (savePasswordState != null) {
+      setState(() {
+        savePassword = savePasswordState == "true";
+      });
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+  void initState() {
+    super.initState();
+    _checkBiometric();
+  }
 
-    return Container(
-      constraints: const BoxConstraints.expand(),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF4e86af),
-            Color(0xFFbcd1e1),
-            Colors.white,
-            Colors.white,
-          ],
-          stops: [
-            0.01 / 100,
-            72.27 / 100,
-            100.79 / 100,
-            100.79 / 100,
-          ],
+  @override
+  Widget build(BuildContext context) {
+    var color = const Color.fromRGBO(99, 96, 255, 1);
+    return Scaffold(
+      backgroundColor: color,
+      appBar: AppBar(
+        backgroundColor: color,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: Colors.white,
+            size: 18,
+          ),
         ),
+        title: const Text(
+          'Cài đặt',
+          style: TextStyle(
+            fontSize: 15,
+            color: Colors.white,
+          ),
+        ),
+        actions: [
+          // ignore: deprecated_member_use
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => HomeScreen(),
+                  ),
+                );
+              },
+              icon: SvgPicture.asset(
+                'assets/icons/home.svg',
+                // ignore: deprecated_member_use
+                color: Colors.white,
+              ))
+        ],
       ),
-      child: Align(
-        alignment: Alignment.center,
-        child: Container(
-          padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 0),
-          constraints: const BoxConstraints.expand(),
-          width: size.width * 0.9,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                AppBar(
-                  title: const Text(
-                    "Cài đặt",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  centerTitle: true,
-                  backgroundColor: Colors.transparent,
-                  foregroundColor: Colors.transparent,
+      body: Container(
+        padding: const EdgeInsets.only(
+          left: 25,
+          top: 40,
+          right: 25,
+        ),
+        height: MediaQuery.sizeOf(context).height * 1,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Cài đặt tài khoản",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF91919F),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      )
-                    ],
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 10,
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            _getAvatarWidget(),
-                            SizedBox(width: size.width * 0.02),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text("Xin chào,"),
-                                userData == null
-                                    ? const CircularProgressIndicator()
-                                    : Text(
-                                        userData?["data"]["displayName"],
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+              ),
+              SwitchListTile(
+                value: savePassword,
+                onChanged: (value) {
+                  if (!isBiometricAvailable) {
+                    _notifyNoBiometric();
+                  } else {
+                    setState(() {
+                      savePassword = value;
+                    });
+                    _handleSavePassword();
+                  }
+                },
+                title: const Text(
+                  "Đăng nhập bằng sinh trắc học",
+                  style: TextStyle(),
                 ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 5,
-                  ),
-                  child: const Text(
-                    "Cài đặt tài khoản",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                visualDensity: VisualDensity.compact,
+                contentPadding: EdgeInsets.zero,
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text("Đổi mật khẩu"),
+                trailing: const Icon(LucideIcons.lock),
+                onTap: () {
+                  final userData = context.read<UserDataModel>().value;
+                  pushScreenWithoutNavBar(
+                    context,
+                    ChangePasswordScreen(
+                      userData: userData!,
+                      changePassword: true,
                     ),
-                  ),
+                  );
+                },
+                visualDensity: VisualDensity.compact,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                "Hỗ trợ",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF91919F),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        offset: const Offset(0, 2),
-                        blurRadius: 4,
-                        color: Colors.black.withOpacity(0.05),
-                      ),
-                    ],
-                  ),
-                  child: ListView(
-                    shrinkWrap: true,
-                    padding: const EdgeInsets.all(0),
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      Divider(
-                        height: 0,
-                        indent: 15,
-                        endIndent: 15,
-                        color: Colors.grey.withOpacity(0.2),
-                      ),
-                      ListTile(
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 16),
-                        title: const Text(
-                          "Đăng xuất",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        leading: SvgPicture.asset("assets/icons/logout.svg"),
-                        onTap: () {
-                          handleLogout(context);
-                        },
-                      ),
-                    ],
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text("Về ứng dụng"),
+                trailing: const Icon(LucideIcons.chevron_right),
+                onTap: () {},
+                visualDensity: VisualDensity.compact,
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text(
+                  "Đăng xuất",
+                  style: TextStyle(
+                    color: Color.fromRGBO(255, 129, 129, 1),
                   ),
                 ),
-              ],
-            ),
+                trailing: const Icon(
+                  LucideIcons.log_out,
+                  color: Color.fromRGBO(255, 129, 129, 1),
+                ),
+                onTap: () {
+                  pushScreenWithoutNavBar(
+                    context,
+                    const LoginScreen(),
+                  );
+                },
+                visualDensity: VisualDensity.compact,
+              ),
+            ],
           ),
         ),
       ),

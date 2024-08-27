@@ -1243,4 +1243,44 @@ class ApiClient {
       return e.response!.data;
     }
   }
+   Future<Map<String, dynamic>> changePasswordWithoutOTP(
+    Map<String, dynamic> userData,
+    String oldPassword,
+    String newPassword,
+  ) async {
+    final apiToken = await _ss.readSecureData("access_token");
+    var details = userData;
+
+    details["oldPassword"] = oldPassword;
+    details["newPassword"] = newPassword;
+
+    try {
+      final response = await _r.retry(
+        () async => await _dio.post(
+          "/core/Users/ChangeMyPassword",
+          options: Options(
+            headers: {
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+          data: details,
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
 }
+
+final apiClient = ApiClient();
+

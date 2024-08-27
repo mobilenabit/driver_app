@@ -1,8 +1,10 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:driver_app/screens/tran_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({
@@ -119,7 +121,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   child: CalendarDatePicker2(
                     config: CalendarDatePicker2Config(
                       calendarType: CalendarDatePicker2Type.range,
-                      firstDate: DateTime(2020),
+                      firstDate: DateTime.now().subtract(Duration(days: 30)),
                       lastDate: DateTime.now(),
                       customModePickerIcon: const Icon(
                         Icons.arrow_drop_down,
@@ -493,7 +495,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                           // Content
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              pushScreenWithoutNavBar(
+                                context,
+                                TranResultScreen(
+                                  code: _items[index].code,
+                                  date: _items[index].date,
+                                  amount: _items[index].amount,
+                                  money: _items[index].money,
+                                  status: _items[index].status,
+                                  hours: _items[index].hours,
+                                ),
+                              );
+                            },
                             child: Column(
                               children: historyList.map((item) {
                                 return Padding(

@@ -1,206 +1,200 @@
-// import 'package:driver_app/core/api_client.dart';
-// import 'package:driver_app/core/secure_store.dart';
-// import 'package:driver_app/screens/home.dart';
-// import 'package:flutter/material.dart';
+import 'package:driver_app/screens/account.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-// import 'package:http/http.dart' as http;
-// import 'dart:convert';
+class LicensePlateScreen extends StatefulWidget {
+  const LicensePlateScreen({super.key});
 
-// class LicensePlateScreen extends StatefulWidget {
-//   const LicensePlateScreen({super.key});
+  @override
+  State<LicensePlateScreen> createState() => _LicensePlateScreenState();
+}
 
-//   @override
-//   State<LicensePlateScreen> createState() => _LicensePlateScreenState();
-// }
+List<GasMap> _item = [
+  GasMap(
+    name: '30A-123.45',
+  ),
+  GasMap(
+    name: '30A-123.56',
+  ),
+  GasMap(
+    name: '30A-132.45',
+  ),
+  GasMap(
+    name: '30A-223.45',
+  ),
+  GasMap(
+    name: '30A-223.89',
+  ),
+  GasMap(
+    name: '30A-143.25',
+  ),
+  GasMap(
+    name: '30A-143.45',
+  ),
+  GasMap(
+    name: '30A-893.45',
+  ),
+  GasMap(
+    name: '30A-243.60',
+  ),
+];
 
-// class _LicensePlateScreenState extends State<LicensePlateScreen> {
-//   final TextEditingController _searchController = TextEditingController();
-//   List<Map<String, String>> _filteredLicensePlates = [];
-//   List<Map<String, String>> _licensePlateData = [];
-//   bool _isLoading = true;
+class _LicensePlateScreenState extends State<LicensePlateScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  List<GasMap> _filteredgasStation = [];
+  final List<GasMap> _gasStation = _item;
 
-//   Future<void> _fetchLicensePlates() async {
-//     final apiToken = await SecureStorage().readSecureData("access_token");
+  // Search
+  void _filtergasStation() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredgasStation = _gasStation.where((station) {
+        final stationName = station.name.toLowerCase();
+        return stationName.contains(query);
+      }).toList();
+    });
+  }
 
-//     final api = ApiClient();
-//     final userData = await api.getUserData(); 
-//     final userId = userData["data"]["userId"].toString();
+  @override
+  void initState() {
+    super.initState();
+    _filteredgasStation = _gasStation;
+    _searchController.addListener(_filtergasStation);
+  }
 
-//     String url =
-//         'http://pumplogapi.petronet.vn/MD/Driver2Vehicle/GetByDriverId/$userId';
-//     try {
-//       final response = await http.get(
-//         Uri.parse(url),
-//         headers: {
-//           'Authorization': 'Bearer $apiToken',
-//         },
-//       );
-//       if (response.statusCode == 200) {
-//         final responseData = json.decode(response.body);
-//         if (responseData['success'] == true) {
-//           final data = responseData['data'] as List;
-//           setState(() {
-//             _licensePlateData = data
-//                 .map(
-//                   (item) => {
-//                     'plateNumber': item['vehicle']['numberPlate'].toString(),
-//                   },
-//                 )
-//                 .toList();
-//             _filteredLicensePlates = _licensePlateData;
-//             _isLoading = false;
-//           });
-//         } else {
-//           throw Exception('Failed to load license plates');
-//         }
-//       }
-//     } catch (e) {
-//       print(e);
-//       setState(
-//         () {
-//           _isLoading = false;
-//         },
-//       );
-//     }
-//   }
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
-//   // search
-//   void _filterLicensePlates() {
-//     final query = _searchController.text.toLowerCase();
-//     setState(() {
-//       _filteredLicensePlates = _licensePlateData.where(
-//         (plate) {
-//         final plateNumber = plate['plateNumber']!.toLowerCase();
-//         return plateNumber.contains(query);
-//       },
-//       ).toList();
-//     },
-//     );
-//   }
+  @override
+  Widget build(BuildContext context) {
+    var color = const Color.fromRGBO(99, 96, 255, 1);
+    return Scaffold(
+      backgroundColor: color,
+      appBar: AppBar(
+        backgroundColor: color,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            size: 18,
+            color: Colors.white,
+          ),
+        ),
+        title: const Text(
+          'Đổi xe',
+          style: TextStyle(
+            fontSize: 15,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: Column(
+          children: [
+            // Search
+            Container(
+              margin: const EdgeInsets.only(
+                top: 25,
+                left: 25,
+                right: 25,
+                bottom: 25,
+              ),
+              decoration: BoxDecoration(
+                color: const Color.fromRGBO(226, 226, 226, 1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextFormField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: "Tìm kiếm",
+                  hintStyle: const TextStyle(
+                    fontWeight: FontWeight.w400,
+                    color: Color.fromRGBO(145, 145, 159, 1),
+                  ),
+                  prefixIcon: const Icon(Icons.search),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 15,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.transparent,
+                ),
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     _fetchLicensePlates();
-//     _searchController.addListener(_filterLicensePlates);
-//   }
+            // List gas station
+            Expanded(
+              child: ListView.builder(
+                itemCount: _filteredgasStation.length,
+                itemBuilder: (context, index) {
+                  final gas = _filteredgasStation[index];
+                  return Container(
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 10.0,
+                      horizontal: 15.0,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                const AccountScreen(),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              gas.name,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          const Icon(
+                            LucideIcons.chevron_right,
+                            color: Color.fromRGBO(145, 145, 159, 1),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-//   @override
-//   void dispose() {
-//     _searchController.dispose();
-//     super.dispose();
-//   }
+class GasMap {
+  final String name;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     // ignore: deprecated_member_use
-//     return WillPopScope(
-//       onWillPop: () async {
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           const SnackBar(
-//             content: Text('Không thể quay lại trang trước'),
-//             backgroundColor: Colors.red,
-//           ),
-//         );
-//         return false;
-//       },
-//       child: Scaffold(
-//         backgroundColor: Colors.white,
-//         appBar: AppBar(
-//           backgroundColor: Colors.white,
-//           automaticallyImplyLeading: false, 
-//           title: const Text(
-//             'Chọn biển số xe',
-//             style: TextStyle(
-//               fontSize: 15,
-//               fontWeight: FontWeight.bold,
-//             ),
-//           ),
-//           centerTitle: true,
-//         ),
-//         body: _isLoading
-//             ? const Center(
-//                 child: CircularProgressIndicator(),
-//               )
-//             : _licensePlateData.isEmpty
-//                 ? const Center(
-//                     child: Text('Không có dữ liệu biển số xe'),
-//                   )
-//                 : Padding(
-//                     padding: const EdgeInsets.symmetric(
-//                       horizontal: 16,
-//                       vertical: 5,
-//                     ),
-//                     child: Column(
-//                       mainAxisAlignment: MainAxisAlignment.center,
-//                       children: [
-//                         Container(
-//                           decoration: BoxDecoration(
-//                             color: const Color.fromRGBO(243, 243, 247, 1),
-//                             borderRadius: BorderRadius.circular(8),
-//                           ),
-//                           child: TextFormField(
-//                             controller: _searchController,
-//                             decoration: InputDecoration(
-//                               hintText: "Tìm kiếm",
-//                               hintStyle:
-//                                   const TextStyle(fontWeight: FontWeight.w400),
-//                               prefixIcon: const Icon(Icons.search),
-//                               contentPadding: const EdgeInsets.symmetric(
-//                                 horizontal: 20,
-//                                 vertical: 15,
-//                               ),
-//                               border: OutlineInputBorder(
-//                                 borderRadius: BorderRadius.circular(8),
-//                                 borderSide: BorderSide.none,
-//                               ),
-//                               filled: true,
-//                               fillColor: Colors.transparent,
-//                             ),
-//                             style: const TextStyle(fontSize: 16),
-//                           ),
-//                         ),
-//                         const SizedBox(
-//                           height: 10,
-//                         ),
-//                         Expanded(
-//                           child: ListView.builder(
-//                             itemCount: _filteredLicensePlates.length,
-//                             itemBuilder: (context, index) {
-//                               final licensePlate =
-//                                   _filteredLicensePlates[index]['plateNumber'];
-//                               return ListTile(
-//                                 shape: Border(
-//                                   bottom: BorderSide(
-//                                     color: Colors.grey.shade300,
-//                                     width: 1,
-//                                   ),
-//                                 ),
-//                                 contentPadding: const EdgeInsets.all(0),
-//                                 title: Text(
-//                                   licensePlate!,
-//                                   style: const TextStyle(
-//                                       fontWeight: FontWeight.w400,
-//                                       fontSize: 16),
-//                                 ),
-//                                 onTap: () {
-//                                   Navigator.push(
-//                                     context,
-//                                     MaterialPageRoute(
-//                                       builder: (context) => HomeScreen(
-//                                         selectedLicensePlate: licensePlate,
-//                                       ),
-//                                     ),
-//                                   );
-//                                 },
-//                               );
-//                             },
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//       ),
-//     );
-//   }
-// }
+  GasMap({
+    required this.name,
+  });
+}
