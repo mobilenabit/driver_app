@@ -1,54 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:latlong2/latlong.dart';
 
 class GasStationScreen extends StatefulWidget {
-  const GasStationScreen({super.key});
+  // final String name;
+  // final double distance;
+  // final LatLng location;
+  final List<GasMap> gasStations;
+
+  const GasStationScreen({
+    super.key,
+    // required this.name,
+    // required this.distance,
+    // required this.location,
+    required this.gasStations,
+  });
 
   @override
   State<GasStationScreen> createState() => _GasStationScreenState();
 }
 
-List<GasMap> _item = [
-  GasMap(
-    name: 'Trạm Xăng Dầu Petrolomex Xa La',
-    address: 'Đ. Cầu Bươu',
-    distance: '550m',
-  ),
-  GasMap(
-    name: 'Trạm Xăng-HV Quân Y',
-    address: '143 Đường Trần Phú',
-    distance: '1.5km',
-  ),
-];
-
 class _GasStationScreenState extends State<GasStationScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<GasMap> _filteredgasStation = [];
-  final List<GasMap> _gasStation = _item;
-
-  // Search
-  void _filtergasStation() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredgasStation = _gasStation.where((station) {
-        final stationName = station.name.toLowerCase();
-        return stationName.contains(query);
-      }).toList();
-    });
-  }
+  List<GasMap> _filteredGasStation = [];
+  late List<GasMap> _gasStation;
 
   @override
   void initState() {
     super.initState();
-    _filteredgasStation = _gasStation;
-    _searchController.addListener(_filtergasStation);
+    // _gasStation = [
+    //   GasMap(
+    //     name: widget.name,
+    //     address: 'Đ.Cầu Bươu',
+    //     distance: '${widget.distance.toStringAsFixed(1)} m',
+    //   ),
+    // ];
+    _gasStation = widget.gasStations;
+    _filteredGasStation = _gasStation;
+    _searchController.addListener(_filterGasStation);
   }
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _filterGasStation() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredGasStation = _gasStation.where((station) {
+        final stationName = station.name.toLowerCase();
+        return stationName.contains(query);
+      }).toList();
+    });
   }
 
   @override
@@ -125,9 +131,9 @@ class _GasStationScreenState extends State<GasStationScreen> {
             // List gas station
             Expanded(
               child: ListView.builder(
-                itemCount: _filteredgasStation.length,
+                itemCount: _filteredGasStation.length,
                 itemBuilder: (context, index) {
-                  final gas = _filteredgasStation[index];
+                  final gas = _filteredGasStation[index];
                   return Container(
                     margin: const EdgeInsets.symmetric(
                       vertical: 5.0,

@@ -1,9 +1,8 @@
 import 'package:driver_app/core/user_data.dart';
-import 'package:driver_app/screens/flutterMap.dart';
+import 'package:driver_app/screens/map.dart';
 import 'package:driver_app/screens/home.dart';
 
 import 'package:driver_app/screens/login.dart';
-import 'package:driver_app/screens/map.dart';
 
 
 import 'package:flutter/material.dart';
