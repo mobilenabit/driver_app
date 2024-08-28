@@ -1,11 +1,11 @@
+import 'dart:io';
 
 import 'package:driver_app/screens/license_plate.dart';
 import 'package:driver_app/screens/settings.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:provider/provider.dart';
 import '../../core/user_data.dart';
@@ -22,6 +22,8 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
+  File? _image;
+
   Widget _getAvatarWidget() {
     final userData = context.read<UserDataModel>().value;
 
@@ -44,35 +46,39 @@ class _AccountScreenState extends State<AccountScreen> {
 
   void showModalBottom() {
     showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return 
-          Container(
-            height: 150,
-            color: Colors.white,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(
-                    top: 10,
-                  ),
-                  height: 5,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
+      context: context,
+      useRootNavigator: true,
+      builder: (BuildContext context) {
+        return Container(
+          height: 150,
+          color: Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(
+                  top: 10,
                 ),
-                Row(
+                height: 5,
+                width: 50,
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              MaterialButton(
+                onPressed: () {
+                  _pickImageFromGallery();
+                },
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     const SizedBox(
-                      width: 25,
+                      width: 15,
                     ),
                     SvgPicture.asset('assets/icons/person.svg'),
                     const SizedBox(
-                      width: 25,
+                      width: 20,
                     ),
                     const Text(
                       'Thư viện',
@@ -84,10 +90,23 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                   ],
                 ),
-              ],
-            ),
-          );
-        });
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImageFromGallery() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
   }
 
   @override
@@ -122,7 +141,7 @@ class _AccountScreenState extends State<AccountScreen> {
               onPressed: () {
                 pushScreenWithoutNavBar(
                   context,
-                   SettingsScreen(),
+                  const SettingsScreen(),
                 );
               },
               icon: const Icon(
@@ -360,7 +379,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                 pushWithoutNavBar(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => LicensePlateScreen(),
+                                    builder: (context) =>
+                                        const LicensePlateScreen(),
                                   ),
                                 );
                               },

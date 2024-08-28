@@ -134,67 +134,72 @@ class _GasStationScreenState extends State<GasStationScreen> {
                 itemCount: _filteredGasStation.length,
                 itemBuilder: (context, index) {
                   final gas = _filteredGasStation[index];
-                  return Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 5.0,
-                      horizontal: 15.0,
-                    ),
-                    padding: const EdgeInsets.all(10.0),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(11.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: color,
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context, gas);
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 5.0,
+                        horizontal: 15.0,
+                      ),
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(11.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: color,
+                            ),
+                            child: SvgPicture.asset(
+                              'assets/icons/gas.svg',
+                              width: 14,
+                              height: 14,
+                            ),
                           ),
-                          child: SvgPicture.asset(
-                            'assets/icons/gas.svg',
-                            width: 14,
-                            height: 14,
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  gas.name,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  gas.address,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Color.fromRGBO(145, 145, 159, 1),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                gas.name,
+                                gas.distance,
                                 style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                gas.address,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Color.fromRGBO(145, 145, 159, 1),
-                                ),
+                              const Icon(
+                                LucideIcons.arrow_right,
+                                color: Color.fromRGBO(189, 189, 189, 1),
+                                size: 18,
                               ),
                             ],
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              gas.distance,
-                              style: const TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            const Icon(
-                              LucideIcons.arrow_right,
-                              color: Color.fromRGBO(189, 189, 189, 1),
-                              size: 18,
-                            ),
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },

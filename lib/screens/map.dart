@@ -1,7 +1,10 @@
 import 'package:driver_app/screens/gas_station.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
@@ -192,7 +195,9 @@ class _MapScreen2State extends State<MapScreen2> {
     var color = const Color.fromRGBO(99, 96, 255, 1);
     return Scaffold(
       body: myPosition == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
           : Stack(
               children: [
                 FlutterMap(
@@ -207,8 +212,25 @@ class _MapScreen2State extends State<MapScreen2> {
                           'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
                       additionalOptions: const {
                         'accessToken': MAPBOX_ACCESS_TOKEN,
-                        'id': 'mapbox/streets-v12',
+                        'id': 'mapbox/outdoors-v12',
                       },
+                    ),
+                    CurrentLocationLayer(
+                      // ignore: deprecated_member_use
+                      followOnLocationUpdate: FollowOnLocationUpdate.always,
+                      // ignore: deprecated_member_use
+                      turnOnHeadingUpdate: TurnOnHeadingUpdate.never,
+                      style: LocationMarkerStyle(
+                        marker: DefaultLocationMarker(
+                          child: Icon(
+                            LucideIcons.locate_fixed,
+                            color: Colors.white,
+                            size: 25,
+                          ),
+                        ),
+                        markerSize: const Size(40, 40),
+                        markerDirection: MarkerDirection.heading,
+                      ),
                     ),
                     MarkerLayer(
                       markers: _markerData.map((marker) {
@@ -259,9 +281,11 @@ class _MapScreen2State extends State<MapScreen2> {
                         child: FloatingActionButton(
                           backgroundColor: Colors.white,
                           shape: const CircleBorder(),
-                          onPressed: () {},
+                          onPressed: () {
+                            CurrentLocationLayer();
+                          },
                           child: Icon(
-                            LucideIcons.locate_fixed,
+                            LucideIcons.locate,
                             color: color,
                             size: 25,
                           ),
