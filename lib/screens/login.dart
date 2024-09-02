@@ -1,8 +1,10 @@
-import "package:driver_app/core/api_client.dart";
-import "package:driver_app/core/secure_store.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_lucide/flutter_lucide.dart";
+import "package:local_auth/local_auth.dart";
+import "../../core/api_client.dart";
+import "../../core/secure_store.dart";
 import "home.dart";
 
 class LoginScreen extends StatefulWidget {
@@ -15,14 +17,116 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   var _username = "";
   var _password = "";
+  var _lastUserName = "";
+  var _lastUserAvatar = "";
+  var _lastUserPhoneNumber = "";
+  bool isBiometricAvailable = false;
+  bool biometricSetting = false;
 
   final _formKey = GlobalKey<FormState>();
-  final apiClient = ApiClient();
 
   final usernameFocus = FocusNode();
   final passwordFocus = FocusNode();
 
   var _passwordVisible = false;
+
+  void _readLastLoggedInData() async {
+    final name = await secureStorage.readSecureData("last_logged_in_user_name");
+    final avatar =
+        await secureStorage.readSecureData("last_logged_in_user_avatar");
+    final number =
+        await secureStorage.readSecureData("last_logged_in_user_phone_number");
+    final username =
+        await secureStorage.readSecureData("last_logged_in_username");
+
+    if (name != null && number != null && username != null && mounted) {
+      setState(() {
+        _lastUserName = name;
+        _lastUserAvatar = avatar ?? "";
+        _lastUserPhoneNumber = number;
+        _username = username;
+      });
+    }
+  }
+
+  final LocalAuthentication localAuth = LocalAuthentication();
+
+  void _checkBiometric() async {
+    isBiometricAvailable = await localAuth.canCheckBiometrics;
+
+    List<BiometricType> availableBiometrics =
+        await localAuth.getAvailableBiometrics();
+    if (availableBiometrics.isNotEmpty) {
+      isBiometricAvailable = true;
+    } else {
+      isBiometricAvailable = false;
+    }
+  }
+
+  void _checkBiometricSettings() async {
+    var result = await const SecureStorage().readSecureData("save_password");
+    if (result != null) {
+      setState(() {
+        biometricSetting = result == "true";
+      });
+    }
+  }
+
+  void _notifyNoBiometric() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Thông báo"),
+          content: const Text(
+              "Thiết bị không hỗ trợ xác thực bằng vân tay hoặc FaceID"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Đóng"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _handleBiometricAuth() async {
+    bool auth = false;
+    try {
+      auth = await localAuth.authenticate(
+          localizedReason:
+              "Vui lòng xác thực bằng vân tay hoặc FaceID để tiếp tục.",
+          options: const AuthenticationOptions(biometricOnly: true));
+    } on PlatformException {
+      const SnackBar(
+        content: Text("Xác thực không thành công."),
+        backgroundColor: Colors.red,
+      );
+    } finally {
+      if (auth) {
+        await const SecureStorage().writeSecureData("logged_in", "true");
+        var result =
+            await const SecureStorage().readSecureData("held_access_token");
+        await const SecureStorage().writeSecureData("access_token", result);
+        if (mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) {
+              return HomeScreen();
+            }),
+            (route) => false,
+          );
+        }
+      }
+    }
+  }
+
+  bool _checkLastLoggedInData() {
+    return _lastUserName.isNotEmpty && _lastUserPhoneNumber.isNotEmpty;
+  }
 
   Future<void> _handleLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
@@ -63,10 +167,11 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
         } else {
-          await SecureStorage()
-              .writeSecureData("access_token", res["access_token"]);
-          await SecureStorage()
-              .writeSecureData("last_logged_in_username", _username);
+          await secureStorage.writeSecureData("logged_in", "true");
+          await secureStorage.writeSecureData(
+              "access_token", res["access_token"]);
+          await secureStorage.writeSecureData(
+              "last_logged_in_username", _username);
 
           Navigator.pushAndRemoveUntil(
             context,
@@ -81,13 +186,35 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    _readLastLoggedInData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF6360FF),
       body: SafeArea(
+        bottom: false,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            Container(
+              width: 128,
+              height: 128,
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F1FA),
+                borderRadius: BorderRadius.circular(10),
+                image: const DecorationImage(
+                  image: AssetImage("assets/images/_Logo.png"),
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+            const SizedBox(height: 96),
             Container(
               decoration: const BoxDecoration(
                 color: Color(0xFFF1F1FA),
@@ -96,79 +223,150 @@ class _LoginScreenState extends State<LoginScreen> {
                   topRight: Radius.circular(30),
                 ),
               ),
-              height: 450,
               child: Form(
                 key: _formKey,
                 child: Align(
                   alignment: Alignment.center,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32.0,
-                      vertical: 48.0,
-                    ),
+                    padding: EdgeInsets.fromLTRB(
+                        32, _checkLastLoggedInData() ? 0 : 48, 32, 48),
                     child: Column(
                       children: [
-                        TextFormField(
-                          focusNode: usernameFocus,
-                          textInputAction: TextInputAction.next,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Tên đăng nhập không được để trống.";
-                            }
-
-                            return null;
-                          },
-                          keyboardType: TextInputType.text,
-                          style: const TextStyle(
-                            fontSize: 13,
+                        if (_checkLastLoggedInData()) ...[
+                          Transform.translate(
+                            offset: const Offset(0, -40),
+                            child: Stack(
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    if (_lastUserAvatar == "")
+                                      Container(
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white,
+                                        ),
+                                        child: const Icon(Icons.account_circle,
+                                            size: 80),
+                                      ),
+                                    if (_lastUserAvatar != "")
+                                      Container(
+                                        width: 80,
+                                        height: 80,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image:
+                                                NetworkImage(_lastUserAvatar),
+                                          ),
+                                        ),
+                                      ),
+                                    Text(
+                                      _lastUserName,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    Text(
+                                      _lastUserPhoneNumber.trim(),
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _lastUserName = "";
+                                          _lastUserAvatar = "";
+                                          _lastUserPhoneNumber = "";
+                                        });
+                                      },
+                                      style: TextButton.styleFrom(
+                                        foregroundColor:
+                                            const Color(0xFF6360FF),
+                                      ),
+                                      child: const Text(
+                                        "Đăng nhập tài khoản khác",
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                          decoration: InputDecoration(
-                            fillColor: const Color(0xFFFCFCFF),
-                            filled: true,
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 0),
-                            hintStyle: const TextStyle(
-                              color: Color(0xFFA7ABC3),
+                        ],
+                        if (!_checkLastLoggedInData()) ...[
+                          TextFormField(
+                            focusNode: usernameFocus,
+                            textInputAction: TextInputAction.next,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Tên đăng nhập không được để trống.";
+                              }
+
+                              return null;
+                            },
+                            keyboardType: TextInputType.text,
+                            style: const TextStyle(
+                              fontSize: 13,
                             ),
-                            hintText: "Tên đăng nhập",
-                            isDense: true,
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(
-                                color: Colors.transparent,
+                            decoration: InputDecoration(
+                              fillColor: const Color(0xFFFCFCFF),
+                              filled: true,
+                              contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 0),
+                              hintStyle: const TextStyle(
+                                color: Color(0xFFA7ABC3),
                               ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(
+                              hintText: "Tên đăng nhập",
+                              isDense: true,
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(
+                                  color: Colors.transparent,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF6360FF),
+                                ),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFE43434),
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFE43434),
+                                ),
+                              ),
+                              prefixIcon: const Icon(
+                                LucideIcons.user,
                                 color: Color(0xFF6360FF),
                               ),
                             ),
-                            focusedErrorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE43434),
-                              ),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE43434),
-                              ),
-                            ),
-                            prefixIcon: const Icon(
-                              LucideIcons.user,
-                              color: Color(0xFF6360FF),
-                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _username = value;
+                              });
+                            },
                           ),
-                          onChanged: (value) {
-                            setState(() {
-                              _username = value;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 20),
+                          const SizedBox(height: 20),
+                        ],
                         TextFormField(
                           focusNode: passwordFocus,
                           textInputAction: TextInputAction.done,
@@ -243,7 +441,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                           },
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 15),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -283,7 +481,36 @@ class _LoginScreenState extends State<LoginScreen> {
                                   backgroundColor: const Color(0xFF6360FF),
                                   shadowColor: Colors.transparent,
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  if (_checkLastLoggedInData()) {
+                                    if (biometricSetting == false) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text("Xác thực"),
+                                            content: const Text(
+                                                "Tài khoản chưa bật chế độ xác thực bằng sinh trắc học"),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text("Đóng"),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    } else if (isBiometricAvailable &&
+                                        biometricSetting) {
+                                      _handleBiometricAuth();
+                                    } else {
+                                      _notifyNoBiometric();
+                                    }
+                                  }
+                                  ;
+                                },
                                 child: const Icon(LucideIcons.scan_face),
                               ),
                             ),

@@ -111,21 +111,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          child: SizedBox(
+          child: Container(
             width: MediaQuery.sizeOf(context).width * 1,
             height: MediaQuery.sizeOf(context).height * 0.4,
             child: Column(
               children: [
                 Expanded(
-                  flex: 3,
                   child: CalendarDatePicker2(
                     config: CalendarDatePicker2Config(
-                      calendarType: CalendarDatePicker2Type.range,
-                      firstDate: DateTime.now().subtract(Duration(days: 30)),
+                      calendarType: CalendarDatePicker2Type.single,
+                      firstDate: DateTime(2020),
                       lastDate: DateTime.now(),
                       customModePickerIcon: const Icon(
                         Icons.arrow_drop_down,
-                        color: Color.fromRGBO(204, 204, 204, 1),
+                        color: Color.fromRGBO(99, 96, 255, 1),
                         size: 25,
                       ),
                       dayTextStyle: const TextStyle(
@@ -136,26 +135,25 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         color: Colors.white,
                         fontSize: 16,
                       ),
-                      selectedDayHighlightColor:
-                          const Color.fromRGBO(99, 96, 255, 1),
+                      selectedDayHighlightColor: Color.fromRGBO(99, 96, 255, 1),
                       lastMonthIcon: const Icon(
                         Icons.arrow_back_ios,
-                        color: Color.fromRGBO(204, 204, 204, 1),
+                        color: Color.fromRGBO(99, 96, 255, 1),
                         size: 18,
                       ),
                       nextMonthIcon: const Icon(
                         Icons.arrow_forward_ios,
-                        color: Color.fromRGBO(204, 204, 204, 1),
+                        color: Color.fromRGBO(99, 96, 255, 1),
                         size: 18,
                       ),
                       disableMonthPicker: true,
                       controlsTextStyle: const TextStyle(
-                        color: Color.fromRGBO(115, 115, 115, 1),
+                        color: Colors.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                       weekdayLabelTextStyle: const TextStyle(
-                        color: Color.fromRGBO(115, 115, 115, 1),
+                        color: Color(0x4D3C3C43),
                         fontSize: 16,
                       ),
                     ),
@@ -529,15 +527,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Expanded(
-                                              child: Text(
-                                                'Thời gian: ${item.hours}',
-                                                style: const TextStyle(
-                                                  color: Color.fromRGBO(
-                                                      145, 145, 159, 1),
-                                                  fontSize: 15,
-                                                ),
+                                            Text(
+                                              'Thời gian: ${item.hours}',
+                                              style: const TextStyle(
+                                                color: Color.fromRGBO(
+                                                    145, 145, 159, 1),
+                                                fontSize: 15,
                                               ),
                                             ),
                                             Container(
@@ -572,36 +570,33 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                           ],
                                         ),
                                         Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Expanded(
-                                              child: Text(
-                                                'Mã giao dịch: ${item.code}',
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 15,
-                                                ),
+                                            Text(
+                                              'Mã giao dịch: ${item.code}',
+                                              style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 15,
                                               ),
                                             ),
-                                            TextButton(
-                                              onPressed: () {},
-                                              child: const Row(
-                                                children: [
-                                                  Text(
-                                                    'Chi tiết',
-                                                    style: TextStyle(
-                                                        color: Color.fromRGBO(
-                                                            145, 145, 159, 1),
-                                                        fontSize: 15),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  Icon(
-                                                    LucideIcons.chevron_right,
-                                                    size: 18,
-                                                  )
-                                                ],
-                                              ),
+                                            const Row(
+                                              children: [
+                                                Text(
+                                                  'Chi tiết',
+                                                  style: TextStyle(
+                                                      color: Color.fromRGBO(
+                                                          145, 145, 159, 1),
+                                                      fontSize: 15),
+                                                ),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                Icon(
+                                                  LucideIcons.chevron_right,
+                                                  size: 18,
+                                                )
+                                              ],
                                             ),
                                           ],
                                         ),

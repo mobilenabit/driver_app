@@ -4,16 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
 
 class GasStationScreen extends StatefulWidget {
-  // final String name;
-  // final double distance;
-  // final LatLng location;
   final List<GasMap> gasStations;
 
   const GasStationScreen({
     super.key,
-    // required this.name,
-    // required this.distance,
-    // required this.location,
     required this.gasStations,
   });
 
@@ -29,13 +23,6 @@ class _GasStationScreenState extends State<GasStationScreen> {
   @override
   void initState() {
     super.initState();
-    // _gasStation = [
-    //   GasMap(
-    //     name: widget.name,
-    //     address: 'Đ.Cầu Bươu',
-    //     distance: '${widget.distance.toStringAsFixed(1)} m',
-    //   ),
-    // ];
     _gasStation = widget.gasStations;
     _filteredGasStation = _gasStation;
     _searchController.addListener(_filterGasStation);
@@ -136,7 +123,8 @@ class _GasStationScreenState extends State<GasStationScreen> {
                   final gas = _filteredGasStation[index];
                   return GestureDetector(
                     onTap: () {
-                      Navigator.pop(context, gas);
+                      Navigator.pop(
+                          context, gas); // Return the selected gas station
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(

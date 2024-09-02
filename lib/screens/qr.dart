@@ -10,22 +10,14 @@ class QrScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: color,
       appBar: AppBar(
+        automaticallyImplyLeading: true,
         backgroundColor: color,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            size: 18,
-            color: Colors.white,
-          ),
-        ),
         title: const Text(
           'QR của tôi',
           style: TextStyle(
             fontSize: 15,
             color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),

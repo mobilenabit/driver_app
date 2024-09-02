@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:driver_app/screens/gas_station.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +8,7 @@ import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -22,8 +25,55 @@ class MapScreen2 extends StatefulWidget {
 }
 
 class _MapScreen2State extends State<MapScreen2> {
-  LatLng? myPosition = const LatLng(20.9658224, 105.791458);
+  LatLng? myPosition;
   final MapController _mapController = MapController();
+  StreamSubscription<Position>? _positionStreamSubscription;
+  GasMap? selectedGasStation;
+
+  @override
+  void initState() {
+    super.initState();
+    _startLocationUpdates();
+  }
+
+  @override
+  void dispose() {
+    _positionStreamSubscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _startLocationUpdates() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Check if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    // Check for location permissions.
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied.');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // Start listening for location updates.
+    _positionStreamSubscription =
+        Geolocator.getPositionStream().listen((Position position) {
+      setState(() {
+        myPosition = LatLng(position.latitude, position.longitude);
+      });
+    });
+  }
 
   // Marker data with name and address
   final _markerData = [
@@ -64,6 +114,10 @@ class _MapScreen2State extends State<MapScreen2> {
     double distance,
     LatLng location,
   ) {
+    _mapController.move(
+      location,
+      16,
+    );
     showModalBottomSheet(
       barrierColor: Colors.transparent,
       backgroundColor: Colors.transparent,
@@ -215,23 +269,6 @@ class _MapScreen2State extends State<MapScreen2> {
                         'id': 'mapbox/outdoors-v12',
                       },
                     ),
-                    CurrentLocationLayer(
-                      // ignore: deprecated_member_use
-                      followOnLocationUpdate: FollowOnLocationUpdate.always,
-                      // ignore: deprecated_member_use
-                      turnOnHeadingUpdate: TurnOnHeadingUpdate.never,
-                      style: LocationMarkerStyle(
-                        marker: DefaultLocationMarker(
-                          child: Icon(
-                            LucideIcons.locate_fixed,
-                            color: Colors.white,
-                            size: 25,
-                          ),
-                        ),
-                        markerSize: const Size(40, 40),
-                        markerDirection: MarkerDirection.heading,
-                      ),
-                    ),
                     MarkerLayer(
                       markers: _markerData.map((marker) {
                         return Marker(
@@ -268,6 +305,15 @@ class _MapScreen2State extends State<MapScreen2> {
                         );
                       }).toList(),
                     ),
+                    CurrentLocationLayer(
+                      // ignore: deprecated_member_use
+                      turnOnHeadingUpdate: TurnOnHeadingUpdate.never,
+                      style: const LocationMarkerStyle(
+                        marker: DefaultLocationMarker(),
+                        markerSize: Size(20, 20),
+                        markerDirection: MarkerDirection.heading,
+                      ),
+                    ),
                   ],
                 ),
                 Align(
@@ -282,7 +328,9 @@ class _MapScreen2State extends State<MapScreen2> {
                           backgroundColor: Colors.white,
                           shape: const CircleBorder(),
                           onPressed: () {
-                            CurrentLocationLayer();
+                            if (myPosition != null) {
+                              _mapController.move(myPosition!, 16);
+                            }
                           },
                           child: Icon(
                             LucideIcons.locate,
@@ -315,25 +363,49 @@ class _MapScreen2State extends State<MapScreen2> {
                               ),
                             ],
                           ),
-                          onPressed: () {
-                            List<GasMap> gasStations =
-                                _markerData.map((marker) {
-                              return GasMap(
-                                name: marker['name'] as String,
-                                address: 'Đ.Cầu Bươu',
-                                distance:
-                                    '${(marker['distance'] as double).toStringAsFixed(1)} m',
-                              );
-                            }).toList();
-
-                            pushWithoutNavBar(
+                          onPressed: () async {
+                            final selectedGas = await Navigator.push<GasMap>(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => GasStationScreen(
-                                  gasStations: gasStations,
+                                  gasStations: _markerData.map((marker) {
+                                    return GasMap(
+                                      name: marker['name'] as String,
+                                      address: 'Đ.Cầu Bươu',
+                                      distance:
+                                          '${(marker['distance'] as double).toStringAsFixed(1)} m',
+                                    );
+                                  }).toList(),
                                 ),
                               ),
                             );
+
+                            if (selectedGas != null) {
+                              setState(() {
+                                selectedGasStation = selectedGas;
+                              });
+
+                              // Find the corresponding marker data
+                              final selectedMarker = _markerData.firstWhere(
+                                (marker) => marker['name'] == selectedGas.name,
+                              );
+
+                              if (selectedMarker != null) {
+                                final name = selectedMarker['name'] as String;
+                                final startTime =
+                                    selectedMarker['startTime'] as DateTime;
+                                final endTime =
+                                    selectedMarker['endTime'] as DateTime;
+                                final distance =
+                                    selectedMarker['distance'] as double;
+                                final location =
+                                    selectedMarker['location'] as LatLng;
+
+                                // Show the marker info for the selected gas station
+                                _showMarkerInfo(name, startTime, endTime,
+                                    distance, location);
+                              }
+                            }
                           },
                         ),
                       ),
