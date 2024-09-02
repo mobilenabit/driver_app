@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import 'package:driver_app/screens/gas_station.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,6 +31,7 @@ class _MapScreen2State extends State<MapScreen2> {
   final MapController _mapController = MapController();
   StreamSubscription<Position>? _positionStreamSubscription;
   GasMap? selectedGasStation;
+  List<LatLng> routePoints = [];
 
   @override
   void initState() {
@@ -42,6 +45,7 @@ class _MapScreen2State extends State<MapScreen2> {
     super.dispose();
   }
 
+  // User Location
   Future<void> _startLocationUpdates() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -75,7 +79,7 @@ class _MapScreen2State extends State<MapScreen2> {
     });
   }
 
-  // Marker data with name and address
+  // Marker data
   final _markerData = [
     {
       'location': const LatLng(20.9658224, 105.791458),
@@ -107,20 +111,45 @@ class _MapScreen2State extends State<MapScreen2> {
     },
   ];
 
+  // Show route
+  Future<void> _fetchRoute(LatLng start, LatLng end) async {
+    final url =
+        'https://api.mapbox.com/directions/v5/mapbox/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?geometries=geojson&access_token=$MAPBOX_ACCESS_TOKEN';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final coordinates = data['routes'][0]['geometry']['coordinates'];
+      setState(() {
+        routePoints = coordinates
+            .map<LatLng>((coord) => LatLng(coord[1], coord[0]))
+            .toList();
+      });
+    } else {
+      throw Exception('Failed to fetch route');
+    }
+  }
+
   void _showMarkerInfo(
     String name,
     DateTime startTime,
     DateTime endTime,
     double distance,
     LatLng location,
-  ) {
-    _mapController.move(
-      location,
-      16,
-    );
+  ) async {
+    if (myPosition != null) {
+      //await _fetchRoute(myPosition!, location); // Fetch the route
+
+      _mapController.move(
+        location,
+        16,
+      );
+    }
+
     showModalBottomSheet(
       barrierColor: Colors.transparent,
       backgroundColor: Colors.transparent,
+      // ignore: use_build_context_synchronously
       context: context,
       builder: (BuildContext context) {
         return Container(
@@ -305,6 +334,16 @@ class _MapScreen2State extends State<MapScreen2> {
                         );
                       }).toList(),
                     ),
+                    if (routePoints.isNotEmpty) // Add the route
+                      PolylineLayer(
+                        polylines: [
+                          Polyline(
+                            points: routePoints,
+                            strokeWidth: 4.0,
+                            color: Colors.blue,
+                          ),
+                        ],
+                      ),
                     CurrentLocationLayer(
                       // ignore: deprecated_member_use
                       turnOnHeadingUpdate: TurnOnHeadingUpdate.never,
@@ -390,21 +429,19 @@ class _MapScreen2State extends State<MapScreen2> {
                                 (marker) => marker['name'] == selectedGas.name,
                               );
 
-                              if (selectedMarker != null) {
-                                final name = selectedMarker['name'] as String;
-                                final startTime =
-                                    selectedMarker['startTime'] as DateTime;
-                                final endTime =
-                                    selectedMarker['endTime'] as DateTime;
-                                final distance =
-                                    selectedMarker['distance'] as double;
-                                final location =
-                                    selectedMarker['location'] as LatLng;
+                              final name = selectedMarker['name'] as String;
+                              final startTime =
+                                  selectedMarker['startTime'] as DateTime;
+                              final endTime =
+                                  selectedMarker['endTime'] as DateTime;
+                              final distance =
+                                  selectedMarker['distance'] as double;
+                              final location =
+                                  selectedMarker['location'] as LatLng;
 
-                                // Show the marker info for the selected gas station
-                                _showMarkerInfo(name, startTime, endTime,
-                                    distance, location);
-                              }
+                              // Show the marker info for the selected gas station
+                              _showMarkerInfo(
+                                  name, startTime, endTime, distance, location);
                             }
                           },
                         ),
