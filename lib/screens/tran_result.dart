@@ -61,7 +61,7 @@ class TranResultScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              code == 'Thành công'
+              status == 'Thành công'
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -93,7 +93,7 @@ class TranResultScreen extends StatelessWidget {
                       children: [
                         Image.asset('assets/images/transaction_failure.png'),
                         const Text(
-                          'Giao dịch Không thành công',
+                          'Giao dịch không thành công',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -204,7 +204,7 @@ class TranResultScreen extends StatelessWidget {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(
+                margin: const EdgeInsets.only(
                   left: 15,
                   right: 15,
                 ),
@@ -236,7 +236,7 @@ class TranResultScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          hours + '-' + date,
+                          '$hours-$date',
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
@@ -265,10 +265,10 @@ class TranResultScreen extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: size.height * 0.02),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           "Biển số xe",
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
@@ -277,7 +277,7 @@ class TranResultScreen extends StatelessWidget {
                         ),
                         Text(
                           '30A-123.45',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
                           ),
@@ -285,10 +285,10 @@ class TranResultScreen extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: size.height * 0.02),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           "Vòi bơm",
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
@@ -297,7 +297,7 @@ class TranResultScreen extends StatelessWidget {
                         ),
                         Text(
                           '2',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
                           ),
@@ -328,10 +328,10 @@ class TranResultScreen extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: size.height * 0.02),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           "Cửa hàng",
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
@@ -340,7 +340,7 @@ class TranResultScreen extends StatelessWidget {
                         ),
                         Text(
                           'Cửa hàng xăng dầu Xa La',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
                           ),
@@ -348,10 +348,10 @@ class TranResultScreen extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: size.height * 0.02),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           "Địa chỉ",
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
@@ -360,7 +360,7 @@ class TranResultScreen extends StatelessWidget {
                         ),
                         Text(
                           'Đường Cầu Bươu',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
                           ),

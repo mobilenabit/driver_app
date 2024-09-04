@@ -87,6 +87,7 @@ class _MapScreen2State extends State<MapScreen2> {
       'startTime': DateTime(2024, 8, 27, 7, 0),
       'endTime': DateTime(2024, 8, 27, 24, 0),
       'distance': 700.0,
+      'isSelected': false,
     },
     {
       'location': const LatLng(20.966063, 105.793304),
@@ -94,6 +95,7 @@ class _MapScreen2State extends State<MapScreen2> {
       'startTime': DateTime(2024, 8, 27, 7, 0),
       'endTime': DateTime(2024, 8, 27, 24, 0),
       'distance': 600.0,
+      'isSelected': false,
     },
     {
       'location': const LatLng(20.964440, 105.792574),
@@ -101,6 +103,7 @@ class _MapScreen2State extends State<MapScreen2> {
       'startTime': DateTime(2024, 8, 27, 7, 0),
       'endTime': DateTime(2024, 8, 27, 24, 0),
       'distance': 80.0,
+      'isSelected': false,
     },
     {
       'location': const LatLng(20.965903, 105.7909057),
@@ -108,6 +111,7 @@ class _MapScreen2State extends State<MapScreen2> {
       'startTime': DateTime(2024, 8, 27, 7, 0),
       'endTime': DateTime(2024, 8, 27, 24, 0),
       'distance': 170.0,
+      'isSelected': false,
     },
   ];
 
@@ -151,6 +155,7 @@ class _MapScreen2State extends State<MapScreen2> {
       backgroundColor: Colors.transparent,
       // ignore: use_build_context_synchronously
       context: context,
+
       builder: (BuildContext context) {
         return Container(
           margin: EdgeInsets.only(
@@ -298,14 +303,31 @@ class _MapScreen2State extends State<MapScreen2> {
                         'id': 'mapbox/outdoors-v12',
                       },
                     ),
+                    CurrentLocationLayer(
+                      // ignore: deprecated_member_use
+                      turnOnHeadingUpdate: TurnOnHeadingUpdate.never,
+                      style: const LocationMarkerStyle(
+                        marker: DefaultLocationMarker(),
+                        markerSize: Size(20, 20),
+                        markerDirection: MarkerDirection.heading,
+                      ),
+                    ),
                     MarkerLayer(
                       markers: _markerData.map((marker) {
                         return Marker(
+                          rotate: true,
                           point: marker['location'] as LatLng,
-                          width: 20,
-                          height: 20,
+                          width: 40,
+                          height: 40,
                           child: GestureDetector(
                             onTap: () {
+                              setState(() {
+                                _markerData
+                                    .forEach((m) => m['isSelected'] = false);
+                              });
+                              setState(() {
+                                marker['isSelected'] = true;
+                              });
                               final name =
                                   marker['name'] as String? ?? 'Unknown';
                               final startTime =
@@ -325,16 +347,26 @@ class _MapScreen2State extends State<MapScreen2> {
                                 location,
                               );
                             },
-                            child: SvgPicture.asset(
-                              'assets/icons/gas.svg',
-                              // ignore: deprecated_member_use
-                              color: color,
-                            ),
+                            child: marker['isSelected'] == true
+                                ? SvgPicture.asset(
+                                    'assets/icons/map_pin.svg',
+                                  )
+                                : SvgPicture.asset(
+                                    'assets/icons/map_gas.svg',
+                                  ),
                           ),
                         );
-                      }).toList(),
+                      }).toList()
+                        ..sort((a, b) {
+                          final selectedMarker = _markerData.firstWhere(
+                            (m) => m['isSelected'] == true,
+                            orElse: () => {},
+                          );
+                          return a.point == selectedMarker['location'] ? 1 : -1;
+                        }),
                     ),
-                    if (routePoints.isNotEmpty) // Add the route
+                    // Add the route
+                    if (routePoints.isNotEmpty)
                       PolylineLayer(
                         polylines: [
                           Polyline(
@@ -344,15 +376,6 @@ class _MapScreen2State extends State<MapScreen2> {
                           ),
                         ],
                       ),
-                    CurrentLocationLayer(
-                      // ignore: deprecated_member_use
-                      turnOnHeadingUpdate: TurnOnHeadingUpdate.never,
-                      style: const LocationMarkerStyle(
-                        marker: DefaultLocationMarker(),
-                        markerSize: Size(20, 20),
-                        markerDirection: MarkerDirection.heading,
-                      ),
-                    ),
                   ],
                 ),
                 Align(

@@ -23,47 +23,53 @@ class _HistoryScreenState extends State<HistoryScreen> {
     super.initState();
     _items = [
       History(
-          status: 'Thành công',
-          code: '12345',
-          amount: 32,
-          hours: '16:30',
-          date: '19/08/2024',
-          money: 250000),
+        status: 'Thành công',
+        code: '12345',
+        amount: 32,
+        hours: '16:30',
+        date: '19/08/2024',
+        money: 250000,
+      ),
       History(
-          status: 'Đã hủy',
-          code: '12345',
-          amount: 6,
-          hours: '20:00',
-          date: '19/08/2024',
-          money: 123000),
+        status: 'Đã hủy',
+        code: '12345',
+        amount: 6,
+        hours: '20:00',
+        date: '19/08/2024',
+        money: 123000,
+      ),
       History(
-          status: 'Thành công',
-          code: '12345',
-          amount: 1000,
-          hours: '06:10',
-          date: '19/08/2024',
-          money: 156000),
+        status: 'Thành công',
+        code: '12345',
+        amount: 1000,
+        hours: '06:10',
+        date: '19/08/2024',
+        money: 156000,
+      ),
       History(
-          status: 'Đã hủy',
-          code: '12345',
-          amount: 50,
-          hours: '06:30',
-          date: '20/08/2024',
-          money: 54600),
+        status: 'Đã hủy',
+        code: '12345',
+        amount: 50,
+        hours: '06:30',
+        date: '20/08/2024',
+        money: 54600,
+      ),
       History(
-          status: 'Thành công',
-          code: '12345',
-          amount: 50,
-          hours: '05:30',
-          date: '21/08/2024',
-          money: 54600),
+        status: 'Thành công',
+        code: '12345',
+        amount: 50,
+        hours: '05:30',
+        date: '21/08/2024',
+        money: 54600,
+      ),
       History(
-          status: 'Thành công',
-          code: '12345',
-          amount: 65,
-          hours: '06:30',
-          date: '21/08/2024',
-          money: 45600),
+        status: 'Thành công',
+        code: '12345',
+        amount: 65,
+        hours: '06:30',
+        date: '21/08/2024',
+        money: 45600,
+      ),
     ];
 
     _sortDate();
@@ -111,7 +117,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          child: Container(
+          child: SizedBox(
             width: MediaQuery.sizeOf(context).width * 1,
             height: MediaQuery.sizeOf(context).height * 0.4,
             child: Column(
@@ -135,7 +141,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         color: Colors.white,
                         fontSize: 16,
                       ),
-                      selectedDayHighlightColor: Color.fromRGBO(99, 96, 255, 1),
+                      selectedDayHighlightColor:
+                          const Color.fromRGBO(99, 96, 255, 1),
                       lastMonthIcon: const Icon(
                         Icons.arrow_back_ios,
                         color: Color.fromRGBO(99, 96, 255, 1),

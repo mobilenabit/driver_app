@@ -173,14 +173,29 @@ class _AccountScreenState extends State<AccountScreen> {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             fit: BoxFit.cover,
-                            image:
-                                NetworkImage(userData.value?["avatar"] ?? ''),
+                            image: NetworkImage(
+                              userData.value?["avatar"],
+                            ),
                           ),
+                        ),
+                      )
+                    else
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey,
+                        ),
+                        child: const Icon(
+                          Icons.person,
+                          size: 80,
+                          color: Colors.white,
                         ),
                       ),
                     const SizedBox(height: 20),
                     Text(
-                      userData.value?["displayName"] ?? 'No Display Name',
+                      userData.value?["displayName"] ?? "Unknown User",
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
