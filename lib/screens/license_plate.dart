@@ -2,6 +2,7 @@ import 'package:driver_app/screens/account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 
 class LicensePlateScreen extends StatefulWidget {
   const LicensePlateScreen({super.key});
@@ -153,13 +154,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                     ),
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                const AccountScreen(),
-                          ),
-                        );
+                        Navigator.pop(context);
                       },
                       child: Row(
                         children: [

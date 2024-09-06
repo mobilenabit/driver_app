@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:latlong2/latlong.dart';
 
 class GasStationScreen extends StatefulWidget {
   final List<GasMap> gasStations;
@@ -116,6 +115,7 @@ class _GasStationScreenState extends State<GasStationScreen> {
             ),
 
             // List gas station
+           
             Expanded(
               child: ListView.builder(
                 itemCount: _filteredGasStation.length,
@@ -123,8 +123,7 @@ class _GasStationScreenState extends State<GasStationScreen> {
                   final gas = _filteredGasStation[index];
                   return GestureDetector(
                     onTap: () {
-                      Navigator.pop(
-                          context, gas); // Return the selected gas station
+                      Navigator.pop(context, gas);
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(

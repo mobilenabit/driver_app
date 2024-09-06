@@ -6,7 +6,6 @@ class UserDataModel with ChangeNotifier {
   Map<String, dynamic>? value;
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-  final apiClient = ApiClient();
 
   void loadUserData() async {
     _isLoading = true;

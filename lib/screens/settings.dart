@@ -3,6 +3,7 @@ import 'package:driver_app/core/user_data.dart';
 import 'package:driver_app/screens/change_password.dart';
 import 'package:driver_app/screens/home.dart';
 import 'package:driver_app/screens/login.dart';
+import 'package:driver_app/screens/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -39,7 +40,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return AlertDialog(
           title: const Text("Thông báo"),
           content: const Text(
-              "Thiết bị không hỗ trợ xác thực bằng vân tay hoặc FaceID"),
+              "Thiết bị không hỗ trợ xác thực bằng vân tay hoặc FaceID",
+              ),
           actions: [
             TextButton(
               onPressed: () {
@@ -53,14 +55,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _handleSavePassword() async {
-    await SecureStorage()
+    void _handleSavePassword() async {
+    await const SecureStorage()
         .writeSecureData("save_password", savePassword.toString());
   }
 
   void _handleSavePasswordState() async {
     final savePasswordState =
-        await SecureStorage().readSecureData("save_password");
+        await const SecureStorage().readSecureData("save_password");
     if (savePasswordState != null) {
       setState(() {
         savePassword = savePasswordState == "true";
@@ -71,6 +73,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+    _handleSavePasswordState();
     _checkBiometric();
   }
 
@@ -105,7 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) => HomeScreen(),
+                    builder: (BuildContext context) => const HomeScreen(),
                   ),
                 );
               },
@@ -165,7 +168,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: const Text("Đổi mật khẩu"),
                 trailing: const Icon(LucideIcons.lock),
                 onTap: () {
-                  
                   final userData = context.read<UserDataModel>().value;
                   pushScreenWithoutNavBar(
                     context,
@@ -173,6 +175,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       userData: userData!,
                       changePassword: true,
                     ),
+                  );
+                },
+                visualDensity: VisualDensity.compact,
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text("Thông tin tài khoản"),
+                trailing: const Icon(LucideIcons.chevron_right),
+                onTap: () {
+                  final userData = context.read<UserDataModel>().value;
+                  pushScreenWithoutNavBar(
+                    context,
+                    UserInfoScreen(userData: userData!),
                   );
                 },
                 visualDensity: VisualDensity.compact,

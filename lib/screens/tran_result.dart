@@ -25,6 +25,9 @@ class TranResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var color = const Color.fromRGBO(99, 96, 255, 1);
     var size = MediaQuery.of(context).size;
+    print('Received money: $money'); // Debug statement to check the value
+    print('Received status: $status'); // Debug statement to check the status
+
     return Scaffold(
       backgroundColor: color,
       appBar: AppBar(
@@ -65,28 +68,29 @@ class TranResultScreen extends StatelessWidget {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                          Image.asset('assets/images/transaction_success.png'),
-                          const Text(
-                            'Giao dịch thành công',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Color.fromRGBO(26, 159, 65, 1),
-                            ),
+                        Image.asset('assets/images/transaction_success.png'),
+                        const Text(
+                          'Giao dịch thành công',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Color.fromRGBO(26, 159, 65, 1),
                           ),
-                          Text(
-                            NumberFormat.currency(
-                              decimalDigits: 0,
-                              symbol: "₫",
-                              customPattern: "###,###",
-                            ).format(money),
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                        ),
+                        Text(
+                          '${NumberFormat.currency(
+                            decimalDigits: 0,
+                            symbol: "₫",
+                            customPattern: "###,###",
+                          ).format(money)} ₫',
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
-                        ])
+                        ),
+                      ],
+                    )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -101,11 +105,11 @@ class TranResultScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          NumberFormat.currency(
+                          '${NumberFormat.currency(
                             decimalDigits: 0,
                             symbol: "₫",
                             customPattern: "###,###",
-                          ).format(money),
+                          ).format(money)} ₫',
                           style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,

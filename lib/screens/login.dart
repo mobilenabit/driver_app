@@ -509,7 +509,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       _notifyNoBiometric();
                                     }
                                   }
-                                  ;
+                                  
                                 },
                                 child: const Icon(LucideIcons.scan_face),
                               ),

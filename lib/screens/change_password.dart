@@ -1,15 +1,13 @@
-import "dart:convert";
+// ignore_for_file: use_build_context_synchronously
 
+import "dart:convert";
 import "package:conditional_wrap/conditional_wrap.dart";
 import "package:driver_app/components/text_field.dart";
 import "package:flutter/material.dart";
 import "package:flutter_lucide/flutter_lucide.dart";
 import "package:flutter_svg/svg.dart";
-
 import "../../components/password_validator.dart";
-
 import "../../core/api_client.dart";
-import "../../core/helpers.dart";
 import "../../core/secure_store.dart";
 import "login.dart";
 
@@ -210,9 +208,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                   ),
                                 ),
                                 onPressed: () async {
-                                  await SecureStorage()
+                                  await const SecureStorage()
                                       .deleteSecureData("logged_in");
-                                  await SecureStorage()
+                                  await const SecureStorage()
                                       .deleteSecureData("access_token");
 
                                   Navigator.pushAndRemoveUntil(
@@ -247,11 +245,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   void _handleForgotPassword() async {
     if (_formKey.currentState!.validate()) {
-       SecureStorage().deleteSecureData("last_logged_in_user_name");
-       SecureStorage().deleteSecureData("last_logged_in_user_avatar");
-       SecureStorage()
+       const SecureStorage().deleteSecureData("last_logged_in_user_name");
+       const SecureStorage().deleteSecureData("last_logged_in_user_avatar");
+       const SecureStorage()
           .deleteSecureData("last_logged_in_user_phone_number");
-       SecureStorage().deleteSecureData("last_logged_in_username");
+       const SecureStorage().deleteSecureData("last_logged_in_username");
 
       final res = await apiClient.resetPassword(
           widget.userData, _newPassword, widget.userData["otp"]);

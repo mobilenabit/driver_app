@@ -22,28 +22,6 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  File? _image;
-
-  Widget _getAvatarWidget() {
-    final userData = context.read<UserDataModel>().value;
-
-    if (userData?["avatar"] != null && userData?["avatar"].isNotEmpty) {
-      return Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: NetworkImage(userData?["avatar"]),
-          ),
-        ),
-      );
-    } else {
-      return const Icon(Icons.account_circle, size: 40);
-    }
-  }
-
   void showModalBottom() {
     showModalBottomSheet(
       context: context,
@@ -91,6 +69,34 @@ class _AccountScreenState extends State<AccountScreen> {
                   ],
                 ),
               ),
+              MaterialButton(
+                onPressed: () {
+                  _pickImageFromCamera();
+                },
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Icon(
+                      LucideIcons.camera,
+                      color: Color.fromRGBO(99, 96, 255, 1),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      'Chụp ảnh',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         );
@@ -98,14 +104,23 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
+  // Choose image from gallery
   Future<void> _pickImageFromGallery() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
+      setState(() {});
+    }
+  }
+
+  // Choose image from camera
+  Future<void> _pickImageFromCamera() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      setState(() {});
     }
   }
 
@@ -183,7 +198,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       Container(
                         width: 120,
                         height: 120,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.grey,
                         ),
@@ -221,6 +236,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                   ),
                   child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
                     child: Column(
                       children: [
                         Table(
@@ -426,6 +442,9 @@ class _AccountScreenState extends State<AccountScreen> {
                               ),
                             ),
                           ],
+                        ),
+                        SizedBox(
+                          height: MediaQuery.sizeOf(context).height * 0.2,
                         )
                       ],
                     ),

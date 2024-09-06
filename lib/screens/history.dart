@@ -126,7 +126,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   child: CalendarDatePicker2(
                     config: CalendarDatePicker2Config(
                       calendarType: CalendarDatePicker2Type.single,
-                      firstDate: DateTime(2020),
+                      firstDate: DateTime.now().subtract(
+                        
+                        const Duration(
+                          days: 30,
+                        ),
+                      ),
                       lastDate: DateTime.now(),
                       customModePickerIcon: const Icon(
                         Icons.arrow_drop_down,
@@ -499,31 +504,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           ),
 
                           // Content
-                          GestureDetector(
-                            onTap: () {
-                              pushScreenWithoutNavBar(
-                                context,
-                                TranResultScreen(
-                                  code: _items[index].code,
-                                  date: _items[index].date,
-                                  amount: _items[index].amount,
-                                  money: _items[index].money,
-                                  status: _items[index].status,
-                                  hours: _items[index].hours,
-                                ),
-                              );
-                            },
-                            child: Column(
-                              children: historyList.map((item) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 12,
-                                  ),
+                          Column(
+                            children: historyList.map((item) {
+                              return GestureDetector(
+                                onTap: () {
+                                  pushScreenWithoutNavBar(
+                                    context,
+                                    TranResultScreen(
+                                      amount: item.amount,
+                                      code: item.code,
+                                      date: item.date,
+                                      hours: item.hours,
+                                      money: item.money,
+                                      status: item.status,
+                                    ),
+                                  );
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 15,
-                                      vertical: 15,
-                                    ),
+                                        horizontal: 15, vertical: 15),
                                     decoration: BoxDecoration(
                                       color: const Color.fromARGB(
                                           255, 255, 255, 255),
@@ -548,8 +549,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                horizontal: 10,
-                                              ),
+                                                      horizontal: 10),
                                               decoration: BoxDecoration(
                                                 color:
                                                     item.status == 'Thành công'
@@ -573,7 +573,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                           255, 99, 99, 1),
                                                 ),
                                               ),
-                                            )
+                                            ),
                                           ],
                                         ),
                                         Row(
@@ -596,19 +596,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                           145, 145, 159, 1),
                                                       fontSize: 15),
                                                 ),
-                                                SizedBox(
-                                                  width: 5,
-                                                ),
+                                                SizedBox(width: 5),
                                                 Icon(
                                                   LucideIcons.chevron_right,
                                                   size: 18,
-                                                )
+                                                ),
                                               ],
                                             ),
                                           ],
                                         ),
                                         Text(
-                                          'Số lượng: ${currencyFormat.format(item.amount)} lít',
+                                          'Số lượng: ${currencyFormat.format(item.amount)}lít',
                                           style: const TextStyle(
                                             color: Colors.black,
                                             fontSize: 15,
@@ -639,10 +637,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                       ],
                                     ),
                                   ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
+                                ),
+                              );
+                            }).toList(),
+                          )
                         ],
                       ),
                     );

@@ -113,6 +113,14 @@ class _MapScreen2State extends State<MapScreen2> {
       'distance': 170.0,
       'isSelected': false,
     },
+    {
+      'location': const LatLng(21.1982264, 105.8360869),
+      'name': 'PVOIL CHXD PHỦ LỖ',
+      'startTime': DateTime(2024, 8, 27, 7, 0),
+      'endTime': DateTime(2024, 8, 27, 24, 0),
+      'distance': 170.0,
+      'isSelected': false,
+    },
   ];
 
   // Show route
@@ -140,9 +148,10 @@ class _MapScreen2State extends State<MapScreen2> {
     DateTime endTime,
     double distance,
     LatLng location,
+    int markerIndex,
   ) async {
     if (myPosition != null) {
-      //await _fetchRoute(myPosition!, location); // Fetch the route
+      // await _fetchRoute(myPosition!, location); // Fetch the route
 
       _mapController.move(
         location,
@@ -238,7 +247,8 @@ class _MapScreen2State extends State<MapScreen2> {
               GestureDetector(
                 onTap: () async {
                   final url =
-                      'https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}';
+                      // 'https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}';
+                      'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(name)} ${location.latitude},${location.longitude}';
                   // ignore: deprecated_member_use
                   if (await canLaunch(url)) {
                     // ignore: deprecated_member_use
@@ -275,7 +285,20 @@ class _MapScreen2State extends State<MapScreen2> {
           ),
         );
       },
-    );
+    ).whenComplete(() {
+      // Reset all markers to their initial state when modal is closed
+      setState(() {
+        for (var marker in _markerData) {
+          marker['isSelected'] = false; // Reset selection
+        }
+      });
+    });
+    // Reset all markers to unselected after the modal is closed
+    setState(() {
+      for (var i = 0; i < _markerData.length; i++) {
+        _markerData[i]['isSelected'] = i == markerIndex;
+      }
+    });
   }
 
   @override
@@ -300,9 +323,19 @@ class _MapScreen2State extends State<MapScreen2> {
                           'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
                       additionalOptions: const {
                         'accessToken': MAPBOX_ACCESS_TOKEN,
-                        'id': 'mapbox/outdoors-v12',
+                        'id': 'mapbox/streets-v12',
                       },
                     ),
+                    if (routePoints.isNotEmpty)
+                      PolylineLayer(
+                        polylines: [
+                          Polyline(
+                            points: routePoints,
+                            strokeWidth: 10.0,
+                            color: Colors.blue,
+                          ),
+                        ],
+                      ),
                     CurrentLocationLayer(
                       // ignore: deprecated_member_use
                       turnOnHeadingUpdate: TurnOnHeadingUpdate.never,
@@ -314,6 +347,7 @@ class _MapScreen2State extends State<MapScreen2> {
                     ),
                     MarkerLayer(
                       markers: _markerData.map((marker) {
+                        final index = _markerData.indexOf(marker);
                         return Marker(
                           rotate: true,
                           point: marker['location'] as LatLng,
@@ -345,6 +379,7 @@ class _MapScreen2State extends State<MapScreen2> {
                                 endTime,
                                 distance,
                                 location,
+                                index,
                               );
                             },
                             child: marker['isSelected'] == true
@@ -365,17 +400,6 @@ class _MapScreen2State extends State<MapScreen2> {
                           return a.point == selectedMarker['location'] ? 1 : -1;
                         }),
                     ),
-                    // Add the route
-                    if (routePoints.isNotEmpty)
-                      PolylineLayer(
-                        polylines: [
-                          Polyline(
-                            points: routePoints,
-                            strokeWidth: 4.0,
-                            color: Colors.blue,
-                          ),
-                        ],
-                      ),
                   ],
                 ),
                 Align(
@@ -461,10 +485,16 @@ class _MapScreen2State extends State<MapScreen2> {
                                   selectedMarker['distance'] as double;
                               final location =
                                   selectedMarker['location'] as LatLng;
+                              final index = _markerData.indexOf(selectedMarker);
 
-                              // Show the marker info for the selected gas station
                               _showMarkerInfo(
-                                  name, startTime, endTime, distance, location);
+                                name,
+                                startTime,
+                                endTime,
+                                distance,
+                                location,
+                                index,
+                              );
                             }
                           },
                         ),
