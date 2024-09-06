@@ -152,7 +152,6 @@ class _MapScreen2State extends State<MapScreen2> {
   ) async {
     if (myPosition != null) {
       // await _fetchRoute(myPosition!, location); // Fetch the route
-
       _mapController.move(
         location,
         16,
@@ -162,13 +161,11 @@ class _MapScreen2State extends State<MapScreen2> {
     showModalBottomSheet(
       barrierColor: Colors.transparent,
       backgroundColor: Colors.transparent,
-      // ignore: use_build_context_synchronously
       context: context,
-
       builder: (BuildContext context) {
         return Container(
           margin: EdgeInsets.only(
-            bottom: MediaQuery.of(context).size.height * 0.1,
+            bottom: MediaQuery.of(context).size.height * 0.12,
             left: 15,
             right: 15,
           ),

@@ -209,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: const Color(0xFFF1F1FA),
                 borderRadius: BorderRadius.circular(10),
                 image: const DecorationImage(
-                  image: AssetImage("assets/images/_Logo.png"),
+                  image: AssetImage("assets/images/PetroNET_Logo.png"),
                   fit: BoxFit.contain,
                 ),
               ),
@@ -509,7 +509,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                       _notifyNoBiometric();
                                     }
                                   }
-                                  
                                 },
                                 child: const Icon(LucideIcons.scan_face),
                               ),

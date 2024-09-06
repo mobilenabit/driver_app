@@ -173,10 +173,10 @@ class _AccountScreenState extends State<AccountScreen> {
         body: SafeArea(
           bottom: false,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 96),
+                padding: const EdgeInsets.symmetric(vertical: 48),
                 child: Column(
                   children: [
                     if (userData.value?["avatar"] != null &&
@@ -235,219 +235,216 @@ class _AccountScreenState extends State<AccountScreen> {
                       topRight: Radius.circular(30),
                     ),
                   ),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      children: [
-                        Table(
-                          border: TableBorder.all(
-                            width: 1,
-                            color: const Color.fromRGBO(226, 226, 226, 1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          columnWidths: const <int, TableColumnWidth>{
-                            0: FractionColumnWidth(0.5),
-                            1: FractionColumnWidth(0.5),
-                          },
-                          defaultVerticalAlignment:
-                              TableCellVerticalAlignment.middle,
-                          children: [
-                            TableRow(
-                              children: <Widget>[
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 15,
-                                        ),
-                                        child: Text(
-                                          'Hạn mức còn lại',
-                                          style: style1,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            bottom: 15, top: 15),
-                                        child: Text(
-                                          '16.000.000đ',
-                                          style: style2,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 15,
-                                        ),
-                                        child: Text(
-                                          'Hạn mức từng giao dịch',
-                                          style: style1,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            bottom: 15, top: 15),
-                                        child: Text(
-                                          '1.500.000đ',
-                                          style: style2,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                  child: Column(
+                    children: [
+                      Table(
+                        border: TableBorder.all(
+                          width: 1,
+                          color: const Color.fromRGBO(226, 226, 226, 1),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            bottom: 8,
-                            top: 8,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  'Công ty',
-                                  style: subTitle,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                'DVVT Thái Hải',
-                                style: title,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            top: 8,
-                            bottom: 8,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  'Địa chỉ',
-                                  style: subTitle,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                '245 Phùng Hưng, Hà Đông',
-                                style: title,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            top: 8,
-                            bottom: 32,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  'Đơn vị cấp hạn mức',
-                                  style: subTitle,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                'PVOIL Hà Nội',
-                                style: title,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GestureDetector(
-                              onTap: showModalBottom,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: color,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 15,
-                                  vertical: 10,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                        columnWidths: const <int, TableColumnWidth>{
+                          0: FractionColumnWidth(0.5),
+                          1: FractionColumnWidth(0.5),
+                        },
+                        defaultVerticalAlignment:
+                            TableCellVerticalAlignment.middle,
+                        children: [
+                          TableRow(
+                            children: <Widget>[
+                              TableCell(
+                                verticalAlignment:
+                                    TableCellVerticalAlignment.middle,
+                                child: Column(
                                   children: [
-                                    SvgPicture.asset('assets/icons/image.svg'),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    const Text(
-                                      'Thay đổi ảnh',
-                                      style: TextStyle(
-                                        color: Colors.white,
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 15,
                                       ),
-                                    )
+                                      child: Text(
+                                        'Hạn mức còn lại',
+                                        style: style1,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          bottom: 15, top: 15),
+                                      child: Text(
+                                        '16.000.000đ',
+                                        style: style2,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                pushWithoutNavBar(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const LicensePlateScreen(),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: color,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 10,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                              TableCell(
+                                verticalAlignment:
+                                    TableCellVerticalAlignment.middle,
+                                child: Column(
                                   children: [
-                                    SvgPicture.asset('assets/icons/car.svg'),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    const Text(
-                                      'Đổi xe',
-                                      style: TextStyle(
-                                        color: Colors.white,
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 15,
                                       ),
-                                    )
+                                      child: Text(
+                                        'Hạn mức từng giao dịch',
+                                        style: style1,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          bottom: 15, top: 15),
+                                      child: Text(
+                                        '1.500.000đ',
+                                        style: style2,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 8,
+                          top: 8,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Công ty',
+                                style: subTitle,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              'DVVT Thái Hải',
+                              style: title,
                             ),
                           ],
                         ),
-                        SizedBox(
-                          height: MediaQuery.sizeOf(context).height * 0.2,
-                        )
-                      ],
-                    ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 8,
+                          bottom: 8,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Địa chỉ',
+                                style: subTitle,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              '245 Phùng Hưng, Hà Đông',
+                              style: title,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 8,
+                          bottom: 32,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Đơn vị cấp hạn mức',
+                                style: subTitle,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              'PVOIL Hà Nội',
+                              style: title,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: showModalBottom,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: color,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                                vertical: 10,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset('assets/icons/image.svg'),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Text(
+                                    'Thay đổi ảnh',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              pushWithoutNavBar(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const LicensePlateScreen(),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: color,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 10,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset('assets/icons/car.svg'),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Text(
+                                    'Đổi xe',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.2,
+                      )
+                    ],
                   ),
                 ),
               ),
