@@ -25,8 +25,6 @@ class TranResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var color = const Color.fromRGBO(99, 96, 255, 1);
     var size = MediaQuery.of(context).size;
-    print('Received money: $money'); // Debug statement to check the value
-    print('Received status: $status'); // Debug statement to check the status
 
     return Scaffold(
       backgroundColor: color,
@@ -73,6 +71,7 @@ class TranResultScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        const SizedBox(height: 20),
                         status == 'Thành công'
                             ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -81,8 +80,9 @@ class TranResultScreen extends StatelessWidget {
                                     'assets/images/transaction_success.png',
                                     scale: 2.0,
                                   ),
+                                  const SizedBox(height: 10),
                                   const Text(
-                                    'Giao dịch thành công',
+                                    "Thanh toán thành công",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -112,7 +112,7 @@ class TranResultScreen extends StatelessWidget {
                                     scale: 2.0,
                                   ),
                                   const Text(
-                                    'Giao dịch không thành công',
+                                    "Thanh toán không thành công",
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,

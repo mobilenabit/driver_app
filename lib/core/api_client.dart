@@ -1,5 +1,4 @@
 import "package:dio/dio.dart";
-import "package:intl/intl.dart";
 import "package:retry/retry.dart";
 import "secure_store.dart";
 
@@ -9,7 +8,7 @@ class ApiClient {
     receiveTimeout: const Duration(seconds: 5),
   ));
   final RetryOptions _r = const RetryOptions(maxAttempts: 4);
-  final SecureStorage _ss = SecureStorage();
+  final SecureStorage _ss = const SecureStorage();
   static const String _apiUrl = "https://pumplogapi.petronet.vn";
 
   Future<Map<String, dynamic>> login(String username, String password) async {

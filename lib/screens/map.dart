@@ -1,18 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-
-import 'package:driver_app/screens/gas_station.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
+import 'package:driver_app/screens/gas_station.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // ignore: constant_identifier_names
@@ -32,6 +29,7 @@ class _MapScreen2State extends State<MapScreen2> {
   StreamSubscription<Position>? _positionStreamSubscription;
   GasMap? selectedGasStation;
   List<LatLng> routePoints = [];
+  bool _isMapMove = false;
 
   @override
   void initState() {
@@ -313,6 +311,11 @@ class _MapScreen2State extends State<MapScreen2> {
                   options: MapOptions(
                     initialCenter: myPosition!,
                     initialZoom: 15,
+                    onPositionChanged: (MapCamera position, bool hasGesture) {
+                      setState(() {
+                        _isMapMove = position.center != myPosition;
+                      });
+                    },
                   ),
                   children: [
                     TileLayer(
@@ -402,9 +405,14 @@ class _MapScreen2State extends State<MapScreen2> {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SizedBox(
+                      // User location
+                      Container(
+                        margin: const EdgeInsets.only(
+                          right: 15,
+                        ),
                         height: 50,
                         width: 50,
                         child: FloatingActionButton(
@@ -416,32 +424,46 @@ class _MapScreen2State extends State<MapScreen2> {
                             }
                           },
                           child: Icon(
-                            LucideIcons.locate,
-                            color: color,
+                            _isMapMove
+                                ? LucideIcons.locate
+                                : LucideIcons.locate_fixed,
+                            color: _isMapMove ? Colors.black87 : color,
                             size: 25,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
                       SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.025,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(
+                          right: 15,
+                        ),
                         width: 160,
                         child: FloatingActionButton(
                           backgroundColor: Colors.white,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                LucideIcons.list,
-                                size: 25,
-                                color: color,
+                              Expanded(
+                                child: Icon(
+                                  LucideIcons.list,
+                                  size: 25,
+                                  color: color,
+                                ),
                               ),
                               const SizedBox(
                                 width: 10,
                               ),
-                              Text(
-                                'Xem danh sách',
-                                style: TextStyle(
-                                  color: color,
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  right: 8,
+                                ),
+                                child: Text(
+                                  'Xem danh sách',
+                                  style: TextStyle(
+                                    color: color,
+                                  ),
                                 ),
                               ),
                             ],

@@ -127,7 +127,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     config: CalendarDatePicker2Config(
                       calendarType: CalendarDatePicker2Type.single,
                       firstDate: DateTime.now().subtract(
-                        
                         const Duration(
                           days: 30,
                         ),
@@ -234,7 +233,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         backgroundColor: color,
         appBar: AppBar(
           backgroundColor: color,
-          toolbarHeight: 80,
+          //  toolbarHeight: 80,
           title: const Text(
             'Lịch sử giao dịch',
             style: TextStyle(
