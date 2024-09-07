@@ -84,7 +84,7 @@ class _MapScreen2State extends State<MapScreen2> {
       'name': 'CHXD Số 1 Hà Đông',
       'startTime': DateTime(2024, 8, 27, 7, 0),
       'endTime': DateTime(2024, 8, 27, 24, 0),
-      'distance': 700.0,
+      'distance': 1700.0,
       'isSelected': false,
     },
     {
@@ -224,7 +224,9 @@ class _MapScreen2State extends State<MapScreen2> {
                             width: 5,
                           ),
                           Text(
-                            '${distance.toStringAsFixed(1)} m',
+                            distance > 1000
+                                ? '${(distance / 1000).toStringAsFixed(1)} km'
+                                : '${distance.toStringAsFixed(1)} m',
                             style: const TextStyle(
                               fontSize: 12,
                               color: Color.fromRGBO(189, 189, 189, 1),
@@ -477,8 +479,7 @@ class _MapScreen2State extends State<MapScreen2> {
                                     return GasMap(
                                       name: marker['name'] as String,
                                       address: 'Đ.Cầu Bươu',
-                                      distance:
-                                          '${(marker['distance'] as double).toStringAsFixed(1)} m',
+                                    distance: marker['distance'] as double, 
                                     );
                                   }).toList(),
                                 ),

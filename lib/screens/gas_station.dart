@@ -115,7 +115,7 @@ class _GasStationScreenState extends State<GasStationScreen> {
             ),
 
             // List gas station
-           
+
             Expanded(
               child: ListView.builder(
                 itemCount: _filteredGasStation.length,
@@ -131,6 +131,10 @@ class _GasStationScreenState extends State<GasStationScreen> {
                         horizontal: 15.0,
                       ),
                       padding: const EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(0),
+                      ),
                       child: Row(
                         children: [
                           Container(
@@ -172,7 +176,9 @@ class _GasStationScreenState extends State<GasStationScreen> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                gas.distance,
+                                gas.distance > 1000
+                                    ? '${(gas.distance / 1000).toStringAsFixed(1)} km'
+                                    : '${gas.distance.toStringAsFixed(1)} m',
                                 style: const TextStyle(
                                   fontSize: 14,
                                 ),
@@ -202,7 +208,7 @@ class _GasStationScreenState extends State<GasStationScreen> {
 class GasMap {
   final String name;
   final String address;
-  final String distance;
+  final double distance;
 
   GasMap({
     required this.name,
