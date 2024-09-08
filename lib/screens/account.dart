@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:driver_app/screens/license_plate.dart';
 import 'package:driver_app/screens/settings.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +20,13 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<UserDataModel>(context, listen: false).loadUserData();
+  }
+
+  // Change avatar
   void showModalBottom() {
     showModalBottomSheet(
       context: context,
@@ -54,7 +59,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     const SizedBox(
                       width: 15,
                     ),
-                    SvgPicture.asset('assets/icons/person.svg'),
+                    SvgPicture.asset('assets/icons/gallery.svg'),
                     const SizedBox(
                       width: 20,
                     ),
@@ -69,24 +74,24 @@ class _AccountScreenState extends State<AccountScreen> {
                   ],
                 ),
               ),
+              SizedBox(
+                height: MediaQuery.sizeOf(context).height * 0.01,
+              ),
               MaterialButton(
                 onPressed: () {
                   _pickImageFromCamera();
                 },
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 15,
                     ),
-                    Icon(
-                      LucideIcons.camera,
-                      color: Color.fromRGBO(99, 96, 255, 1),
-                    ),
-                    SizedBox(
+                    SvgPicture.asset('assets/icons/cam_account.svg'),
+                    const SizedBox(
                       width: 20,
                     ),
-                    Text(
+                    const Text(
                       'Chụp ảnh',
                       style: TextStyle(
                         fontSize: 15,
@@ -102,6 +107,42 @@ class _AccountScreenState extends State<AccountScreen> {
         );
       },
     );
+  }
+
+  void showPopup() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+            backgroundColor: Colors.white,
+            title: const Text(
+              'Đã gửi yêu cầu thành công',
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  'Ok',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Color.fromRGBO(99, 96, 255, 1),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          );
+        });
   }
 
   // Choose image from gallery
@@ -147,8 +188,18 @@ class _AccountScreenState extends State<AccountScreen> {
       color: Color.fromRGBO(253, 79, 79, 1),
     );
 
-    return Consumer<UserDataModel>(
-      builder: (context, userData, child) => Scaffold(
+    return Consumer<UserDataModel>(builder: (context, userData, child) {
+      final data = Provider.of<UserDataModel>(context);
+      print('Data: $data');
+      print('Data value: ${data.value}');
+
+      final avatarUrl = data.value?["avatar"];
+      final displayName = data.value?["displayName"] ?? "Unknown User";
+
+      print('Avatar URL: $avatarUrl');
+      print('Display Name: $displayName');
+
+      return Scaffold(
         backgroundColor: const Color(0xFF6360FF),
         appBar: AppBar(
           actions: [
@@ -179,38 +230,49 @@ class _AccountScreenState extends State<AccountScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 48),
                 child: Column(
                   children: [
-                    if (userData.value?["avatar"] != null &&
-                        userData.value?["avatar"].isNotEmpty)
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(
-                              userData.value?["avatar"],
+                    IconButton(
+                      onPressed: showModalBottom,
+                      icon: Stack(
+                        children: [
+                          if (avatarUrl != null && avatarUrl.isNotEmpty)
+                            Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(avatarUrl),
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
+                              width: 120,
+                              height: 120,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.grey,
+                              ),
+                              child: const Icon(
+                                Icons.person,
+                                size: 80,
+                                color: Colors.white,
+                              ),
+                            ),
+                          Positioned(
+                            bottom: 8,
+                            right: -1,
+                            child: SvgPicture.asset(
+                              'assets/icons/chang_ava.svg',
                             ),
                           ),
-                        ),
-                      )
-                    else
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey,
-                        ),
-                        child: const Icon(
-                          Icons.person,
-                          size: 80,
-                          color: Colors.white,
-                        ),
+                        ],
                       ),
+                    ),
                     const SizedBox(height: 20),
                     Text(
-                      userData.value?["displayName"] ?? "Unknown User",
+                      displayName,
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -376,7 +438,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            onTap: showModalBottom,
+                            onTap: showPopup,
                             child: Container(
                               decoration: BoxDecoration(
                                 color: color,
@@ -389,12 +451,12 @@ class _AccountScreenState extends State<AccountScreen> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SvgPicture.asset('assets/icons/image.svg'),
+                                  SvgPicture.asset('assets/icons/bill.svg'),
                                   const SizedBox(
                                     width: 10,
                                   ),
                                   const Text(
-                                    'Thay đổi ảnh',
+                                    'Cấp lại hạn mức',
                                     style: TextStyle(
                                       color: Colors.white,
                                     ),
@@ -451,7 +513,7 @@ class _AccountScreenState extends State<AccountScreen> {
             ],
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

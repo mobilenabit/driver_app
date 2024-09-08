@@ -251,7 +251,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
               topRight: Radius.circular(30),
             ),
           ),
-          child: Column(
+          child: 
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Pick date
@@ -537,18 +538,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
-                                              'Thời gian: ${item.hours}',
-                                              style: const TextStyle(
-                                                color: Color.fromRGBO(
-                                                    145, 145, 159, 1),
-                                                fontSize: 15,
+                                            Expanded(
+                                              child: Text(
+                                                'Thời gian: ${item.hours}',
+                                                style: const TextStyle(
+                                                  color: Color.fromRGBO(
+                                                      145, 145, 159, 1),
+                                                  fontSize: 15,
+                                                ),
                                               ),
                                             ),
                                             Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                      horizontal: 10),
+                                                horizontal: 10,
+                                              ),
                                               decoration: BoxDecoration(
                                                 color:
                                                     item.status == 'Thành công'
@@ -575,15 +579,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             ),
                                           ],
                                         ),
+                                        SizedBox(
+                                          height: MediaQuery.sizeOf(context)
+                                                  .height *
+                                              0.003,
+                                        ),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
-                                              'Mã giao dịch: ${item.code}',
-                                              style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 15,
+                                            Expanded(
+                                              child: Text(
+                                                'Mã giao dịch: ${item.code}',
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 15,
+                                                ),
                                               ),
                                             ),
                                             const Row(
@@ -604,12 +615,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             ),
                                           ],
                                         ),
+                                        SizedBox(
+                                          height: MediaQuery.sizeOf(context)
+                                                  .height *
+                                              0.003,
+                                        ),
                                         Text(
                                           'Số lượng: ${currencyFormat.format(item.amount)}lít',
                                           style: const TextStyle(
                                             color: Colors.black,
                                             fontSize: 15,
                                           ),
+                                        ),
+                                        SizedBox(
+                                          height: MediaQuery.sizeOf(context)
+                                                  .height *
+                                              0.003,
+                                        ),
+                                        SizedBox(
+                                          height: MediaQuery.sizeOf(context)
+                                                  .height *
+                                              0.003,
                                         ),
                                         RichText(
                                           text: TextSpan(

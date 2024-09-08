@@ -1,3 +1,4 @@
+import 'package:driver_app/screens/qr_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 
@@ -82,6 +83,7 @@ class QrScreen extends StatelessWidget {
                   LucideIcons.qr_code,
                   size: 200,
                 ),
+               
               ],
             ),
           ),

@@ -362,10 +362,10 @@ class TranResultScreen extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              NumberFormat.currency(
+                                              '${NumberFormat.currency(
                                                 decimalDigits: 0,
                                                 customPattern: "###,###",
-                                              ).format(amount),
+                                              ).format(amount)} lít',
                                               style: const TextStyle(
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w600,
