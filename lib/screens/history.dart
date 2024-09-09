@@ -251,8 +251,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               topRight: Radius.circular(30),
             ),
           ),
-          child: 
-          Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Pick date
@@ -429,14 +428,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           () {
                             _dateSelected = isSelected ? null : index;
                             if (date[index] == '7 ngày') {
-                              _startDate = DateTime.now()
-                                  .subtract(const Duration(days: 7));
+                              _startDate = _endDate.subtract(
+                                const Duration(days: 7),
+                              );
                             } else if (date[index] == '15 ngày') {
-                              _startDate = DateTime.now()
-                                  .subtract(const Duration(days: 15));
+                              _startDate = _endDate.subtract(
+                                const Duration(days: 15),
+                              );
                             } else {
-                              _startDate = DateTime.now()
-                                  .subtract(const Duration(days: 30));
+                              _startDate = _endDate.subtract(
+                                const Duration(days: 30),
+                              );
                             }
                           },
                         );
@@ -474,203 +476,259 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
               // List items after filter
               Expanded(
-                child: ListView.builder(
-                  itemCount: _groupedItems.keys.length,
-                  itemBuilder: (context, index) {
-                    String date = _groupedItems.keys.elementAt(index);
-                    List<History> historyList = _groupedItems[date]!;
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 10,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Date header
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: 12,
-                            ),
-                            child: Text(
-                              date,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color.fromRGBO(145, 145, 159, 1),
-                                fontWeight: FontWeight.normal,
+                child: _filteredItems.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: 10,
+                              ),
+                              child: Image.asset(
+                                'assets/images/intent.png',
+                                scale: 4,
                               ),
                             ),
-                          ),
+                            Text(
+                              'Không có phát sinh giao dịch',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                            Text(
+                              'trong khoảng thời gian này',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: _groupedItems.keys.length,
+                        itemBuilder: (context, index) {
+                          String date = _groupedItems.keys.elementAt(index);
+                          List<History> historyList = _groupedItems[date]!;
 
-                          // Content
-                          Column(
-                            children: historyList.map((item) {
-                              return GestureDetector(
-                                onTap: () {
-                                  pushScreenWithoutNavBar(
-                                    context,
-                                    TranResultScreen(
-                                      amount: item.amount,
-                                      code: item.code,
-                                      date: item.date,
-                                      hours: item.hours,
-                                      money: item.money,
-                                      status: item.status,
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 10,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Date header
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: 12,
+                                  ),
+                                  child: Text(
+                                    date,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Color.fromRGBO(145, 145, 159, 1),
+                                      fontWeight: FontWeight.normal,
                                     ),
-                                  );
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 15),
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(
-                                          255, 255, 255, 255),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                'Thời gian: ${item.hours}',
-                                                style: const TextStyle(
-                                                  color: Color.fromRGBO(
-                                                      145, 145, 159, 1),
-                                                  fontSize: 15,
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 10,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    item.status == 'Thành công'
-                                                        ? const Color.fromRGBO(
-                                                            219, 255, 225, 1)
-                                                        : const Color.fromRGBO(
-                                                            255, 219, 219, 1),
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
-                                              ),
-                                              child: Text(
-                                                item.status,
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w300,
-                                                  color: item.status ==
-                                                          'Thành công'
-                                                      ? const Color.fromRGBO(
-                                                          76, 217, 100, 1)
-                                                      : const Color.fromRGBO(
-                                                          255, 99, 99, 1),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: MediaQuery.sizeOf(context)
-                                                  .height *
-                                              0.003,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                'Mã giao dịch: ${item.code}',
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 15,
-                                                ),
-                                              ),
-                                            ),
-                                            const Row(
-                                              children: [
-                                                Text(
-                                                  'Chi tiết',
-                                                  style: TextStyle(
-                                                      color: Color.fromRGBO(
-                                                          145, 145, 159, 1),
-                                                      fontSize: 15),
-                                                ),
-                                                SizedBox(width: 5),
-                                                Icon(
-                                                  LucideIcons.chevron_right,
-                                                  size: 18,
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: MediaQuery.sizeOf(context)
-                                                  .height *
-                                              0.003,
-                                        ),
-                                        Text(
-                                          'Số lượng: ${currencyFormat.format(item.amount)}lít',
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 15,
+                                  ),
+                                ),
+
+                                // Content
+                                Column(
+                                  children: historyList.map((item) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        pushScreenWithoutNavBar(
+                                          context,
+                                          TranResultScreen(
+                                            amount: item.amount,
+                                            code: item.code,
+                                            date: item.date,
+                                            hours: item.hours,
+                                            money: item.money,
+                                            status: item.status,
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: MediaQuery.sizeOf(context)
-                                                  .height *
-                                              0.003,
-                                        ),
-                                        SizedBox(
-                                          height: MediaQuery.sizeOf(context)
-                                                  .height *
-                                              0.003,
-                                        ),
-                                        RichText(
-                                          text: TextSpan(
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 12),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15, vertical: 15),
+                                          decoration: BoxDecoration(
+                                            color: const Color.fromARGB(
+                                                255, 255, 255, 255),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              const TextSpan(
-                                                text: 'Số tiền: ',
-                                                style: TextStyle(
-                                                  fontSize: 15,
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      'Thời gian: ${item.hours}',
+                                                      style: const TextStyle(
+                                                        color: Color.fromRGBO(
+                                                            145, 145, 159, 1),
+                                                        fontSize: 15,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 10,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: item.status ==
+                                                              'Thành công'
+                                                          ? const Color
+                                                              .fromRGBO(
+                                                              219, 255, 225, 1)
+                                                          : const Color
+                                                              .fromRGBO(
+                                                              255, 219, 219, 1),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              50),
+                                                    ),
+                                                    child: Text(
+                                                      item.status,
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w300,
+                                                        color: item.status ==
+                                                                'Thành công'
+                                                            ? const Color
+                                                                .fromRGBO(
+                                                                76, 217, 100, 1)
+                                                            : const Color
+                                                                .fromRGBO(
+                                                                255, 99, 99, 1),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(
+                                                height:
+                                                    MediaQuery.sizeOf(context)
+                                                            .height *
+                                                        0.003,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      'Mã giao dịch: ${item.code}',
+                                                      style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 15,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const Row(
+                                                    children: [
+                                                      Text(
+                                                        'Chi tiết',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Color.fromRGBO(
+                                                                    145,
+                                                                    145,
+                                                                    159,
+                                                                    1),
+                                                            fontSize: 15),
+                                                      ),
+                                                      SizedBox(width: 5),
+                                                      Icon(
+                                                        LucideIcons
+                                                            .chevron_right,
+                                                        size: 18,
+                                                        color: Color.fromRGBO(
+                                                            145, 145, 159, 1),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(
+                                                height:
+                                                    MediaQuery.sizeOf(context)
+                                                            .height *
+                                                        0.003,
+                                              ),
+                                              Text(
+                                                'Số lượng: ${currencyFormat.format(item.amount)}lít',
+                                                style: const TextStyle(
                                                   color: Colors.black,
+                                                  fontSize: 15,
                                                 ),
                                               ),
-                                              TextSpan(
-                                                text:
-                                                    '${currencyFormat.format(item.money)}₫',
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: color,
+                                              SizedBox(
+                                                height:
+                                                    MediaQuery.sizeOf(context)
+                                                            .height *
+                                                        0.003,
+                                              ),
+                                              SizedBox(
+                                                height:
+                                                    MediaQuery.sizeOf(context)
+                                                            .height *
+                                                        0.003,
+                                              ),
+                                              RichText(
+                                                text: TextSpan(
+                                                  children: [
+                                                    const TextSpan(
+                                                      text: 'Số tiền: ',
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                    TextSpan(
+                                                      text:
+                                                          '${currencyFormat.format(item.money)}₫',
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: color,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          )
-                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                                )
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),

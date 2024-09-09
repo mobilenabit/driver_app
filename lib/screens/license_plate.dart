@@ -1,8 +1,7 @@
-import 'package:driver_app/screens/account.dart';
+import 'package:driver_app/models/licensePlate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
+import 'package:provider/provider.dart';
 
 class LicensePlateScreen extends StatefulWidget {
   const LicensePlateScreen({super.key});
@@ -45,6 +44,14 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<GasMap> _filteredgasStation = [];
   final List<GasMap> _gasStation = _item;
+  LicensePlateModel? licensePlateModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredgasStation = _gasStation;
+    _searchController.addListener(_filtergasStation);
+  }
 
   // Search
   void _filtergasStation() {
@@ -58,13 +65,6 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _filteredgasStation = _gasStation;
-    _searchController.addListener(_filtergasStation);
-  }
-
-  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
@@ -72,6 +72,8 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    licensePlateModel = context.read<LicensePlateModel>();
+
     var color = const Color.fromRGBO(99, 96, 255, 1);
     return Scaffold(
       backgroundColor: color,
@@ -154,7 +156,8 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                     ),
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.pop(context);
+                        licensePlateModel?.setLicensePlate(gas.name);
+                        Navigator.pop(context, gas.name);
                       },
                       child: Row(
                         children: [

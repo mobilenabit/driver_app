@@ -43,12 +43,13 @@ class ApiClient {
     }
   }
 
-    Future<Map<String, dynamic>> getUserData() async {
-    final apiToken = await secureStorage.readSecureData("access_token");
+  Future<Map<String, dynamic>> getUserData() async {
+    final apiToken = await _ss.readSecureData("access_token");
+
     try {
       final response = await _r.retry(
         () async => await _dio.get(
-          "/core/Users/GetMyInfo",
+          "$_apiUrl/core/Users/GetMyInfo",
           options: Options(
             headers: {
               "Authorization": "Bearer $apiToken",

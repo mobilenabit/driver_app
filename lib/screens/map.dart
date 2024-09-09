@@ -119,6 +119,14 @@ class _MapScreen2State extends State<MapScreen2> {
       'distance': 170.0,
       'isSelected': false,
     },
+    {
+      'location': const LatLng(20.9579999, 105.7981846),
+      'name': '',
+      'startTime': DateTime(2024, 8, 27, 7, 0),
+      'endTime': DateTime(2024, 8, 27, 24, 0),
+      'distance': 1700.0,
+      'isSelected': false,
+    },
   ];
 
   // Show route
@@ -167,7 +175,12 @@ class _MapScreen2State extends State<MapScreen2> {
             left: 15,
             right: 15,
           ),
-          padding: const EdgeInsets.all(15),
+          padding: const EdgeInsets.fromLTRB(
+            5,
+            15,
+            15,
+            15,
+          ),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -179,8 +192,11 @@ class _MapScreen2State extends State<MapScreen2> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Image.asset(
-                    'assets/images/Card.png',
+                  Expanded(
+                    child: Image.asset(
+                      'assets/images/pvoil.jpg',
+                      scale: 4,
+                    ),
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,13 +255,14 @@ class _MapScreen2State extends State<MapScreen2> {
                 ],
               ),
               const SizedBox(
-                height: 20,
+                height: 16,
               ),
               GestureDetector(
                 onTap: () async {
-                  final url =
-                      // 'https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}';
-                      'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(name)} ${location.latitude},${location.longitude}';
+                  final url = name.isNotEmpty
+                      // 'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(name)} ${location.latitude},${location.longitude}';
+                      ? 'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(name)}'
+                      : 'https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}';
                   // ignore: deprecated_member_use
                   if (await canLaunch(url)) {
                     // ignore: deprecated_member_use
@@ -479,7 +496,7 @@ class _MapScreen2State extends State<MapScreen2> {
                                     return GasMap(
                                       name: marker['name'] as String,
                                       address: 'Đ.Cầu Bươu',
-                                    distance: marker['distance'] as double, 
+                                      distance: marker['distance'] as double,
                                     );
                                   }).toList(),
                                 ),
