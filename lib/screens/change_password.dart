@@ -478,7 +478,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                                 : null,
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor:
-                                                  const Color(0xFFFFC709),
+                                                  const Color.fromRGBO(99, 96, 255, 1),
                                               disabledForegroundColor:
                                                   Colors.grey,
                                               foregroundColor: Colors.black,

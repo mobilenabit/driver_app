@@ -120,8 +120,16 @@ class _MapScreen2State extends State<MapScreen2> {
       'isSelected': false,
     },
     {
-      'location': const LatLng(20.9579999, 105.7981846),
-      'name': '',
+      'location': const LatLng(20.9762719, 105.8335204),
+      'name': 'CHXD Lê Hoàng',
+      'startTime': DateTime(2024, 8, 27, 7, 0),
+      'endTime': DateTime(2024, 8, 27, 24, 0),
+      'distance': 1700.0,
+      'isSelected': false,
+    },
+    {
+      'location': const LatLng(20.9762713, 105.8335207),
+      'name': 'CHXD Lê Hoàngdadasdsadasdasdsaasdadassadasdas',
       'startTime': DateTime(2024, 8, 27, 7, 0),
       'endTime': DateTime(2024, 8, 27, 24, 0),
       'distance': 1700.0,
@@ -176,7 +184,7 @@ class _MapScreen2State extends State<MapScreen2> {
             right: 15,
           ),
           padding: const EdgeInsets.fromLTRB(
-            5,
+            15,
             15,
             15,
             15,
@@ -198,59 +206,66 @@ class _MapScreen2State extends State<MapScreen2> {
                       scale: 4,
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(
-                            LucideIcons.clock,
-                            size: 12,
-                            color: Color.fromRGBO(255, 129, 129, 1),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            '${startTime.hour}:${startTime.minute.toString().padLeft(2, '0')} - ${endTime.hour}:${endTime.minute.toString().padLeft(2, '0')}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Color.fromRGBO(189, 189, 189, 1),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              LucideIcons.clock,
+                              size: 12,
+                              color: Color.fromRGBO(255, 129, 129, 1),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          const Icon(
-                            LucideIcons.map_pin,
-                            size: 12,
-                            color: Color.fromRGBO(255, 129, 129, 1),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            distance > 1000
-                                ? '${(distance / 1000).toStringAsFixed(1)} km'
-                                : '${distance.toStringAsFixed(1)} m',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Color.fromRGBO(189, 189, 189, 1),
+                            const SizedBox(
+                              width: 5,
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            Text(
+                              '${startTime.hour}:${startTime.minute.toString().padLeft(2, '0')} - ${endTime.hour}:${endTime.minute.toString().padLeft(2, '0')}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color.fromRGBO(189, 189, 189, 1),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              LucideIcons.map_pin,
+                              size: 12,
+                              color: Color.fromRGBO(255, 129, 129, 1),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              distance > 1000
+                                  ? '${(distance / 1000).toStringAsFixed(1)} km'
+                                  : '${distance.toStringAsFixed(1)} m',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color.fromRGBO(189, 189, 189, 1),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -273,22 +288,32 @@ class _MapScreen2State extends State<MapScreen2> {
                 },
                 child: Container(
                   width: MediaQuery.sizeOf(context).width * 0.4,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(99, 96, 255, 1),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SvgPicture.asset('assets/icons/road.svg'),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'Đường đi',
-                        style: TextStyle(
+                      Expanded(
+                        child: Icon(
+                          LucideIcons.corner_up_right,
                           color: Colors.white,
-                          fontSize: 15,
+                        ),
+                      ),
+                      //  SizedBox(width: 10),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          'Đường đi',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                     ],
@@ -320,8 +345,141 @@ class _MapScreen2State extends State<MapScreen2> {
     var color = const Color.fromRGBO(99, 96, 255, 1);
     return Scaffold(
       body: myPosition == null
-          ? const Center(
-              child: CircularProgressIndicator(),
+          ? Stack(
+              //child: CircularProgressIndicator(),
+              children: [
+                FlutterMap(
+                  mapController: _mapController,
+                  options: const MapOptions(
+                    initialCenter: LatLng(21.0331038, 105.8211664),
+                    initialZoom: 15,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                      additionalOptions: const {
+                        'accessToken': MAPBOX_ACCESS_TOKEN,
+                        'id': 'mapbox/streets-v12',
+                      },
+                    ),
+                  ],
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // User location
+                      Container(
+                        margin: const EdgeInsets.only(
+                          right: 15,
+                        ),
+                        height: 50,
+                        width: 50,
+                        child: FloatingActionButton(
+                          backgroundColor: Colors.white,
+                          shape: const CircleBorder(),
+                          onPressed: () {},
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            color: color,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.025,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(
+                          right: 15,
+                        ),
+                        width: 160,
+                        child: FloatingActionButton(
+                          backgroundColor: Colors.white,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Icon(
+                                  LucideIcons.list,
+                                  size: 25,
+                                  color: color,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    right: 8,
+                                  ),
+                                  child: Text(
+                                    'Xem danh sách',
+                                    style: TextStyle(
+                                      color: color,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          onPressed: () async {
+                            final selectedGas = await Navigator.push<GasMap>(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GasStationScreen(
+                                  gasStations: _markerData.map((marker) {
+                                    return GasMap(
+                                      name: marker['name'] as String,
+                                      address: 'Đ.Cầu Bươu',
+                                      distance: marker['distance'] as double,
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            );
+
+                            if (selectedGas != null) {
+                              setState(() {
+                                selectedGasStation = selectedGas;
+                              });
+
+                              // Find the corresponding marker data
+                              final selectedMarker = _markerData.firstWhere(
+                                (marker) => marker['name'] == selectedGas.name,
+                              );
+
+                              final name = selectedMarker['name'] as String;
+                              final startTime =
+                                  selectedMarker['startTime'] as DateTime;
+                              final endTime =
+                                  selectedMarker['endTime'] as DateTime;
+                              final distance =
+                                  selectedMarker['distance'] as double;
+                              final location =
+                                  selectedMarker['location'] as LatLng;
+                              final index = _markerData.indexOf(selectedMarker);
+
+                              _showMarkerInfo(
+                                name,
+                                startTime,
+                                endTime,
+                                distance,
+                                location,
+                                index,
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 100),
+                    ],
+                  ),
+                ),
+              ],
             )
           : Stack(
               children: [
@@ -339,7 +497,7 @@ class _MapScreen2State extends State<MapScreen2> {
                   children: [
                     TileLayer(
                       urlTemplate:
-                          'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                    'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
                       additionalOptions: const {
                         'accessToken': MAPBOX_ACCESS_TOKEN,
                         'id': 'mapbox/streets-v12',

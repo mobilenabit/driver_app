@@ -1,14 +1,13 @@
 import 'package:driver_app/components/nav__bar.dart';
-import 'package:driver_app/core/user_data.dart';
 import 'package:driver_app/screens/account.dart';
 import 'package:driver_app/screens/history.dart';
+import 'package:driver_app/screens/info_test.dart';
 import 'package:driver_app/screens/map.dart';
 import 'package:driver_app/screens/qr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:driver_app/screens/info.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
-import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return PersistentTabView(
       tabs: [
         PersistentTabConfig(
-          screen: const InfoScreen(),
+          screen: const InfoTestScreen(),
           item: ItemConfig(
             icon: SvgPicture.asset('assets/icons/home_selected.svg'),
             inactiveIcon: SvgPicture.asset('assets/icons/home.svg'),

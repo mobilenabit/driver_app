@@ -3,6 +3,7 @@ import 'package:driver_app/models/userData.dart';
 import 'package:driver_app/screens/qr_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 
 class QrScreen extends StatefulWidget {
   const QrScreen({super.key});
@@ -83,7 +84,7 @@ class _QrScreenState extends State<QrScreen> {
                 child: Align(
                   alignment: Alignment.center,
                   child: Container(
-                    height: 320,
+                    height: 350,
                     width: 320,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -121,7 +122,8 @@ class _QrScreenState extends State<QrScreen> {
                                                 179, 179, 179, 1),
                                         height: 2,
                                       ),
-                                    )),
+                                    ),
+                                    ),
                           ),
                         ),
                         const SizedBox(
@@ -130,6 +132,21 @@ class _QrScreenState extends State<QrScreen> {
                         const Icon(
                           LucideIcons.qr_code,
                           size: 200,
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            pushScreenWithoutNavBar(
+                              context,
+                              const QrResultScreen(),
+                            );
+                          },
+                          child: Text(
+                            'Debug',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: color,
+                            ),
+                          ),
                         ),
                       ],
                     ),

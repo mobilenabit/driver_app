@@ -1,14 +1,12 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:driver_app/components/ticket_cliper.dart';
-import 'package:driver_app/screens/transaction_fail.dart';
-import 'package:driver_app/screens/transaction_success.dart';
+import 'package:driver_app/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:intl/intl.dart';
 
-class QrResultScreen extends StatelessWidget {
-  const QrResultScreen({
+class TransactionResult extends StatelessWidget {
+  const TransactionResult({
     super.key,
   });
 
@@ -21,7 +19,6 @@ class QrResultScreen extends StatelessWidget {
       backgroundColor: color,
       appBar: AppBar(
         backgroundColor: color,
-        automaticallyImplyLeading: false,
         // leading: IconButton(
         //   onPressed: () {
         //     Navigator.pop(context);
@@ -32,6 +29,7 @@ class QrResultScreen extends StatelessWidget {
         //     color: Colors.white,
         //   ),
         // ),
+        automaticallyImplyLeading: false,
         title: const Text(
           'Chi tiết giao dịch',
           style: TextStyle(
@@ -50,19 +48,50 @@ class QrResultScreen extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: Align(
-            alignment: Alignment.center,
-            child: Container(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 30),
-              child: Column(
-                children: [
-                  SingleChildScrollView(
-                    child: Column(
+          child: SingleChildScrollView(
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 30),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/images/transaction_success.png',
+                          scale: 2.0,
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "Thanh toán thành công",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Color.fromRGBO(26, 159, 65, 1),
+                          ),
+                        ),
+                        Text(
+                          '${NumberFormat.currency(
+                            decimalDigits: 0,
+                            symbol: "₫",
+                            customPattern: "###,###",
+                          ).format(123000)} ₫',
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
-                          height: size.height * 0.1,
+                          height: size.height * 0.02,
                         ),
                         Stack(
                           alignment: Alignment.center,
@@ -351,88 +380,42 @@ class QrResultScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: size.width * 0.85,
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 40,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: TextButton(
-                            onPressed: () {
-                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      const TransactionFailedResult(),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: const Color.fromRGBO(191, 200, 210, 1),
-                                  strokeAlign: 1,
-                                ),
+                        SizedBox(
+                          height: size.height * 0.02,
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    const HomeScreen(),
                               ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 25,
-                                vertical: 10,
-                              ),
-                              child: const Text(
-                                'Hủy',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
+                            );
+                          },
+                          icon: Container(
+                            height: 50,
+                            width: 50,
+                            decoration: const BoxDecoration(
+                                color: Colors.white, shape: BoxShape.circle),
+                            child: SvgPicture.asset(
+                              'assets/icons/return_home.svg',
+                              width: 20,
+                              height: 20,
                             ),
                           ),
                         ),
-                        Expanded(
-                          flex: 2,
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      const TransactionResult(),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: color,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 60,
-                                vertical: 10,
-                              ),
-                              child: const Text(
-                                'Xác nhận',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
+                        const Text(
+                          'Về trang chủ',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
