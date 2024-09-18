@@ -238,7 +238,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             'Lịch sử giao dịch',
             style: TextStyle(
               fontSize: 15,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.normal,
               color: Colors.white,
             ),
           ),
@@ -400,10 +400,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
 
               const Padding(
-                padding: EdgeInsets.only(
-                  left: 15,
-                  top: 10,
-                  bottom: 10,
+                padding: EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 15,
                 ),
                 child: Text(
                   'Hệ thống hỗ trợ truy vấn lịch sử giao dịch trong vòng 30 ngày gần nhất',

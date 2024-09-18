@@ -178,81 +178,6 @@ class ApiClient {
     }
   }
 
-  Future<Map<String, dynamic>> getNotifications() async {
-    final apiToken = await _ss.readSecureData("access_token");
-
-    try {
-      final response = await _r.retry(
-        () async => await _dio.get(
-          "$_apiUrl/core/NotificationTo/GetsMyNotification/1/20/-1",
-          options: Options(
-            headers: {
-              "Authorization": "Bearer $apiToken",
-            },
-          ),
-        ),
-        retryIf: (e) {
-          if (e is DioException) {
-            return e.type == DioExceptionType.sendTimeout ||
-                e.type == DioExceptionType.receiveTimeout ||
-                e.type == DioExceptionType.connectionTimeout;
-          }
-
-          return false;
-        },
-      );
-      return response.data;
-    } on DioException catch (e) {
-      return e.response!.data;
-    }
-  }
-
-  Future<Map<String, dynamic>> sendNotification(
-    String title,
-    String body,
-    int userId,
-  ) async {
-    final apiToken = await _ss.readSecureData("access_token");
-
-    final details = {
-      "title": title,
-      "body": body,
-      "status": 1,
-      "notificationTos": [
-        {
-          "toUserId": userId,
-          "status": 1,
-        }
-      ]
-    };
-
-    try {
-      final response = await _r.retry(
-        () async => await _dio.post(
-          "$_apiUrl/core/NotificationFrom/Send",
-          options: Options(
-            headers: {
-              "Authorization": "Bearer $apiToken",
-            },
-          ),
-          data: details,
-        ),
-        retryIf: (e) {
-          if (e is DioException) {
-            return e.type == DioExceptionType.sendTimeout ||
-                e.type == DioExceptionType.receiveTimeout ||
-                e.type == DioExceptionType.connectionTimeout;
-          }
-
-          return false;
-        },
-      );
-      return response.data;
-    } on DioException catch (e) {
-      return e.response!.data;
-    }
-  }
-
   Future<Map<String, dynamic>> verifyOldPassword(
     Map<String, dynamic> userData,
     String password,
@@ -312,6 +237,79 @@ class ApiClient {
             },
           ),
           data: details,
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  // Get all News
+  Future<Map<String, dynamic>> getNews() async {
+    final apiToken = await _ss.readSecureData("access_token");
+
+    final Map<String, dynamic> details = {
+      'keyword': '',
+      'status': 0,
+      'pageIndex': 1,
+      'pageSize': 50,
+      'orderCol': '',
+      'isDesc': true,
+      'idLanguage': 0,
+      'idCategory': 0,
+    };
+    try {
+      final response = await _r.retry(
+        () async => await _dio.post(
+          "$_apiUrl/CMS/CmsNews/Find",
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+          data: details,
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  // Get News by Id
+  Future<Map<String, dynamic>> getNewsById(id) async {
+    final apiToken = await _ss.readSecureData("access_token");
+
+    try {
+      final response = await _r.retry(
+        () async => await _dio.get(
+          "$_apiUrl/CMS/CmsNews/$id",
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
         ),
         retryIf: (e) {
           if (e is DioException) {

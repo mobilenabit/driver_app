@@ -8,6 +8,8 @@
 	<string>Used to demonstrate image picker plugin</string>
 	<key>NSCameraUsageDescriptio</key>
 	<string>Used to capture audio for image picker plugin</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Why is my app authenticating using face id?</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
   		<string>$(com.google.android.apps.maps)</string> 

@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return PersistentTabView(
       tabs: [
         PersistentTabConfig(
-          screen: const InfoTestScreen(),
+          screen: const InfoScreen(),
           item: ItemConfig(
             icon: SvgPicture.asset('assets/icons/home_selected.svg'),
             inactiveIcon: SvgPicture.asset('assets/icons/home.svg'),

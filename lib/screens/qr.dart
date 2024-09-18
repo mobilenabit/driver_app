@@ -54,7 +54,7 @@ class _QrScreenState extends State<QrScreen> {
           style: TextStyle(
             fontSize: 15,
             color: Colors.white,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.normal,
           ),
         ),
       ),
@@ -113,17 +113,16 @@ class _QrScreenState extends State<QrScreen> {
                           ),
                           child: Row(
                             children: List.generate(
-                                150 ~/ 5,
-                                (index) => Expanded(
-                                      child: Container(
-                                        color: index % 2 == 0
-                                            ? Colors.transparent
-                                            : const Color.fromRGBO(
-                                                179, 179, 179, 1),
-                                        height: 2,
-                                      ),
-                                    ),
-                                    ),
+                              150 ~/ 5,
+                              (index) => Expanded(
+                                child: Container(
+                                  color: index % 2 == 0
+                                      ? Colors.transparent
+                                      : const Color.fromRGBO(179, 179, 179, 1),
+                                  height: 2,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(
