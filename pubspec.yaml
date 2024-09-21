@@ -66,6 +66,8 @@ dependencies:
   flutter_map_location_marker: ^9.1.0
   html: ^0.15.4
   cached_network_image: ^3.4.1
+  fluttertoast: ^8.2.8
+  relative_time: ^5.0.0
 
 
 
