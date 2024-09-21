@@ -392,9 +392,7 @@ class _MapScreen2State extends State<MapScreen2> {
                         height: MediaQuery.sizeOf(context).height * 0.025,
                       ),
                       Container(
-                        margin: const EdgeInsets.only(
-                          right: 15,
-                        ),
+                        margin: const EdgeInsets.only(right: 15),
                         width: 160,
                         child: FloatingActionButton(
                           backgroundColor: Colors.white,
@@ -413,9 +411,7 @@ class _MapScreen2State extends State<MapScreen2> {
                               ),
                               Expanded(
                                 child: Padding(
-                                  padding: const EdgeInsets.only(
-                                    right: 8,
-                                  ),
+                                  padding: const EdgeInsets.only(right: 8),
                                   child: Text(
                                     'Xem danh sách',
                                     style: TextStyle(
@@ -475,7 +471,7 @@ class _MapScreen2State extends State<MapScreen2> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 100),
+                      const SizedBox(height: 120),
                     ],
                   ),
                 ),
@@ -497,7 +493,7 @@ class _MapScreen2State extends State<MapScreen2> {
                   children: [
                     TileLayer(
                       urlTemplate:
-                    'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                          'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
                       additionalOptions: const {
                         'accessToken': MAPBOX_ACCESS_TOKEN,
                         'id': 'mapbox/streets-v12',
@@ -694,7 +690,7 @@ class _MapScreen2State extends State<MapScreen2> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 100),
+                      const SizedBox(height: 120),
                     ],
                   ),
                 ),
