@@ -418,6 +418,66 @@ class ApiClient {
       return e.response!.data;
     }
   }
+
+  Future<Map<String, dynamic>> getVehicles(int id) async {
+    final apiToken = _ss.readSecureData("access_token");
+
+    try {
+      final response = await _r.retry(
+        () async => await _dio.get(
+          "$_apiUrl/MD/Driver2Vehicle/GetByDriverId/$id",
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getActiveVehicle(int id) async {
+    final apiToken = _ss.readSecureData("access_token");
+
+    try {
+      final response = await _r.retry(
+        () async => await _dio.get(
+          "$_apiUrl/MD/Driver2Vehicle/GetActiveVehicle/$id",
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
 }
 
 final apiClient = ApiClient();
