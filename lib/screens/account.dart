@@ -1,3 +1,4 @@
+import 'dart:convert';
 import "dart:typed_data";
 import 'package:driver_app/core/api_client.dart';
 import 'package:driver_app/models/userData.dart';
@@ -6,8 +7,10 @@ import 'package:driver_app/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
+import 'package:http/http.dart' as http;
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({
@@ -77,7 +80,6 @@ class _AccountScreenState extends State<AccountScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Avatar Options Handle
               Container(
                 margin: const EdgeInsets.only(top: 10),
                 height: 5,
@@ -138,11 +140,11 @@ class _AccountScreenState extends State<AccountScreen> {
   Future<void> _pickImageFromGallery(BuildContext context) async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
-
     if (pickedFile != null) {
       final bytes = await pickedFile.readAsBytes();
       String fileName = pickedFile.name;
       await _uploadImage(bytes, fileName);
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
     }
   }
@@ -150,48 +152,48 @@ class _AccountScreenState extends State<AccountScreen> {
   Future<void> _pickImageFromCamera(BuildContext context) async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.camera);
-
     if (pickedFile != null) {
       final bytes = await pickedFile.readAsBytes();
       String fileName = pickedFile.name;
       await _uploadImage(bytes, fileName);
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
     }
   }
 
+  // Upload the image
   Future<void> _uploadImage(Uint8List bytes, String fileName) async {
-    const String mimeType = 'image/jpeg';
-    final response = await apiClient.updateImage(bytes, mimeType, fileName);
+    final uri = Uri.parse(
+        'https://pumplogapi.petronet.vn/Storage/StorageFileItem/UploadFiles');
+    var request = http.MultipartRequest('POST', uri);
 
-    if (response['error'] != null) {
-      print('Error uploading image: ${response['message']}');
-    } else {
-      print('Image uploaded successfully: ${response['data']}');
+    final httpImage = http.MultipartFile.fromBytes(
+      'file',
+      bytes,
+      contentType: MediaType.parse('image/jpeg'),
+      filename: fileName,
+    );
 
-      await _fetchUpdatedUserAvatar();
+    request.files.add(httpImage);
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      String newAvatarUrl =
+          'http://pumplogapi.petronet.vn/Storage/StorageFileItem/GetFileById/${jsonResponse['data']['data']['id']}';
 
       setState(() {
-        _userDataBuilder = fetchUserData().then((value) {
-          _items = value;
-          return value;
-        });
+        _items[0].avatar = newAvatarUrl;
       });
-    }
-  }
 
-  Future<void> _fetchUpdatedUserAvatar() async {
-    final response = await apiClient
-        .getUserData(); // Ensure this call retrieves fresh user data
-    print('Fetch response: $response');
+      fetchUserData();
 
-    if (response['success'] && response['data'] != null) {
-      setState(() {
-        _items[0].avatar = response['data']
-            ['avatar']; // Ensure you're updating with the correct field
-      });
-      print('Avatar updated in state: ${_items[0].avatar}');
+      print('Avatar URL: $newAvatarUrl');
+      print('Response from upload: $jsonResponse');
     } else {
-      print('Error fetching user data: ${response['message']}');
+      print('Upload failed with status: ${response.statusCode}');
     }
   }
 
