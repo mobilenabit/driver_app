@@ -427,14 +427,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           () {
                             _dateSelected = isSelected ? null : index;
                             if (date[index] == '7 ngày') {
+                              _endDate = DateTime.now();
                               _startDate = _endDate.subtract(
                                 const Duration(days: 7),
                               );
                             } else if (date[index] == '15 ngày') {
+                              _endDate = DateTime.now();
                               _startDate = _endDate.subtract(
                                 const Duration(days: 15),
                               );
                             } else {
+                              _endDate = DateTime.now();
                               _startDate = _endDate.subtract(
                                 const Duration(days: 30),
                               );
