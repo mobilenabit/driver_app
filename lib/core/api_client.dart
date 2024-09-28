@@ -1,4 +1,9 @@
+import "dart:convert";
+import "dart:io";
+import "dart:typed_data";
+  import 'package:http/http.dart' as http;  
 import "package:dio/dio.dart";
+import "package:http_parser/http_parser.dart";
 import "package:retry/retry.dart";
 import "secure_store.dart";
 
@@ -326,6 +331,70 @@ class ApiClient {
       return e.response!.data;
     }
   }
+
+  // Change avatar
+  Future<Map<String, dynamic>> changeAvatar(File avatarFile) async {
+    final apiToken = await _ss.readSecureData("access_token");
+
+    try {
+      FormData formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(
+          avatarFile.path,
+          filename: avatarFile.path,
+        ),
+      });
+
+      final response = await _dio.post(
+        "$_apiUrl/Storage/StorageFileItem/UploadFiles",
+        data: formData,
+        options: Options(
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            "Authorization": "Bearer $apiToken",
+          },
+        ),
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  // Update avatar 
+  Future<Map<String, dynamic>> updateImage(
+      Uint8List bytes, String mimeType, String fileName) async {
+    final uri = Uri.parse(
+        '$_apiUrl/Storage/StorageFileItem/UploadFiles');
+    var request = http.MultipartRequest('POST', uri);
+    final httpImage = http.MultipartFile.fromBytes(
+      'file',
+      bytes,
+      contentType: MediaType.parse(mimeType),
+      filename: fileName,
+    );
+
+    request.files.add(httpImage);
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      final responseData = await http.Response.fromStream(response);
+      print('Upload successful!');
+
+      return jsonDecode(responseData.body);
+    } else {
+      print('Upload failed with status: ${response.statusCode}');
+      return {
+        'error': 'Upload failed',
+        'statusCode': response.statusCode,
+        'message': 'Status code: ${response.statusCode}',
+      };
+    }
+  }
+
+ 
+
 }
 
 final apiClient = ApiClient();

@@ -304,24 +304,24 @@ class _InfoScreenState extends State<InfoScreen> {
                           left: 0,
                           right: 0,
                           child: Container(
-                              margin: const EdgeInsets.fromLTRB(21, 27, 21, 38),
-                              padding: const EdgeInsets.all(11),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
+                            margin: const EdgeInsets.fromLTRB(21, 27, 21, 38),
+                            padding: const EdgeInsets.all(11),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: CarouselSlider(
+                              options: CarouselOptions(
+                                enableInfiniteScroll: true,
+                                autoPlayCurve: Curves.fastOutSlowIn,
+                                enlargeCenterPage: true,
+                                autoPlay: true,
+                                autoPlayInterval: const Duration(seconds: 3),
                               ),
-                              child: CarouselSlider(
-                                options: CarouselOptions(
-                                  
-                                  enableInfiniteScroll: true,
-                                  autoPlayCurve: Curves.fastOutSlowIn,
-                                  enlargeCenterPage: true,
-                                  autoPlay: true,
-                                  autoPlayInterval: const Duration(seconds: 3),
-                                ),
-                                items: _newsData
-                                    .where((news) => news.isHot == true)
-                                    .map((news) {
+                              items: _newsData
+                                  .where((news) => news.isHot == true)
+                                  .map(
+                                (news) {
                                   return Builder(
                                     builder: (BuildContext context) {
                                       return SizedBox(
@@ -355,8 +355,10 @@ class _InfoScreenState extends State<InfoScreen> {
                                       );
                                     },
                                   );
-                                }).toList(),
-                              )),
+                                },
+                              ).toList(),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -371,15 +373,4 @@ class _InfoScreenState extends State<InfoScreen> {
       ),
     );
   }
-}
-
-class Info {
-  String title;
-  String time;
-  Image image;
-  Info({
-    required this.title,
-    required this.time,
-    required this.image,
-  });
 }

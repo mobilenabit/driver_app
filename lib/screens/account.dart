@@ -1,3 +1,4 @@
+import "dart:typed_data";
 import 'package:driver_app/core/api_client.dart';
 import 'package:driver_app/models/userData.dart';
 import 'package:driver_app/screens/license_plate.dart';
@@ -65,7 +66,6 @@ class _AccountScreenState extends State<AccountScreen> {
     }
   }
 
-  // Change avatar
   void showModalBottom() {
     showModalBottomSheet(
       context: context,
@@ -77,66 +77,53 @@ class _AccountScreenState extends State<AccountScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // Avatar Options Handle
               Container(
-                margin: const EdgeInsets.only(
-                  top: 10,
-                ),
+                margin: const EdgeInsets.only(top: 10),
                 height: 5,
                 width: 50,
                 decoration: BoxDecoration(
-                  color: Colors.grey,
+                  color: Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(15),
                 ),
               ),
               MaterialButton(
                 onPressed: () {
-                  _pickImageFromGallery();
+                  _pickImageFromGallery(context);
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                      width: 15,
-                    ),
+                    const SizedBox(width: 15),
                     SvgPicture.asset('assets/icons/gallery.svg'),
-                    const SizedBox(
-                      width: 20,
-                    ),
+                    const SizedBox(width: 20),
                     const Text(
                       'Thư viện',
                       style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                      ),
+                          fontSize: 15,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
               ),
-              SizedBox(
-                height: MediaQuery.sizeOf(context).height * 0.01,
-              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.01),
               MaterialButton(
                 onPressed: () {
-                  _pickImageFromCamera();
+                  _pickImageFromCamera(context);
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                      width: 15,
-                    ),
+                    const SizedBox(width: 15),
                     SvgPicture.asset('assets/icons/cam_account.svg'),
-                    const SizedBox(
-                      width: 20,
-                    ),
+                    const SizedBox(width: 20),
                     const Text(
                       'Chụp ảnh',
                       style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                      ),
+                          fontSize: 15,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -148,60 +135,95 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  void showPopup() {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5),
-            ),
-            backgroundColor: Colors.white,
-            title: const Text(
-              'Đã gửi yêu cầu thành công',
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text(
-                  'Ok',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Color.fromRGBO(99, 96, 255, 1),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          );
-        });
-  }
-
-  // Choose image from gallery
-  Future<void> _pickImageFromGallery() async {
+  Future<void> _pickImageFromGallery(BuildContext context) async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      setState(() {});
+      final bytes = await pickedFile.readAsBytes();
+      String fileName = pickedFile.name;
+      await _uploadImage(bytes, fileName);
+      Navigator.pop(context);
     }
   }
 
-  // Choose image from camera
-  Future<void> _pickImageFromCamera() async {
+  Future<void> _pickImageFromCamera(BuildContext context) async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
-      setState(() {});
+      final bytes = await pickedFile.readAsBytes();
+      String fileName = pickedFile.name;
+      await _uploadImage(bytes, fileName);
+      Navigator.pop(context);
     }
+  }
+
+  Future<void> _uploadImage(Uint8List bytes, String fileName) async {
+    const String mimeType = 'image/jpeg';
+    final response = await apiClient.updateImage(bytes, mimeType, fileName);
+
+    if (response['error'] != null) {
+      print('Error uploading image: ${response['message']}');
+    } else {
+      print('Image uploaded successfully: ${response['data']}');
+
+      await _fetchUpdatedUserAvatar();
+
+      setState(() {
+        _userDataBuilder = fetchUserData().then((value) {
+          _items = value;
+          return value;
+        });
+      });
+    }
+  }
+
+  Future<void> _fetchUpdatedUserAvatar() async {
+    final response = await apiClient
+        .getUserData(); // Ensure this call retrieves fresh user data
+    print('Fetch response: $response');
+
+    if (response['success'] && response['data'] != null) {
+      setState(() {
+        _items[0].avatar = response['data']
+            ['avatar']; // Ensure you're updating with the correct field
+      });
+      print('Avatar updated in state: ${_items[0].avatar}');
+    } else {
+      print('Error fetching user data: ${response['message']}');
+    }
+  }
+
+  void showPopup() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+          backgroundColor: Colors.white,
+          title: const Text(
+            'Đã gửi yêu cầu thành công',
+            style: TextStyle(
+                fontSize: 15, color: Colors.black, fontWeight: FontWeight.w500),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Ok',
+                style: TextStyle(
+                    fontSize: 15,
+                    color: Color.fromRGBO(99, 96, 255, 1),
+                    fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

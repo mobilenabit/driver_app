@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         PersistentTabConfig(
-          screen: const AccountScreen(),
+          screen:  AccountScreen(),
           item: ItemConfig(
             icon: SvgPicture.asset('assets/icons/user_selected.svg'),
             inactiveIcon: SvgPicture.asset('assets/icons/user.svg'),

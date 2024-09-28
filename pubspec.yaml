@@ -64,10 +64,12 @@ dependencies:
   geolocator: ^13.0.1
   image_picker: ^1.1.2
   flutter_map_location_marker: ^9.1.0
-  html: ^0.15.4
   cached_network_image: ^3.4.1
   fluttertoast: ^8.2.8
   relative_time: ^5.0.0
+  flutter_image_compress: ^2.3.0
+  shimmer: ^3.0.0
+  http_parser: ^4.0.2
 
 
 

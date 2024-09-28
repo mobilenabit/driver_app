@@ -29,7 +29,7 @@ class _NewsScreenState extends State<NewsScreen> {
 
   Future<List<NewsId>> fetchNewsIdData(int id) async {
     try {
-      final response = await apiClient.getNewsById(id!);
+      final response = await apiClient.getNewsById(id);
 
       if (response['success']) {
         dynamic jsonData = response['data'];

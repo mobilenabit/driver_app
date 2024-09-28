@@ -13,13 +13,15 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          lazy: false, 
           create: (_) => LicensePlateModel(),
         ),
         ChangeNotifierProvider(
           create: (_) => UserDataModel()..loadUserData(),
         ),
+        
       ],
-      child: const App(),
+      child: const MyApp(),
     ),
   );
 }

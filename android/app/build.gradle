@@ -57,3 +57,10 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    implementation "androidx.fragment:fragment:1.5.7"
+    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "androidx.core:core-ktx:1.9.0"
+}
+
