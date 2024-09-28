@@ -22,8 +22,8 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  Future<List<UserData>>? _userDataBuilder;
-  late List<UserData> _items = [];
+  Future<List<Map<String, dynamic>>>? _userDataBuilder;
+  late List<Map<String, dynamic>> _items = [];
   String selectedLicensePlate = '30A-123.45';
 
   @override
@@ -47,17 +47,16 @@ class _AccountScreenState extends State<AccountScreen> {
     }
   }
 
-  Future<List<UserData>> fetchUserData() async {
+  Future<List<Map<String, dynamic>>> fetchUserData() async {
     try {
       final response = await apiClient.getUserData();
       print(response);
 
       if (response['success']) {
-        UserData data = UserData.fromJson(response['data']);
-        print('UserData: $data');
+        print('UserData: ${response["data"]}');
 
         setState(() {
-          _items = [data];
+          _items = [response["data"]];
         });
         return _items;
       } else {
@@ -142,8 +141,9 @@ class _AccountScreenState extends State<AccountScreen> {
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       final bytes = await pickedFile.readAsBytes();
-      String fileName = pickedFile.name;
-      await _uploadImage(bytes, fileName);
+      final fileName = pickedFile.name;
+      final res = await apiClient.uploadImage(bytes, fileName);
+      await apiClient.updateImage(_items[0], res["data"]["data"]["id"]);
       // ignore: use_build_context_synchronously
       Navigator.pop(context);
     }
@@ -155,45 +155,10 @@ class _AccountScreenState extends State<AccountScreen> {
     if (pickedFile != null) {
       final bytes = await pickedFile.readAsBytes();
       String fileName = pickedFile.name;
-      await _uploadImage(bytes, fileName);
+      final res = await apiClient.uploadImage(bytes, fileName);
+      await apiClient.updateImage(_items[0], res["data"]["data"]["id"]);
       // ignore: use_build_context_synchronously
       Navigator.pop(context);
-    }
-  }
-
-  // Upload the image
-  Future<void> _uploadImage(Uint8List bytes, String fileName) async {
-    final uri = Uri.parse(
-        'https://pumplogapi.petronet.vn/Storage/StorageFileItem/UploadFiles');
-    var request = http.MultipartRequest('POST', uri);
-
-    final httpImage = http.MultipartFile.fromBytes(
-      'file',
-      bytes,
-      contentType: MediaType.parse('image/jpeg'),
-      filename: fileName,
-    );
-
-    request.files.add(httpImage);
-
-    final response = await request.send();
-
-    if (response.statusCode == 200) {
-      final responseBody = await response.stream.bytesToString();
-      final jsonResponse = jsonDecode(responseBody);
-      String newAvatarUrl =
-          'http://pumplogapi.petronet.vn/Storage/StorageFileItem/GetFileById/${jsonResponse['data']['data']['id']}';
-
-      setState(() {
-        _items[0].avatar = newAvatarUrl;
-      });
-
-      fetchUserData();
-
-      print('Avatar URL: $newAvatarUrl');
-      print('Response from upload: $jsonResponse');
-    } else {
-      print('Upload failed with status: ${response.statusCode}');
     }
   }
 
@@ -271,7 +236,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ],
         backgroundColor: const Color(0xFF6360FF),
       ),
-      body: FutureBuilder<List<UserData>>(
+      body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _userDataBuilder,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -297,7 +262,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           onPressed: showModalBottom,
                           icon: Stack(
                             children: [
-                              if (userData.avatar.isNotEmpty)
+                              if (userData["avatar"].isNotEmpty)
                                 Container(
                                   width: 120,
                                   height: 120,
@@ -305,7 +270,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                     shape: BoxShape.circle,
                                     image: DecorationImage(
                                       fit: BoxFit.cover,
-                                      image: NetworkImage(userData.avatar),
+                                      image: NetworkImage(userData["avatar"]),
                                     ),
                                   ),
                                 )
@@ -335,8 +300,8 @@ class _AccountScreenState extends State<AccountScreen> {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          userData.name.isNotEmpty
-                              ? userData.name
+                          userData["displayName"].isNotEmpty
+                              ? userData["displayName"]
                               : 'No Name Available',
                           style: const TextStyle(
                             fontSize: 24,
@@ -384,8 +349,8 @@ class _AccountScreenState extends State<AccountScreen> {
                               ),
                             ),
                             Text(
-                              userData.phoneNumber.isNotEmpty
-                                  ? userData.phoneNumber
+                              userData["phoneNumber"].isNotEmpty
+                                  ? userData["phoneNumber"]
                                   : 'Khong co du lieu',
                               style: const TextStyle(
                                 fontSize: 15,

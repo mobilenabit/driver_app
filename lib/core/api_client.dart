@@ -333,14 +333,16 @@ class ApiClient {
   }
 
   // Change avatar
-  Future<Map<String, dynamic>> changeAvatar(File avatarFile) async {
+  Future<Map<String, dynamic>> uploadImage(
+      Uint8List bytes, String fileName) async {
     final apiToken = await _ss.readSecureData("access_token");
 
     try {
       FormData formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(
-          avatarFile.path,
-          filename: avatarFile.path,
+        'file': MultipartFile.fromBytes(
+          bytes,
+          contentType: MediaType.parse("image/jpeg"),
+          filename: fileName,
         ),
       });
 
@@ -349,7 +351,7 @@ class ApiClient {
         data: formData,
         options: Options(
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
             "Authorization": "Bearer $apiToken",
           },
         ),
@@ -363,32 +365,27 @@ class ApiClient {
 
   // Update avatar
   Future<Map<String, dynamic>> updateImage(
-      Uint8List bytes, String mimeType, String fileName) async {
-    final uri = Uri.parse('$_apiUrl/Storage/StorageFileItem/UploadFiles');
-    var request = http.MultipartRequest('POST', uri);
-    final httpImage = http.MultipartFile.fromBytes(
-      'file',
-      bytes,
-      contentType: MediaType.parse(mimeType),
-      filename: fileName,
-    );
+      Map<String, dynamic> oldUserData, int imageId) async {
+    final apiToken = await _ss.readSecureData("access_token");
+    final data = oldUserData;
 
-    request.files.add(httpImage);
+    data["avatar"] = "$_apiUrl/Storage/StorageFileItem/GetFileById/$imageId";
 
-    final response = await request.send();
+    try {
+      final response = await _dio.put(
+        "$_apiUrl/core/Users/UpdateMyInfo",
+        data: data,
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $apiToken",
+          },
+        ),
+      );
 
-    if (response.statusCode == 200) {
-      final responseData = await http.Response.fromStream(response);
-      print('Upload successful!');
-
-      return jsonDecode(responseData.body);
-    } else {
-      print('Upload failed with status: ${response.statusCode}');
-      return {
-        'error': 'Upload failed',
-        'statusCode': response.statusCode,
-        'message': 'Status code: ${response.statusCode}',
-      };
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
     }
   }
 
