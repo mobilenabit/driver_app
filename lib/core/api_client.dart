@@ -1,7 +1,7 @@
 import "dart:convert";
 import "dart:io";
 import "dart:typed_data";
-  import 'package:http/http.dart' as http;  
+import 'package:http/http.dart' as http;
 import "package:dio/dio.dart";
 import "package:http_parser/http_parser.dart";
 import "package:retry/retry.dart";
@@ -361,11 +361,10 @@ class ApiClient {
     }
   }
 
-  // Update avatar 
+  // Update avatar
   Future<Map<String, dynamic>> updateImage(
       Uint8List bytes, String mimeType, String fileName) async {
-    final uri = Uri.parse(
-        '$_apiUrl/Storage/StorageFileItem/UploadFiles');
+    final uri = Uri.parse('$_apiUrl/Storage/StorageFileItem/UploadFiles');
     var request = http.MultipartRequest('POST', uri);
     final httpImage = http.MultipartFile.fromBytes(
       'file',
@@ -393,8 +392,35 @@ class ApiClient {
     }
   }
 
- 
+  Future<Map<String, dynamic>> generateQrCode(int id) async {
+    final apiToken = await _ss.readSecureData("access_token");
+    try {
+      final response = await _r.retry(
+        () async => await _dio.post(
+          "$_apiUrl/MD/QrCode/GenerateQrCode",
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+          data: id,
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
 
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
 }
 
 final apiClient = ApiClient();

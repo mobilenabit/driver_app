@@ -4,6 +4,7 @@ import 'package:driver_app/screens/qr_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class QrScreen extends StatefulWidget {
   const QrScreen({super.key});
@@ -15,11 +16,26 @@ class QrScreen extends StatefulWidget {
 class _QrScreenState extends State<QrScreen> {
   Future<List<UserData>>? _userDataBuilder;
   late List<UserData> _userData = [];
+  String QrCodeString = "";
 
   @override
   void initState() {
     super.initState();
     _userDataBuilder = fetchUserData();
+  }
+
+  Future<Map<String, dynamic>> generateQrCode(int id) async {
+    try {
+      final response = await apiClient.generateQrCode(id);
+
+      if (response['success']) {
+        return response['data'];
+      } else {
+        throw Exception('Failed to generate QR code');
+      }
+    } catch (e) {
+      throw Exception('Failed to generate QR code');
+    }
   }
 
   Future<List<UserData>> fetchUserData() async {
@@ -31,6 +47,7 @@ class _QrScreenState extends State<QrScreen> {
 
         setState(() {
           _userData = [data];
+          QrCodeString = generateQrCode(_userData[0].id).toString();
         });
         return _userData;
       } else {
@@ -128,9 +145,10 @@ class _QrScreenState extends State<QrScreen> {
                         const SizedBox(
                           height: 30,
                         ),
-                        const Icon(
-                          LucideIcons.qr_code,
+                        QrImageView(
+                          data: QrCodeString,
                           size: 200,
+                          backgroundColor: Colors.white,
                         ),
                         TextButton(
                           onPressed: () {
