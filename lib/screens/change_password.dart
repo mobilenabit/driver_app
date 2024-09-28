@@ -165,7 +165,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           children: [
                             const SizedBox(height: 12),
                             SvgPicture.asset(
-                              "assets/images/password_success.svg",
+                              "../assets/images/password_success.svg",
                             ),
                             const SizedBox(height: 32),
                             const Text(
@@ -245,11 +245,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   void _handleForgotPassword() async {
     if (_formKey.currentState!.validate()) {
-       const SecureStorage().deleteSecureData("last_logged_in_user_name");
-       const SecureStorage().deleteSecureData("last_logged_in_user_avatar");
-       const SecureStorage()
+      const SecureStorage().deleteSecureData("last_logged_in_user_name");
+      const SecureStorage().deleteSecureData("last_logged_in_user_avatar");
+      const SecureStorage()
           .deleteSecureData("last_logged_in_user_phone_number");
-       const SecureStorage().deleteSecureData("last_logged_in_username");
+      const SecureStorage().deleteSecureData("last_logged_in_username");
 
       final res = await apiClient.resetPassword(
           widget.userData, _newPassword, widget.userData["otp"]);
@@ -295,8 +295,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            const LoginScreen()),
+                        builder: (BuildContext context) => const LoginScreen()),
                     (route) => false,
                   );
                 }
@@ -332,8 +331,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          const LoginScreen()),
+                      builder: (BuildContext context) => const LoginScreen()),
                   (route) => false,
                 );
               }
@@ -478,7 +476,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                                 : null,
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor:
-                                                  const Color.fromRGBO(99, 96, 255, 1),
+                                                  const Color.fromRGBO(
+                                                      99, 96, 255, 1),
                                               disabledForegroundColor:
                                                   Colors.grey,
                                               foregroundColor: Colors.black,

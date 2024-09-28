@@ -129,7 +129,7 @@ class _MapScreen2State extends State<MapScreen2> {
     },
     {
       'location': const LatLng(20.9762713, 105.8335207),
-      'name': 'CHXD Lê Hoàngdadasdsadasdasdsaasdadassadasdas',
+      'name': 'CHXD Lê Hoàng 2',
       'startTime': DateTime(2024, 8, 27, 7, 0),
       'endTime': DateTime(2024, 8, 27, 24, 0),
       'distance': 1700.0,
@@ -529,8 +529,9 @@ class _MapScreen2State extends State<MapScreen2> {
                           child: GestureDetector(
                             onTap: () {
                               setState(() {
-                                _markerData
-                                    .forEach((m) => m['isSelected'] = false);
+                                for (var m in _markerData) {
+                                  m['isSelected'] = false;
+                                }
                               });
                               setState(() {
                                 marker['isSelected'] = true;
