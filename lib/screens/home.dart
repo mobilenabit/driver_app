@@ -1,5 +1,5 @@
 import 'package:driver_app/components/nav__bar.dart';
-import 'package:driver_app/models/licensePlate.dart';
+import 'package:driver_app/models/license_plate.dart';
 import 'package:driver_app/models/user_data.dart';
 import 'package:driver_app/screens/account.dart';
 import 'package:driver_app/screens/history.dart';

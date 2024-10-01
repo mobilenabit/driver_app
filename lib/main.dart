@@ -1,6 +1,6 @@
 import 'package:driver_app/app.dart';
 import 'package:driver_app/core/user_data.dart';
-import 'package:driver_app/models/licensePlate.dart';
+import 'package:driver_app/models/license_plate.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,13 +13,12 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          lazy: false, 
+          lazy: false,
           create: (_) => LicensePlateModel(),
         ),
         ChangeNotifierProvider(
           create: (_) => UserDataModel()..loadUserData(),
         ),
-        
       ],
       child: const MyApp(),
     ),

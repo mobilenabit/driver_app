@@ -1,7 +1,7 @@
 import "package:cached_network_image/cached_network_image.dart";
 import "package:carousel_slider/carousel_slider.dart";
 import "package:driver_app/core/api_client.dart";
-import "package:driver_app/models/licensePlate.dart";
+import "package:driver_app/models/license_plate.dart";
 import "package:driver_app/models/news.dart";
 import "package:driver_app/models/user_data.dart";
 import "package:driver_app/screens/news.dart";

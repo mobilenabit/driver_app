@@ -1,7 +1,7 @@
 import 'dart:convert';
 import "dart:typed_data";
 import 'package:driver_app/core/api_client.dart';
-import 'package:driver_app/models/licensePlate.dart';
+import 'package:driver_app/models/license_plate.dart';
 import 'package:driver_app/models/user_data.dart';
 import 'package:driver_app/screens/license_plate.dart';
 import 'package:driver_app/screens/settings.dart';

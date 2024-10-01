@@ -1,5 +1,5 @@
 import 'package:driver_app/core/api_client.dart';
-import 'package:driver_app/models/licensePlate.dart';
+import 'package:driver_app/models/license_plate.dart';
 import 'package:driver_app/models/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
@@ -140,8 +140,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                                 ),
                                 child: GestureDetector(
                                   onTap: () {
-                                    licensePlateModel
-                                        ?.setLicensePlate(vehicleCode);
+                                    licensePlateModel?.setLicensePlate(plate);
                                     Navigator.pop(context, vehicleCode);
                                   },
                                   child: Row(
