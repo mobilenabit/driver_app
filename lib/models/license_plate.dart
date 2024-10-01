@@ -29,8 +29,18 @@ class LicensePlateModel with ChangeNotifier {
     });
   }
 
-  void setLicensePlate(String newLicensePlate) {
-    licensePlate = newLicensePlate;
+  void setLicensePlate(Map<String, dynamic> newLicensePlate) async {
+    licensePlate = newLicensePlate["vehicle"]["vehicleCode"];
+    print(newLicensePlate);
+    print(value?["id"]);
+    await apiClient
+        .setActiveVehicle(value?["id"], newLicensePlate["vehicleId"])
+        .then((res) {
+      print(res);
+    }).catchError((e) {
+      print(e);
+    });
+
     notifyListeners();
   }
 }

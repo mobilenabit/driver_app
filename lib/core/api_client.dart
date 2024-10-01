@@ -508,6 +508,41 @@ class ApiClient {
       return e.response!.data;
     }
   }
+
+  Future<Map<String, dynamic>> setActiveVehicle(
+      int userId, int vehicleId) async {
+    final apiToken = await _ss.readSecureData("access_token");
+
+    try {
+      final response = await _r.retry(
+        () async => await _dio.post(
+          "$_apiUrl/MD/Driver2Vehicle/SetActiveVehicle",
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+          data: {
+            "driverId": userId,
+            "vehicleId": vehicleId,
+          },
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
 }
 
 final apiClient = ApiClient();
