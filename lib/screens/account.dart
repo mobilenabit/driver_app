@@ -1,7 +1,7 @@
 import 'dart:convert';
 import "dart:typed_data";
 import 'package:driver_app/core/api_client.dart';
-import 'package:driver_app/models/userData.dart';
+import 'package:driver_app/models/user_data.dart';
 import 'package:driver_app/screens/license_plate.dart';
 import 'package:driver_app/screens/settings.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +11,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({
@@ -22,14 +23,12 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  Future<List<Map<String, dynamic>>>? _userDataBuilder;
   late List<Map<String, dynamic>> _items = [];
   String selectedLicensePlate = '30A-123.45';
 
   @override
   void initState() {
     super.initState();
-    _userDataBuilder = fetchUserData();
   }
 
   Future<void> _selectLicensePlate() async {
@@ -47,26 +46,26 @@ class _AccountScreenState extends State<AccountScreen> {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchUserData() async {
-    try {
-      final response = await apiClient.getUserData();
-      print(response);
+  // Future<List<Map<String, dynamic>>> fetchUserData() async {
+  //   try {
+  //     final response = await apiClient.getUserData();
+  //     print(response);
 
-      if (response['success']) {
-        print('UserData: ${response["data"]}');
+  //     if (response['success']) {
+  //       print('UserData: ${response["data"]}');
 
-        setState(() {
-          _items = [response["data"]];
-        });
-        return _items;
-      } else {
-        throw Exception('Failed to load data');
-      }
-    } catch (e) {
-      print('Error: $e');
-      throw Exception('Failed to load UserData');
-    }
-  }
+  //       setState(() {
+  //         _items = [response["data"]];
+  //       });
+  //       return _items;
+  //     } else {
+  //       throw Exception('Failed to load data');
+  //     }
+  //   } catch (e) {
+  //     print('Error: $e');
+  //     throw Exception('Failed to load UserData');
+  //   }
+  // }
 
   void showModalBottom() {
     showModalBottomSheet(
@@ -216,386 +215,365 @@ class _AccountScreenState extends State<AccountScreen> {
       color: Color.fromRGBO(253, 79, 79, 1),
     );
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF6360FF),
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {
-              pushScreenWithoutNavBar(
-                context,
-                const SettingsScreen(),
-              );
-            },
-            icon: const Icon(
-              LucideIcons.settings,
-              size: 20,
-              color: Colors.white,
-            ),
-          ),
-        ],
+    return Consumer<UserDataModel>(
+      builder: (context, userData, child) => Scaffold(
         backgroundColor: const Color(0xFF6360FF),
-      ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _userDataBuilder,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            _items = snapshot.data!;
-            var userData = _items[0];
-
-            return SafeArea(
-              bottom: false,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 15,
+        appBar: AppBar(
+          actions: [
+            IconButton(
+              onPressed: () {
+                pushScreenWithoutNavBar(
+                  context,
+                  const SettingsScreen(),
+                );
+              },
+              icon: const Icon(
+                LucideIcons.settings,
+                size: 20,
+                color: Colors.white,
+              ),
+            ),
+          ],
+          backgroundColor: const Color(0xFF6360FF),
+        ),
+        body: SafeArea(
+          bottom: false,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 15,
+                ),
+                child: Column(
+                  children: [
+                    IconButton(
+                      onPressed: showModalBottom,
+                      icon: Stack(
+                        children: [
+                          if (userData.value?["avatar"].isNotEmpty)
+                            Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image:
+                                      NetworkImage(userData.value?["avatar"]),
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
+                              width: 120,
+                              height: 120,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.grey,
+                              ),
+                              child: const Icon(
+                                Icons.person,
+                                size: 80,
+                                color: Colors.white,
+                              ),
+                            ),
+                          Positioned(
+                            bottom: 8,
+                            right: -1,
+                            child: SvgPicture.asset(
+                              'assets/icons/chang_ava.svg',
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(height: 20),
+                    Text(
+                      userData.value?["displayName"],
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            right: 10,
+                          ),
+                          child: SvgPicture.asset('assets/icons/car.svg'),
+                        ),
+                        Text(
+                          selectedLicensePlate,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 40,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            right: 10,
+                          ),
+                          child: SvgPicture.asset(
+                            'assets/icons/phone.svg',
+                            width: 13,
+                            height: 13,
+                          ),
+                        ),
+                        Text(
+                          userData.value?["phoneNumber"],
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  width: MediaQuery.sizeOf(context).width * 1,
+                  padding: const EdgeInsets.only(
+                    top: 25,
+                    left: 25,
+                    right: 25,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 255, 255, 255),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    ),
+                  ),
+                  child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        IconButton(
-                          onPressed: showModalBottom,
-                          icon: Stack(
+                        Table(
+                          border: TableBorder.all(
+                            width: 1,
+                            color: const Color.fromRGBO(226, 226, 226, 1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          columnWidths: const <int, TableColumnWidth>{
+                            0: FractionColumnWidth(0.5),
+                            1: FractionColumnWidth(0.5),
+                          },
+                          defaultVerticalAlignment:
+                              TableCellVerticalAlignment.middle,
+                          children: [
+                            TableRow(
+                              children: <Widget>[
+                                TableCell(
+                                  verticalAlignment:
+                                      TableCellVerticalAlignment.middle,
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 15,
+                                        ),
+                                        child: Text(
+                                          'Hạn mức còn lại',
+                                          style: style1,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            bottom: 15, top: 15),
+                                        child: Text(
+                                          '16.000.000đ',
+                                          style: style2,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                TableCell(
+                                  verticalAlignment:
+                                      TableCellVerticalAlignment.middle,
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 15,
+                                        ),
+                                        child: Text(
+                                          'Hạn mức từng giao dịch',
+                                          style: style1,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            bottom: 15, top: 15),
+                                        child: Text(
+                                          '1.500.000đ',
+                                          style: style2,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: 8,
+                            top: 8,
+                          ),
+                          child: Row(
                             children: [
-                              if (userData["avatar"].isNotEmpty)
-                                Container(
-                                  width: 120,
-                                  height: 120,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: NetworkImage(userData["avatar"]),
-                                    ),
-                                  ),
-                                )
-                              else
-                                Container(
-                                  width: 120,
-                                  height: 120,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.grey,
-                                  ),
-                                  child: const Icon(
-                                    Icons.person,
-                                    size: 80,
-                                    color: Colors.white,
-                                  ),
+                              Expanded(
+                                child: Text(
+                                  'Công ty',
+                                  style: subTitle,
                                 ),
-                              Positioned(
-                                bottom: 8,
-                                right: -1,
-                                child: SvgPicture.asset(
-                                  'assets/icons/chang_ava.svg',
-                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                'DVVT Thái Hải',
+                                style: title,
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        Text(
-                          userData["displayName"].isNotEmpty
-                              ? userData["displayName"]
-                              : 'No Name Available',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            top: 8,
+                            bottom: 8,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Địa chỉ',
+                                  style: subTitle,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                '245 Phùng Hưng, Hà Đông',
+                                style: title,
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(
-                          height: 20,
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            top: 8,
+                            bottom: 32,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Đơn vị cấp hạn mức',
+                                  style: subTitle,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                'PVOIL Hà Nội',
+                                style: title,
+                              ),
+                            ],
+                          ),
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                right: 10,
+                            GestureDetector(
+                              onTap: showPopup,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 10,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset('assets/icons/bill.svg'),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Text(
+                                      'Cấp lại hạn mức',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
-                              child: SvgPicture.asset('assets/icons/car.svg'),
                             ),
-                            Text(
-                              selectedLicensePlate,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
+                            GestureDetector(
+                              onTap: _selectLicensePlate,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 10,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset('assets/icons/car.svg'),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Text(
+                                      'Đổi xe',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const SizedBox(
-                              width: 40,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                right: 10,
-                              ),
-                              child: SvgPicture.asset(
-                                'assets/icons/phone.svg',
-                                width: 13,
-                                height: 13,
-                              ),
-                            ),
-                            Text(
-                              userData["phoneNumber"].isNotEmpty
-                                  ? userData["phoneNumber"]
-                                  : 'Khong co du lieu',
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
+                        SizedBox(
+                          height: MediaQuery.sizeOf(context).height * 0.2,
+                        )
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: Container(
-                      width: MediaQuery.sizeOf(context).width * 1,
-                      padding: const EdgeInsets.only(
-                        top: 25,
-                        left: 25,
-                        right: 25,
-                      ),
-                      decoration: const BoxDecoration(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                        ),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Table(
-                              border: TableBorder.all(
-                                width: 1,
-                                color: const Color.fromRGBO(226, 226, 226, 1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              columnWidths: const <int, TableColumnWidth>{
-                                0: FractionColumnWidth(0.5),
-                                1: FractionColumnWidth(0.5),
-                              },
-                              defaultVerticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              children: [
-                                TableRow(
-                                  children: <Widget>[
-                                    TableCell(
-                                      verticalAlignment:
-                                          TableCellVerticalAlignment.middle,
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              top: 15,
-                                            ),
-                                            child: Text(
-                                              'Hạn mức còn lại',
-                                              style: style1,
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 15, top: 15),
-                                            child: Text(
-                                              '16.000.000đ',
-                                              style: style2,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    TableCell(
-                                      verticalAlignment:
-                                          TableCellVerticalAlignment.middle,
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              top: 15,
-                                            ),
-                                            child: Text(
-                                              'Hạn mức từng giao dịch',
-                                              style: style1,
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 15, top: 15),
-                                            child: Text(
-                                              '1.500.000đ',
-                                              style: style2,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 30,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 8,
-                                top: 8,
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      'Công ty',
-                                      style: subTitle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    'DVVT Thái Hải',
-                                    style: title,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 8,
-                                bottom: 8,
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      'Địa chỉ',
-                                      style: subTitle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    '245 Phùng Hưng, Hà Đông',
-                                    style: title,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 8,
-                                bottom: 32,
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      'Đơn vị cấp hạn mức',
-                                      style: subTitle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    'PVOIL Hà Nội',
-                                    style: title,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                GestureDetector(
-                                  onTap: showPopup,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: color,
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 15,
-                                      vertical: 10,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                            'assets/icons/bill.svg'),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        const Text(
-                                          'Cấp lại hạn mức',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: _selectLicensePlate,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: color,
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 10,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                            'assets/icons/car.svg'),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        const Text(
-                                          'Đổi xe',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: MediaQuery.sizeOf(context).height * 0.2,
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            );
-          } else {
-            return const Center(child: Text('No user data available.'));
-          }
-        },
+            ],
+          ),
+        ),
       ),
     );
   }

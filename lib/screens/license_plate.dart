@@ -1,3 +1,4 @@
+import 'package:driver_app/core/api_client.dart';
 import 'package:driver_app/models/licensePlate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
@@ -45,6 +46,7 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
   List<GasMap> _filteredgasStation = [];
   final List<GasMap> _gasStation = _item;
   LicensePlateModel? licensePlateModel;
+  Map<String, dynamic>? userData;
 
   @override
   void initState() {
@@ -53,7 +55,26 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
     _searchController.addListener(_filtergasStation);
   }
 
-  // Search
+  Future<void> getUserData() async {
+    try {
+      final response = await apiClient.getUserData();
+      if (response["success"]) {
+        setState(() {
+          userData = response["data"];
+        });
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  // Future<void> getLicensePlate() async {
+  //   try {
+  //     final response = await apiClient.getVehicles(userData!["id"]);
+
+  //   }
+  // }
+
   void _filtergasStation() {
     final query = _searchController.text.toLowerCase();
     setState(() {
