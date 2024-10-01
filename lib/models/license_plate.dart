@@ -20,7 +20,6 @@ class LicensePlateModel with ChangeNotifier {
 
     return await apiClient.getActiveVehicle(value?["id"]).then((res) {
       licensePlate = res["data"]["vehicle"]["vehicleCode"];
-      print(licensePlate);
       _isLoading = false;
       notifyListeners();
     }).catchError((e) {
@@ -31,14 +30,12 @@ class LicensePlateModel with ChangeNotifier {
 
   void setLicensePlate(Map<String, dynamic> newLicensePlate) async {
     licensePlate = newLicensePlate["vehicle"]["vehicleCode"];
-    print(newLicensePlate);
-    print(value?["id"]);
+
     await apiClient
         .setActiveVehicle(value?["id"], newLicensePlate["vehicleId"])
-        .then((res) {
-      print(res);
-    }).catchError((e) {
-      print(e);
+        .then((res) {})
+        .catchError((e) {
+      throw Exception("Failed to set active vehicle");
     });
 
     notifyListeners();
