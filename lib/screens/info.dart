@@ -24,14 +24,10 @@ class _InfoScreenState extends State<InfoScreen> {
 
   @override
   void initState() {
+    final userData = context.read<UserDataModel>().value;
     super.initState();
 
     _newsBuilder = fetchNewsData();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final licensePlateModel = context.read<LicensePlateModel>();
-      licensePlate = licensePlateModel.licensePlate;
-      licensePlateModel.addListener(_updateLicensePlate);
-    });
   }
 
   @override
@@ -41,29 +37,8 @@ class _InfoScreenState extends State<InfoScreen> {
   }
 
   void _updateLicensePlate() {
-    setState(() {
-      licensePlate = context.read<LicensePlateModel>().licensePlate;
-    });
+    setState(() {});
   }
-
-  // Future<List<UserData>> fetchUserData() async {
-  //   try {
-  //     final response = await apiClient.getUserData();
-
-  //     if (response['success']) {
-  //       UserData data = UserData.fromJson(response['data']);
-
-  //       setState(() {
-  //         _userData = [data];
-  //       });
-  //       return _userData;
-  //     } else {
-  //       throw Exception('Failed to load data');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Failed to load UserData');
-  //   }
-  // }
 
   Future<List<News>> fetchNewsData() async {
     try {
@@ -92,8 +67,8 @@ class _InfoScreenState extends State<InfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserDataModel>(
-      builder: (context, userData, child) => Scaffold(
+    return Consumer2<UserDataModel, LicensePlateModel>(
+      builder: (context, userData, licensePlate, child) => Scaffold(
         backgroundColor: const Color(0xFF6360FF),
         body: SafeArea(
           bottom: false,
@@ -135,7 +110,7 @@ class _InfoScreenState extends State<InfoScreen> {
                             ),
                           ),
                           Text(
-                            licensePlate,
+                            licensePlate.licensePlate ?? '',
                             style: const TextStyle(
                               color: Color(0xFFFCFCFF),
                               fontSize: 14,

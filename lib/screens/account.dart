@@ -1,6 +1,7 @@
 import 'dart:convert';
 import "dart:typed_data";
 import 'package:driver_app/core/api_client.dart';
+import 'package:driver_app/models/licensePlate.dart';
 import 'package:driver_app/models/user_data.dart';
 import 'package:driver_app/screens/license_plate.dart';
 import 'package:driver_app/screens/settings.dart';
@@ -215,8 +216,8 @@ class _AccountScreenState extends State<AccountScreen> {
       color: Color.fromRGBO(253, 79, 79, 1),
     );
 
-    return Consumer<UserDataModel>(
-      builder: (context, userData, child) => Scaffold(
+    return Consumer2<UserDataModel, LicensePlateModel>(
+      builder: (context, userData, licensePlate, child) => Scaffold(
         backgroundColor: const Color(0xFF6360FF),
         appBar: AppBar(
           actions: [
@@ -310,7 +311,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           child: SvgPicture.asset('assets/icons/car.svg'),
                         ),
                         Text(
-                          selectedLicensePlate,
+                          licensePlate.licensePlate ?? "",
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
