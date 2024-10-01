@@ -1,4 +1,5 @@
 import 'package:driver_app/components/nav__bar.dart';
+import 'package:driver_app/models/licensePlate.dart';
 import 'package:driver_app/models/user_data.dart';
 import 'package:driver_app/screens/account.dart';
 import 'package:driver_app/screens/history.dart';
@@ -21,8 +22,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => UserDataModel()..loadUserData(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<UserDataModel>(
+            create: (_) => UserDataModel()..loadUserData()),
+        ChangeNotifierProvider<LicensePlateModel>(
+            create: (_) => LicensePlateModel()..loadLicensePlate())
+      ],
       child: PersistentTabView(
         tabs: [
           PersistentTabConfig(
