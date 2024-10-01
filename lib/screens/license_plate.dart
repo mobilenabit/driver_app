@@ -14,7 +14,7 @@ class LicensePlateScreen extends StatefulWidget {
 
 class _LicensePlateScreenState extends State<LicensePlateScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, dynamic>> filteredLicensePlates = [];
+  String filter = "";
   Future<Map<String, dynamic>>? licensePlates;
   LicensePlateModel? licensePlateModel;
   Map<String, dynamic>? userData;
@@ -88,6 +88,11 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextFormField(
+                  onChanged: (value) {
+                    setState(() {
+                      filter = value;
+                    });
+                  },
                   controller: _searchController,
                   decoration: InputDecoration(
                     hintText: "Tìm kiếm",
@@ -120,44 +125,46 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                     if (snapshot.connectionState != ConnectionState.done) {
                       return Container();
                     }
-
-                    // final length = snapshot.data?["data"].length;
                     return ListView.builder(
                       itemCount: snapshot.data?["data"].length,
                       itemBuilder: (context, index) {
                         final plate = snapshot.data?["data"][index];
                         print(plate);
-                        var vehicleCode = plate["vehicle"]["vehicleCode"];
-                        return Container(
-                          margin: const EdgeInsets.symmetric(
-                            vertical: 10.0,
-                            horizontal: 15.0,
-                          ),
-                          child: GestureDetector(
-                            onTap: () {
-                              licensePlateModel?.setLicensePlate(vehicleCode);
-                              Navigator.pop(context, vehicleCode);
-                            },
-                            child: Row(
-                              children: [
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    vehicleCode,
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                        var vehicleCode =
+                            plate["vehicle"]["vehicleCode"].toString();
+                        return vehicleCode.contains(filter)
+                            ? Container(
+                                margin: const EdgeInsets.symmetric(
+                                  vertical: 10.0,
+                                  horizontal: 15.0,
+                                ),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    licensePlateModel
+                                        ?.setLicensePlate(vehicleCode);
+                                    Navigator.pop(context, vehicleCode);
+                                  },
+                                  child: Row(
+                                    children: [
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          vehicleCode,
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      const Icon(
+                                        LucideIcons.chevron_right,
+                                        color: Color.fromRGBO(145, 145, 159, 1),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const Icon(
-                                  LucideIcons.chevron_right,
-                                  color: Color.fromRGBO(145, 145, 159, 1),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
+                              )
+                            : null;
                       },
                     );
                   },
