@@ -2,6 +2,7 @@ import "package:cached_network_image/cached_network_image.dart";
 import "package:carousel_slider/carousel_slider.dart";
 import "package:driver_app/core/api_client.dart";
 import "package:driver_app/models/license_plate.dart";
+import "package:driver_app/models/map_destinations.dart";
 import "package:driver_app/models/news.dart";
 import "package:driver_app/models/user_data.dart";
 import "package:driver_app/screens/news.dart";
@@ -67,8 +68,9 @@ class _InfoScreenState extends State<InfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<UserDataModel, LicensePlateModel>(
-      builder: (context, userData, licensePlate, child) => Scaffold(
+    return Consumer3<UserDataModel, LicensePlateModel, MapDestinationModel>(
+      builder: (context, userData, licensePlate, mapDestinations, child) =>
+          Scaffold(
         backgroundColor: const Color(0xFF6360FF),
         body: SafeArea(
           bottom: false,

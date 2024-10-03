@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:driver_app/models/map_destinations.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:driver_app/screens/gas_station.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // ignore: constant_identifier_names
@@ -28,13 +30,30 @@ class _MapScreen2State extends State<MapScreen2> {
   final MapController _mapController = MapController();
   StreamSubscription<Position>? _positionStreamSubscription;
   GasMap? selectedGasStation;
+  List<Map<String, dynamic>> _markerData = [];
   List<LatLng> routePoints = [];
   bool _isMapMove = false;
 
   @override
   void initState() {
+    final mapDestinations = context.read<MapDestinationModel>().value;
+    print(mapDestinations?["data"]);
     super.initState();
     _startLocationUpdates();
+    for (var destination in mapDestinations?["data"]) {
+      _markerData.add({
+        "location": LatLng(destination["lat"], destination["long"]),
+        "name": destination["customerName"],
+        "startTime": destination["startTime"] == null
+            ? DateTime(2024, 8, 27, 7, 0)
+            : DateTime.parse(destination["startTime"]),
+        "endTime": destination["endTime"] == null
+            ? DateTime(2024, 8, 27, 24, 0)
+            : DateTime.parse(destination["endTime"]),
+        "distance": 0.0,
+        "isSelected": false,
+      });
+    }
   }
 
   @override
@@ -77,84 +96,23 @@ class _MapScreen2State extends State<MapScreen2> {
     });
   }
 
-  // Marker data
-  final _markerData = [
-    {
-      'location': const LatLng(20.9658224, 105.791458),
-      'name': 'CHXD Số 1 Hà Đông',
-      'startTime': DateTime(2024, 8, 27, 7, 0),
-      'endTime': DateTime(2024, 8, 27, 24, 0),
-      'distance': 1700.0,
-      'isSelected': false,
-    },
-    {
-      'location': const LatLng(20.966063, 105.793304),
-      'name': 'CHXD Số 2 Hà Đông',
-      'startTime': DateTime(2024, 8, 27, 7, 0),
-      'endTime': DateTime(2024, 8, 27, 24, 0),
-      'distance': 600.0,
-      'isSelected': false,
-    },
-    {
-      'location': const LatLng(20.964440, 105.792574),
-      'name': 'CHXD Số 3 Hà Đông',
-      'startTime': DateTime(2024, 8, 27, 7, 0),
-      'endTime': DateTime(2024, 8, 27, 24, 0),
-      'distance': 80.0,
-      'isSelected': false,
-    },
-    {
-      'location': const LatLng(20.965903, 105.7909057),
-      'name': 'CHXD Số 4 Hà Đông',
-      'startTime': DateTime(2024, 8, 27, 7, 0),
-      'endTime': DateTime(2024, 8, 27, 24, 0),
-      'distance': 170.0,
-      'isSelected': false,
-    },
-    {
-      'location': const LatLng(21.1982264, 105.8360869),
-      'name': 'PVOIL CHXD PHỦ LỖ',
-      'startTime': DateTime(2024, 8, 27, 7, 0),
-      'endTime': DateTime(2024, 8, 27, 24, 0),
-      'distance': 170.0,
-      'isSelected': false,
-    },
-    {
-      'location': const LatLng(20.9762719, 105.8335204),
-      'name': 'CHXD Lê Hoàng',
-      'startTime': DateTime(2024, 8, 27, 7, 0),
-      'endTime': DateTime(2024, 8, 27, 24, 0),
-      'distance': 1700.0,
-      'isSelected': false,
-    },
-    {
-      'location': const LatLng(20.9762713, 105.8335207),
-      'name': 'CHXD Lê Hoàng 2',
-      'startTime': DateTime(2024, 8, 27, 7, 0),
-      'endTime': DateTime(2024, 8, 27, 24, 0),
-      'distance': 1700.0,
-      'isSelected': false,
-    },
-  ];
+  // Future<void> _fetchRoute(LatLng start, LatLng end) async {
+  //   final url =
+  //       'https://api.mapbox.com/directions/v5/mapbox/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?geometries=geojson&access_token=$MAPBOX_ACCESS_TOKEN';
+  //   final response = await http.get(Uri.parse(url));
 
-  // Show route
-  Future<void> _fetchRoute(LatLng start, LatLng end) async {
-    final url =
-        'https://api.mapbox.com/directions/v5/mapbox/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?geometries=geojson&access_token=$MAPBOX_ACCESS_TOKEN';
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final coordinates = data['routes'][0]['geometry']['coordinates'];
-      setState(() {
-        routePoints = coordinates
-            .map<LatLng>((coord) => LatLng(coord[1], coord[0]))
-            .toList();
-      });
-    } else {
-      throw Exception('Failed to fetch route');
-    }
-  }
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body);
+  //     final coordinates = data['routes'][0]['geometry']['coordinates'];
+  //     setState(() {
+  //       routePoints = coordinates
+  //           .map<LatLng>((coord) => LatLng(coord[1], coord[0]))
+  //           .toList();
+  //     });
+  //   } else {
+  //     throw Exception('Failed to fetch route');
+  //   }
+  // }
 
   void _showMarkerInfo(
     String name,
@@ -343,75 +301,302 @@ class _MapScreen2State extends State<MapScreen2> {
   @override
   Widget build(BuildContext context) {
     var color = const Color.fromRGBO(99, 96, 255, 1);
-    return Scaffold(
-      body: myPosition == null
-          ? Stack(
-              //child: CircularProgressIndicator(),
-              children: [
-                FlutterMap(
-                  mapController: _mapController,
-                  options: const MapOptions(
-                    initialCenter: LatLng(21.0331038, 105.8211664),
-                    initialZoom: 15,
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-                      additionalOptions: const {
-                        'accessToken': MAPBOX_ACCESS_TOKEN,
-                        'id': 'mapbox/streets-v12',
-                      },
+    return Consumer(
+      builder: (context, mapDestinations, child) => Scaffold(
+        body: myPosition == null
+            ? Stack(
+                //child: CircularProgressIndicator(),
+                children: [
+                  FlutterMap(
+                    mapController: _mapController,
+                    options: const MapOptions(
+                      initialCenter: LatLng(21.0331038, 105.8211664),
+                      initialZoom: 15,
                     ),
-                  ],
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // User location
-                      Container(
-                        margin: const EdgeInsets.only(
-                          right: 15,
-                        ),
-                        height: 50,
-                        width: 50,
-                        child: FloatingActionButton(
-                          backgroundColor: Colors.white,
-                          shape: const CircleBorder(),
-                          onPressed: () {},
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3,
-                            color: color,
+                      TileLayer(
+                        urlTemplate:
+                            'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                        additionalOptions: const {
+                          'accessToken': MAPBOX_ACCESS_TOKEN,
+                          'id': 'mapbox/streets-v12',
+                        },
+                      ),
+                    ],
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // User location
+                        Container(
+                          margin: const EdgeInsets.only(
+                            right: 15,
+                          ),
+                          height: 50,
+                          width: 50,
+                          child: FloatingActionButton(
+                            backgroundColor: Colors.white,
+                            shape: const CircleBorder(),
+                            onPressed: () {},
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: color,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.sizeOf(context).height * 0.025,
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(right: 15),
-                        width: 160,
-                        child: FloatingActionButton(
-                          backgroundColor: Colors.white,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Icon(
-                                  LucideIcons.list,
-                                  size: 25,
-                                  color: color,
+                        SizedBox(
+                          height: MediaQuery.sizeOf(context).height * 0.025,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(right: 15),
+                          width: 160,
+                          child: FloatingActionButton(
+                            backgroundColor: Colors.white,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Icon(
+                                    LucideIcons.list,
+                                    size: 25,
+                                    color: color,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 8),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: Text(
+                                      'Xem danh sách',
+                                      style: TextStyle(
+                                        color: color,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onPressed: () async {
+                              final selectedGas = await Navigator.push<GasMap>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => GasStationScreen(
+                                    gasStations: _markerData.map((marker) {
+                                      return GasMap(
+                                        name: marker['name'] as String,
+                                        address: 'Đ.Cầu Bươu',
+                                        distance: marker['distance'] as double,
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              );
+
+                              if (selectedGas != null) {
+                                setState(() {
+                                  selectedGasStation = selectedGas;
+                                });
+
+                                // Find the corresponding marker data
+                                final selectedMarker = _markerData.firstWhere(
+                                  (marker) =>
+                                      marker['name'] == selectedGas.name,
+                                );
+
+                                final name = selectedMarker['name'] as String;
+                                final startTime =
+                                    selectedMarker['startTime'] as DateTime;
+                                final endTime =
+                                    selectedMarker['endTime'] as DateTime;
+                                final distance =
+                                    selectedMarker['distance'] as double;
+                                final location =
+                                    selectedMarker['location'] as LatLng;
+                                final index =
+                                    _markerData.indexOf(selectedMarker);
+
+                                _showMarkerInfo(
+                                  name,
+                                  startTime,
+                                  endTime,
+                                  distance,
+                                  location,
+                                  index,
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 120),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            : Stack(
+                children: [
+                  FlutterMap(
+                    mapController: _mapController,
+                    options: MapOptions(
+                      initialCenter: myPosition!,
+                      initialZoom: 15,
+                      onPositionChanged: (MapCamera position, bool hasGesture) {
+                        setState(() {
+                          _isMapMove = position.center != myPosition;
+                        });
+                      },
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                        additionalOptions: const {
+                          'accessToken': MAPBOX_ACCESS_TOKEN,
+                          'id': 'mapbox/streets-v12',
+                        },
+                      ),
+                      if (routePoints.isNotEmpty)
+                        PolylineLayer(
+                          polylines: [
+                            Polyline(
+                              points: routePoints,
+                              strokeWidth: 10.0,
+                              color: Colors.blue,
+                            ),
+                          ],
+                        ),
+                      CurrentLocationLayer(
+                        // ignore: deprecated_member_use
+                        turnOnHeadingUpdate: TurnOnHeadingUpdate.never,
+                        style: const LocationMarkerStyle(
+                          marker: DefaultLocationMarker(),
+                          markerSize: Size(20, 20),
+                          markerDirection: MarkerDirection.heading,
+                        ),
+                      ),
+                      MarkerLayer(
+                        markers: _markerData.map((marker) {
+                          final index = _markerData.indexOf(marker);
+                          return Marker(
+                            rotate: true,
+                            point: marker['location'] as LatLng,
+                            width: 40,
+                            height: 40,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  for (var m in _markerData) {
+                                    m['isSelected'] = false;
+                                  }
+                                });
+                                setState(() {
+                                  marker['isSelected'] = true;
+                                });
+                                final name =
+                                    marker['name'] as String? ?? 'Unknown';
+                                final startTime =
+                                    marker['startTime'] as DateTime? ??
+                                        DateTime.now();
+                                final endTime =
+                                    marker['endTime'] as DateTime? ??
+                                        DateTime.now();
+                                final distance =
+                                    marker['distance'] as double? ?? 0.0;
+                                final location = marker['location'] as LatLng;
+
+                                _showMarkerInfo(
+                                  name,
+                                  startTime,
+                                  endTime,
+                                  distance,
+                                  location,
+                                  index,
+                                );
+                              },
+                              child: marker['isSelected'] == true
+                                  ? SvgPicture.asset(
+                                      'assets/icons/map_pin.svg',
+                                    )
+                                  : SvgPicture.asset(
+                                      'assets/icons/map_gas.svg',
+                                    ),
+                            ),
+                          );
+                        }).toList()
+                          ..sort((a, b) {
+                            final selectedMarker = _markerData.firstWhere(
+                              (m) => m['isSelected'] == true,
+                              orElse: () => {},
+                            );
+                            return a.point == selectedMarker['location']
+                                ? 1
+                                : -1;
+                          }),
+                      ),
+                    ],
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // User location
+                        Container(
+                          margin: const EdgeInsets.only(
+                            right: 15,
+                          ),
+                          height: 50,
+                          width: 50,
+                          child: FloatingActionButton(
+                            backgroundColor: Colors.white,
+                            shape: const CircleBorder(),
+                            onPressed: () {
+                              if (myPosition != null) {
+                                _mapController.move(myPosition!, 16);
+                              }
+                            },
+                            child: Icon(
+                              _isMapMove
+                                  ? LucideIcons.locate
+                                  : LucideIcons.locate_fixed,
+                              color: _isMapMove ? Colors.black87 : color,
+                              size: 25,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: MediaQuery.sizeOf(context).height * 0.025,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                            right: 15,
+                          ),
+                          width: 160,
+                          child: FloatingActionButton(
+                            backgroundColor: Colors.white,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Icon(
+                                    LucideIcons.list,
+                                    size: 25,
+                                    color: color,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    right: 8,
+                                  ),
                                   child: Text(
                                     'Xem danh sách',
                                     style: TextStyle(
@@ -419,284 +604,66 @@ class _MapScreen2State extends State<MapScreen2> {
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          onPressed: () async {
-                            final selectedGas = await Navigator.push<GasMap>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => GasStationScreen(
-                                  gasStations: _markerData.map((marker) {
-                                    return GasMap(
-                                      name: marker['name'] as String,
-                                      address: 'Đ.Cầu Bươu',
-                                      distance: marker['distance'] as double,
-                                    );
-                                  }).toList(),
+                              ],
+                            ),
+                            onPressed: () async {
+                              final selectedGas = await Navigator.push<GasMap>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => GasStationScreen(
+                                    gasStations: _markerData.map((marker) {
+                                      return GasMap(
+                                        name: marker['name'] as String,
+                                        address: 'Đ.Cầu Bươu',
+                                        distance: marker['distance'] as double,
+                                      );
+                                    }).toList(),
+                                  ),
                                 ),
-                              ),
-                            );
-
-                            if (selectedGas != null) {
-                              setState(() {
-                                selectedGasStation = selectedGas;
-                              });
-
-                              // Find the corresponding marker data
-                              final selectedMarker = _markerData.firstWhere(
-                                (marker) => marker['name'] == selectedGas.name,
                               );
 
-                              final name = selectedMarker['name'] as String;
-                              final startTime =
-                                  selectedMarker['startTime'] as DateTime;
-                              final endTime =
-                                  selectedMarker['endTime'] as DateTime;
-                              final distance =
-                                  selectedMarker['distance'] as double;
-                              final location =
-                                  selectedMarker['location'] as LatLng;
-                              final index = _markerData.indexOf(selectedMarker);
+                              if (selectedGas != null) {
+                                setState(() {
+                                  selectedGasStation = selectedGas;
+                                });
 
-                              _showMarkerInfo(
-                                name,
-                                startTime,
-                                endTime,
-                                distance,
-                                location,
-                                index,
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 120),
-                    ],
-                  ),
-                ),
-              ],
-            )
-          : Stack(
-              children: [
-                FlutterMap(
-                  mapController: _mapController,
-                  options: MapOptions(
-                    initialCenter: myPosition!,
-                    initialZoom: 15,
-                    onPositionChanged: (MapCamera position, bool hasGesture) {
-                      setState(() {
-                        _isMapMove = position.center != myPosition;
-                      });
-                    },
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-                      additionalOptions: const {
-                        'accessToken': MAPBOX_ACCESS_TOKEN,
-                        'id': 'mapbox/streets-v12',
-                      },
-                    ),
-                    if (routePoints.isNotEmpty)
-                      PolylineLayer(
-                        polylines: [
-                          Polyline(
-                            points: routePoints,
-                            strokeWidth: 10.0,
-                            color: Colors.blue,
-                          ),
-                        ],
-                      ),
-                    CurrentLocationLayer(
-                      // ignore: deprecated_member_use
-                      turnOnHeadingUpdate: TurnOnHeadingUpdate.never,
-                      style: const LocationMarkerStyle(
-                        marker: DefaultLocationMarker(),
-                        markerSize: Size(20, 20),
-                        markerDirection: MarkerDirection.heading,
-                      ),
-                    ),
-                    MarkerLayer(
-                      markers: _markerData.map((marker) {
-                        final index = _markerData.indexOf(marker);
-                        return Marker(
-                          rotate: true,
-                          point: marker['location'] as LatLng,
-                          width: 40,
-                          height: 40,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                for (var m in _markerData) {
-                                  m['isSelected'] = false;
-                                }
-                              });
-                              setState(() {
-                                marker['isSelected'] = true;
-                              });
-                              final name =
-                                  marker['name'] as String? ?? 'Unknown';
-                              final startTime =
-                                  marker['startTime'] as DateTime? ??
-                                      DateTime.now();
-                              final endTime = marker['endTime'] as DateTime? ??
-                                  DateTime.now();
-                              final distance =
-                                  marker['distance'] as double? ?? 0.0;
-                              final location = marker['location'] as LatLng;
+                                // Find the corresponding marker data
+                                final selectedMarker = _markerData.firstWhere(
+                                  (marker) =>
+                                      marker['name'] == selectedGas.name,
+                                );
 
-                              _showMarkerInfo(
-                                name,
-                                startTime,
-                                endTime,
-                                distance,
-                                location,
-                                index,
-                              );
+                                final name = selectedMarker['name'] as String;
+                                final startTime =
+                                    selectedMarker['startTime'] as DateTime;
+                                final endTime =
+                                    selectedMarker['endTime'] as DateTime;
+                                final distance =
+                                    selectedMarker['distance'] as double;
+                                final location =
+                                    selectedMarker['location'] as LatLng;
+                                final index =
+                                    _markerData.indexOf(selectedMarker);
+
+                                _showMarkerInfo(
+                                  name,
+                                  startTime,
+                                  endTime,
+                                  distance,
+                                  location,
+                                  index,
+                                );
+                              }
                             },
-                            child: marker['isSelected'] == true
-                                ? SvgPicture.asset(
-                                    'assets/icons/map_pin.svg',
-                                  )
-                                : SvgPicture.asset(
-                                    'assets/icons/map_gas.svg',
-                                  ),
                           ),
-                        );
-                      }).toList()
-                        ..sort((a, b) {
-                          final selectedMarker = _markerData.firstWhere(
-                            (m) => m['isSelected'] == true,
-                            orElse: () => {},
-                          );
-                          return a.point == selectedMarker['location'] ? 1 : -1;
-                        }),
+                        ),
+                        const SizedBox(height: 120),
+                      ],
                     ),
-                  ],
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // User location
-                      Container(
-                        margin: const EdgeInsets.only(
-                          right: 15,
-                        ),
-                        height: 50,
-                        width: 50,
-                        child: FloatingActionButton(
-                          backgroundColor: Colors.white,
-                          shape: const CircleBorder(),
-                          onPressed: () {
-                            if (myPosition != null) {
-                              _mapController.move(myPosition!, 16);
-                            }
-                          },
-                          child: Icon(
-                            _isMapMove
-                                ? LucideIcons.locate
-                                : LucideIcons.locate_fixed,
-                            color: _isMapMove ? Colors.black87 : color,
-                            size: 25,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.sizeOf(context).height * 0.025,
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(
-                          right: 15,
-                        ),
-                        width: 160,
-                        child: FloatingActionButton(
-                          backgroundColor: Colors.white,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Icon(
-                                  LucideIcons.list,
-                                  size: 25,
-                                  color: color,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  right: 8,
-                                ),
-                                child: Text(
-                                  'Xem danh sách',
-                                  style: TextStyle(
-                                    color: color,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          onPressed: () async {
-                            final selectedGas = await Navigator.push<GasMap>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => GasStationScreen(
-                                  gasStations: _markerData.map((marker) {
-                                    return GasMap(
-                                      name: marker['name'] as String,
-                                      address: 'Đ.Cầu Bươu',
-                                      distance: marker['distance'] as double,
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            );
-
-                            if (selectedGas != null) {
-                              setState(() {
-                                selectedGasStation = selectedGas;
-                              });
-
-                              // Find the corresponding marker data
-                              final selectedMarker = _markerData.firstWhere(
-                                (marker) => marker['name'] == selectedGas.name,
-                              );
-
-                              final name = selectedMarker['name'] as String;
-                              final startTime =
-                                  selectedMarker['startTime'] as DateTime;
-                              final endTime =
-                                  selectedMarker['endTime'] as DateTime;
-                              final distance =
-                                  selectedMarker['distance'] as double;
-                              final location =
-                                  selectedMarker['location'] as LatLng;
-                              final index = _markerData.indexOf(selectedMarker);
-
-                              _showMarkerInfo(
-                                name,
-                                startTime,
-                                endTime,
-                                distance,
-                                location,
-                                index,
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 120),
-                    ],
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 }
