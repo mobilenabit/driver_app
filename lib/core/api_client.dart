@@ -573,6 +573,129 @@ class ApiClient {
       return e.response!.data;
     }
   }
+
+  Future<Map<String, dynamic>> getConfirmation(int driverId) async {
+    final apiToken = await _ss.readSecureData("access_token");
+
+    try {
+      final response = await _r.retry(
+        () async => await _dio.get(
+          "$_apiUrl/MD/OrderRequest/GetLatestOrderRequest/$driverId",
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getProductNames() async {
+    final apiToken = await _ss.readSecureData("access_token");
+    try {
+      final response = await _r.retry(
+        () async => await _dio.post(
+          "$_apiUrl/MD/Product/GetAll",
+          options: Options(
+            headers: {
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getLog(int orderId) async {
+    final apiToken = await _ss.readSecureData("access_token");
+
+    try {
+      final response = await _r.retry(
+        () async => await _dio.get(
+          "$_apiUrl/IA/PumpTranLog/$orderId",
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> updateOrderStatus(
+      int status, int orderId) async {
+    final apiToken = await _ss.readSecureData("access_token");
+
+    try {
+      final response = await _r.retry(
+        () async => await _dio.post(
+          "$_apiUrl/MD/OrderRequest/UpdateOrderRequestStatus",
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+          data: {
+            "orderId": orderId,
+            "status": status,
+          },
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
 }
 
 final apiClient = ApiClient();
