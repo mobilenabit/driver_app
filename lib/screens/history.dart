@@ -27,7 +27,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         code: '12345',
         amount: 32,
         hours: '16:30',
-        date: '19/08/2024',
+        date: '19/09/2024',
         money: 250000,
       ),
       History(
@@ -35,7 +35,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         code: '12345',
         amount: 6,
         hours: '20:00',
-        date: '19/08/2024',
+        date: '19/09/2024',
         money: 123000,
       ),
       History(
@@ -43,7 +43,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         code: '12345',
         amount: 1000,
         hours: '06:10',
-        date: '19/08/2024',
+        date: '19/09/2024',
         money: 156000,
       ),
       History(
@@ -51,7 +51,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         code: '12345',
         amount: 50,
         hours: '06:30',
-        date: '20/08/2024',
+        date: '20/09/2024',
         money: 54600,
       ),
       History(
@@ -59,7 +59,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         code: '12345',
         amount: 50,
         hours: '05:30',
-        date: '21/08/2024',
+        date: '21/09/2024',
         money: 54600,
       ),
       History(
@@ -67,7 +67,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         code: '12345',
         amount: 65,
         hours: '06:30',
-        date: '21/08/2024',
+        date: '21/09/2024',
         money: 45600,
       ),
     ];

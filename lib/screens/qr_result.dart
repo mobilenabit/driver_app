@@ -1,16 +1,62 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:driver_app/components/ticket_cliper.dart';
+import 'package:driver_app/core/api_client.dart';
+import 'package:driver_app/models/license_plate.dart';
+import 'package:driver_app/models/product_names.dart';
 import 'package:driver_app/screens/transaction_fail.dart';
 import 'package:driver_app/screens/transaction_success.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-class QrResultScreen extends StatelessWidget {
-  const QrResultScreen({
-    super.key,
-  });
+class QrResultScreen extends StatefulWidget {
+  final int orderId;
+  final String vehiclePlate;
+  const QrResultScreen(
+      {super.key, required this.orderId, required this.vehiclePlate});
+
+  @override
+  State<QrResultScreen> createState() => _QrResultScreenState();
+}
+
+class _QrResultScreenState extends State<QrResultScreen> {
+  Map<String, dynamic>? order;
+
+  Future<dynamic> submitOrder(int status) async {
+    var response = await apiClient.updateOrderStatus(status, widget.orderId);
+    print(response);
+    if (response["success"]) {
+      return true;
+    } else {
+      return response;
+    }
+  }
+
+  Future<Map<String, dynamic>> getLog() async {
+    try {
+      final response = await apiClient.getLog(widget.orderId);
+      if (response["success"]) {
+        return response["data"];
+      } else {
+        return {};
+      }
+    } catch (e) {
+      throw Exception("Failed to load log");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.orderId);
+    getLog().then((value) {
+      setState(() {
+        order = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,16 +68,6 @@ class QrResultScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: color,
         automaticallyImplyLeading: false,
-        // leading: IconButton(
-        //   onPressed: () {
-        //     Navigator.pop(context);
-        //   },
-        //   icon: const Icon(
-        //     Icons.arrow_back_ios,
-        //     size: 18,
-        //     color: Colors.white,
-        //   ),
-        // ),
         title: const Text(
           'Chi tiết giao dịch',
           style: TextStyle(
@@ -131,11 +167,11 @@ class QrResultScreen extends StatelessWidget {
                                               ),
                                               SizedBox(
                                                   width: size.width * 0.025),
-                                              const Column(
+                                              Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(
+                                                  const Text(
                                                     'Xăng E5 RON 92-II',
                                                     style: TextStyle(
                                                       fontSize: 13,
@@ -143,14 +179,30 @@ class QrResultScreen extends StatelessWidget {
                                                           FontWeight.w600,
                                                     ),
                                                   ),
-                                                  Text(
-                                                    '22.000₫',
-                                                    style: TextStyle(
-                                                      fontSize: 13,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: Color(0xFF82869E),
-                                                    ),
+                                                  FutureBuilder(
+                                                    future: getLog(),
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      if (snapshot
+                                                              .connectionState ==
+                                                          ConnectionState
+                                                              .waiting) {
+                                                        return const Text(
+                                                            "Đang tải...");
+                                                      } else {
+                                                        return Text(
+                                                          "${NumberFormat("###,###").format(snapshot.data?["unitPrice"])}₫",
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 13,
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                            color: Color(
+                                                                0xFF82869E),
+                                                          ),
+                                                        );
+                                                      }
+                                                    },
                                                   ),
                                                 ],
                                               ),
@@ -194,53 +246,84 @@ class QrResultScreen extends StatelessWidget {
                                     ),
                                     child: Column(
                                       children: [
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Thời gian",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 13,
                                               ),
                                             ),
-                                            Text(
-                                              '20:00 - 19/08/2024',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 13,
-                                              ),
-                                            ),
+                                            // Text(
+                                            //   '20:00 - 19/08/2024',
+                                            //   style: TextStyle(
+                                            //     fontWeight: FontWeight.w600,
+                                            //     fontSize: 13,
+                                            //   ),
+                                            // ),
+                                            FutureBuilder(
+                                                future: getLog(),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return const Text(
+                                                        "Đang tải...");
+                                                  } else {
+                                                    return Text(
+                                                      '${DateFormat("HH:mm - dd/MM/yyyy").format(DateTime.parse(snapshot.data?["endFuelingTime"]))}',
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 13,
+                                                      ),
+                                                    );
+                                                  }
+                                                })
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Mã giao dịch",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 13,
                                               ),
                                             ),
-                                            Text(
-                                              '12345',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 13,
-                                              ),
-                                            ),
+                                            FutureBuilder(
+                                                future: getLog(),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return const Text(
+                                                        "Đang tải...");
+                                                  } else {
+                                                    return Text(
+                                                      '${snapshot.data?["id"]}',
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 13,
+                                                      ),
+                                                    );
+                                                  }
+                                                })
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Biển số xe",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
@@ -248,8 +331,8 @@ class QrResultScreen extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              '30A-123.45',
-                                              style: TextStyle(
+                                              widget.vehiclePlate,
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
                                               ),
@@ -257,24 +340,43 @@ class QrResultScreen extends StatelessWidget {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Vòi bơm",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 13,
                                               ),
                                             ),
-                                            Text(
-                                              '2',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 13,
-                                              ),
-                                            ),
+                                            // Text(
+                                            //   '2',
+                                            //   style: TextStyle(
+                                            //     fontWeight: FontWeight.w600,
+                                            //     fontSize: 13,
+                                            //   ),
+                                            // ),
+                                            FutureBuilder(
+                                                future: getLog(),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return const Text(
+                                                        "Đang tải...");
+                                                  } else {
+                                                    return Text(
+                                                      '${snapshot.data?["nozzleId"]}',
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 13,
+                                                      ),
+                                                    );
+                                                  }
+                                                })
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
@@ -289,16 +391,25 @@ class QrResultScreen extends StatelessWidget {
                                                 fontSize: 13,
                                               ),
                                             ),
-                                            Text(
-                                              '${NumberFormat.currency(
-                                                decimalDigits: 0,
-                                                customPattern: "###,###",
-                                              ).format(40)} lít',
-                                              style: const TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
+                                            FutureBuilder(
+                                                future: getLog(),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return const Text(
+                                                        "Đang tải...");
+                                                  } else {
+                                                    return Text(
+                                                      '${snapshot.data?["volume"]} lít',
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 13,
+                                                      ),
+                                                    );
+                                                  }
+                                                })
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
@@ -365,13 +476,19 @@ class QrResultScreen extends StatelessWidget {
                         Expanded(
                           child: TextButton(
                             onPressed: () {
-                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      const TransactionFailedResult(),
-                                ),
-                              );
+                              submitOrder(0);
+                              order == null
+                                  ? Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            TransactionFailedResult(
+                                          order: order!,
+                                          vehicleCode: widget.vehiclePlate,
+                                        ),
+                                      ),
+                                    )
+                                  : DoNothingAction();
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -401,13 +518,19 @@ class QrResultScreen extends StatelessWidget {
                           flex: 2,
                           child: TextButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      const TransactionResult(),
-                                ),
-                              );
+                              submitOrder(2);
+                              order != null
+                                  ? Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            TransactionResult(
+                                          order: order!,
+                                          vehicleCode: widget.vehiclePlate,
+                                        ),
+                                      ),
+                                    )
+                                  : DoNothingAction();
                             },
                             child: Container(
                               decoration: BoxDecoration(

@@ -8,8 +8,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class TransactionFailedResult extends StatelessWidget {
+  final Map<String, dynamic> order;
+  final String vehicleCode;
   const TransactionFailedResult({
     super.key,
+    required this.order,
+    required this.vehicleCode,
   });
 
   @override
@@ -79,7 +83,7 @@ class TransactionFailedResult extends StatelessWidget {
                             decimalDigits: 0,
                             symbol: "₫",
                             customPattern: "###,###",
-                          ).format(123000)} ₫',
+                          ).format(order["amount"])} ₫',
                           style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
@@ -162,11 +166,11 @@ class TransactionFailedResult extends StatelessWidget {
                                               ),
                                               SizedBox(
                                                   width: size.width * 0.025),
-                                              const Column(
+                                              Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(
+                                                  const Text(
                                                     'Xăng E5 RON 92-II',
                                                     style: TextStyle(
                                                       fontSize: 13,
@@ -175,8 +179,10 @@ class TransactionFailedResult extends StatelessWidget {
                                                     ),
                                                   ),
                                                   Text(
-                                                    '22.000₫',
-                                                    style: TextStyle(
+                                                    NumberFormat("###,###")
+                                                        .format(
+                                                            order["unitPrice"]),
+                                                    style: const TextStyle(
                                                       fontSize: 13,
                                                       fontWeight:
                                                           FontWeight.w400,
@@ -225,11 +231,11 @@ class TransactionFailedResult extends StatelessWidget {
                                     ),
                                     child: Column(
                                       children: [
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Thời gian",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
@@ -237,8 +243,10 @@ class TransactionFailedResult extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              '20:00 - 19/08/2024',
-                                              style: TextStyle(
+                                              DateFormat('HH:mm dd/MM/yyyy')
+                                                  .format(
+                                                      order["endFuelingTime"]),
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
                                               ),
@@ -246,11 +254,11 @@ class TransactionFailedResult extends StatelessWidget {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Mã giao dịch",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
@@ -258,8 +266,8 @@ class TransactionFailedResult extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              '12345',
-                                              style: TextStyle(
+                                              order["id"],
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
                                               ),
@@ -267,11 +275,11 @@ class TransactionFailedResult extends StatelessWidget {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Biển số xe",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
@@ -279,8 +287,8 @@ class TransactionFailedResult extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              '30A-123.45',
-                                              style: TextStyle(
+                                              vehicleCode,
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
                                               ),
@@ -288,11 +296,11 @@ class TransactionFailedResult extends StatelessWidget {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Vòi bơm",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
@@ -300,8 +308,8 @@ class TransactionFailedResult extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              '2',
-                                              style: TextStyle(
+                                              order["nozzleId"],
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
                                               ),
@@ -324,7 +332,7 @@ class TransactionFailedResult extends StatelessWidget {
                                               '${NumberFormat.currency(
                                                 decimalDigits: 0,
                                                 customPattern: "###,###",
-                                              ).format(40)} lít',
+                                              ).format(order["volume"])} lít',
                                               style: const TextStyle(
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w600,

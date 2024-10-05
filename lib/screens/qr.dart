@@ -1,4 +1,6 @@
 import 'package:driver_app/core/api_client.dart';
+import 'package:driver_app/models/license_plate.dart';
+import 'package:driver_app/models/product_names.dart';
 import 'package:driver_app/models/user_data.dart';
 import 'package:driver_app/screens/qr_result.dart';
 import 'package:flutter/material.dart';
@@ -16,51 +18,88 @@ class QrScreen extends StatefulWidget {
 
 class _QrScreenState extends State<QrScreen> {
   String QrCodeString = "";
+  bool _polling = true;
+  bool _QrPolling = true;
 
   @override
   void initState() {
     super.initState();
   }
 
-  Future<Map<String, dynamic>> generateQrCode(int id) async {
+  Future<String> generateQrCode() async {
+    final id = context.read<UserDataModel>().value?["id"];
     try {
       final response = await apiClient.generateQrCode(id);
 
-      if (response['success']) {
-        return response['data'];
+      if (response["success"]) {
+        print(response["data"]);
+        return response["data"];
       } else {
-        throw Exception('Failed to generate QR code');
+        return "";
       }
     } catch (e) {
-      throw Exception('Failed to generate QR code');
+      return "";
     }
   }
 
-  // Future<List<UserData>> fetchUserData() async {
-  //   try {
-  //     final response = await apiClient.getUserData();
+  Future<void> pollQR() async {
+    if (_QrPolling) {
+      var response = await generateQrCode();
 
-  //     if (response['success']) {
-  //       UserData data = UserData.fromJson(response['data']);
+      while (response == null) {
+        print(response);
+        await Future.delayed(const Duration(seconds: 180));
+        response = await generateQrCode();
 
-  //       setState(() {
-  //         _userData = [data];
-  //         QrCodeString = generateQrCode(_userData[0].id).toString();
-  //       });
-  //       return _userData;
-  //     } else {
-  //       throw Exception('Failed to load data');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Failed to load UserData');
-  //   }
-  // }
+        if (!_QrPolling) {
+          return;
+        }
+      }
+
+      setState(() {
+        _QrPolling = false;
+        QrCodeString = response;
+      });
+    }
+  }
+
+  Future<void> pollApi(BuildContext context) async {
+    var vehiclePlate = context.read<LicensePlateModel>().licensePlate!;
+    if (_polling) {
+      final userData = context.read<UserDataModel>().value;
+      var response = await apiClient.getConfirmation(userData?["id"]);
+
+      while (response["data"] == null) {
+        await Future.delayed(const Duration(seconds: 5));
+        response = await apiClient.getConfirmation(userData?["id"]);
+
+        if (!_polling) {
+          return;
+        }
+      }
+
+      setState(() {
+        _polling = false;
+      });
+
+      if (response["data"] != null && response["data"]["orderId"] != null) {
+        pushScreenWithoutNavBar(
+            context,
+            QrResultScreen(
+                orderId: response["data"]["orderId"],
+                vehiclePlate: vehiclePlate));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    pollQR();
+    pollApi(context);
     var color = const Color.fromRGBO(99, 96, 255, 1);
-    return Consumer<UserDataModel>(
-      builder: (context, userData, child) => Scaffold(
+    return Consumer3<UserDataModel, ProductNamesModel, LicensePlateModel>(
+      builder: (context, userData, productNames, licensePlate, child) =>
+          Scaffold(
         backgroundColor: color,
         appBar: AppBar(
           automaticallyImplyLeading: true,
@@ -137,21 +176,21 @@ class _QrScreenState extends State<QrScreen> {
                     size: 200,
                     backgroundColor: Colors.white,
                   ),
-                  TextButton(
-                    onPressed: () {
-                      pushScreenWithoutNavBar(
-                        context,
-                        const QrResultScreen(),
-                      );
-                    },
-                    child: Text(
-                      'Debug',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: color,
-                      ),
-                    ),
-                  ),
+                  // TextButton(
+                  //   onPressed: () {
+                  //     pushScreenWithoutNavBar(
+                  //       context,
+                  //       const QrResultScreen(),
+                  //     );
+                  //   },
+                  //   child: Text(
+                  //     'Debug',
+                  //     style: TextStyle(
+                  //       fontSize: 15,
+                  //       color: color,
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:driver_app/components/nav__bar.dart';
 import 'package:driver_app/models/license_plate.dart';
 import 'package:driver_app/models/map_destinations.dart';
+import 'package:driver_app/models/product_names.dart';
 import 'package:driver_app/models/user_data.dart';
 import 'package:driver_app/screens/account.dart';
 import 'package:driver_app/screens/history.dart';
@@ -31,6 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
             create: (_) => LicensePlateModel()..loadLicensePlate()),
         ChangeNotifierProvider<MapDestinationModel>(
             create: (_) => MapDestinationModel()..loadMapDestinations()),
+        ChangeNotifierProvider<ProductNamesModel>(
+            create: (_) => ProductNamesModel()..loadProductNames()),
       ],
       child: PersistentTabView(
         tabs: [

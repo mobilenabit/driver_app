@@ -172,19 +172,19 @@ class _GasStationScreenState extends State<GasStationScreen> {
                               ],
                             ),
                           ),
-                          Column(
+                          const Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text(
-                                gas.distance > 1000
-                                    ? '${(gas.distance / 1000).toStringAsFixed(1)} km'
-                                    : '${gas.distance.toStringAsFixed(1)} m',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              const Icon(
+                              // Text(
+                              //   gas.distance > 1000
+                              //       ? '${(gas.distance / 1000).toStringAsFixed(1)} km'
+                              //       : '${gas.distance.toStringAsFixed(1)} m',
+                              //   style: const TextStyle(
+                              //     fontSize: 14,
+                              //   ),
+                              // ),
+                              SizedBox(height: 4),
+                              Icon(
                                 LucideIcons.arrow_right,
                                 color: Color.fromRGBO(189, 189, 189, 1),
                                 size: 18,
