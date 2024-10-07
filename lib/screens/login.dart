@@ -193,6 +193,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(_lastUserName);
+
     return Scaffold(
       backgroundColor: const Color(0xFF6360FF),
       body: SafeArea(

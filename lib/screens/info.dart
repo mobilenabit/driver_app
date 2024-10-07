@@ -1,6 +1,7 @@
 import "package:cached_network_image/cached_network_image.dart";
 import "package:carousel_slider/carousel_slider.dart";
 import "package:driver_app/core/api_client.dart";
+import "package:driver_app/core/secure_store.dart";
 import "package:driver_app/models/license_plate.dart";
 import "package:driver_app/models/map_destinations.dart";
 import "package:driver_app/models/news.dart";
@@ -22,6 +23,20 @@ class _InfoScreenState extends State<InfoScreen> {
   late String licensePlate;
   late List<News> _newsData = [];
   Future<List<News>>? _newsBuilder;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final userData = context.watch<UserDataModel>().value;
+    if (userData != null) {
+      secureStorage.writeSecureData(
+          "last_logged_in_user_name", userData["displayName"]);
+      secureStorage.writeSecureData(
+          "last_logged_in_user_avatar", userData["avatar"]);
+      secureStorage.writeSecureData(
+          "last_logged_in_user_phone_number", userData["phoneNumber"]);
+    }
+  }
 
   @override
   void initState() {
