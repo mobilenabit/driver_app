@@ -25,7 +25,7 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   late List<Map<String, dynamic>> _items = [];
-  String selectedLicensePlate = '30A-123.45';
+  String selectedLicensePlate = "";
 
   @override
   void initState() {
@@ -249,7 +249,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 child: Column(
                   children: [
                     IconButton(
-                      onPressed: showModalBottom,
+                      onPressed: () {},
                       icon: Stack(
                         children: [
                           if (userData.value?["avatar"].isNotEmpty)
@@ -279,13 +279,13 @@ class _AccountScreenState extends State<AccountScreen> {
                                 color: Colors.white,
                               ),
                             ),
-                          Positioned(
-                            bottom: 8,
-                            right: -1,
-                            child: SvgPicture.asset(
-                              'assets/icons/chang_ava.svg',
-                            ),
-                          ),
+                          // Positioned(
+                          //   bottom: 8,
+                          //   right: -1,
+                          //   child: SvgPicture.asset(
+                          //     'assets/icons/chang_ava.svg',
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),
