@@ -1,12 +1,12 @@
-// ignore_for_file: use_build_context_synchronously
-
 import "dart:convert";
+
 import "package:conditional_wrap/conditional_wrap.dart";
-import "package:driver_app/components/text_field.dart";
 import "package:flutter/material.dart";
 import "package:flutter_lucide/flutter_lucide.dart";
 import "package:flutter_svg/svg.dart";
+
 import "../../components/password_validator.dart";
+import "../../components/text_field.dart";
 import "../../core/api_client.dart";
 import "../../core/secure_store.dart";
 import "login.dart";
@@ -26,7 +26,6 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
-  final apiClient = ApiClient();
   String _oldPassword = "";
   String _newPassword = "";
   String _confirmPassword = "";
@@ -94,6 +93,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       return _oldPassword.isNotEmpty &&
           _newPassword.isNotEmpty &&
           _confirmPassword.isNotEmpty &&
+          _newPassword != _oldPassword &&
+          _confirmPassword == _newPassword &&
           _validateCharacterCount() &&
           _validateCharacterSet() &&
           !_validateConsecutiveCharacters();
@@ -165,7 +166,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           children: [
                             const SizedBox(height: 12),
                             SvgPicture.asset(
-                              "../assets/images/password_success.svg",
+                              "assets/images/password_success.svg",
                             ),
                             const SizedBox(height: 32),
                             const Text(
@@ -476,8 +477,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                                 : null,
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor:
-                                                  const Color.fromRGBO(
-                                                      99, 96, 255, 1),
+                                                  const Color(0xFFFFC709),
                                               disabledForegroundColor:
                                                   Colors.grey,
                                               foregroundColor: Colors.black,
