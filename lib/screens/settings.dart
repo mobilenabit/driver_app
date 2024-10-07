@@ -1,9 +1,10 @@
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
 import "package:flutter_lucide/flutter_lucide.dart";
 import "package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart";
 import "package:provider/provider.dart";
 import "package:local_auth/local_auth.dart";
+import "package:shimmer/shimmer.dart";
+
 import "../../core/secure_store.dart";
 import "../../core/user_data.dart";
 import "change_password.dart";
@@ -34,6 +35,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       isBiometricAvailable = availableBiometrics.isNotEmpty;
     });
+  }
+
+  Widget _getAvatarWidget() {
+    final userData = context.read<UserDataModel>().value;
+
+    if (userData?["avatar"] != null && userData?["avatar"].isNotEmpty) {
+      return Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: NetworkImage(
+              userData?["avatar"],
+            ),
+          ),
+        ),
+      );
+    } else {
+      return const Icon(Icons.account_circle, size: 40);
+    }
   }
 
   void _handleLogout() async {
@@ -69,21 +92,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         );
       },
     );
-  }
-
-  void _handleBiometricAuth() async {
-    bool authenticated = false;
-    try {
-      authenticated = await localAuth.authenticate(
-        localizedReason: 'Xác thực sinh trắc học',
-        options: const AuthenticationOptions(
-          useErrorDialogs: true,
-          stickyAuth: true,
-        ),
-      );
-    } on PlatformException catch (e) {
-      print('Error: $e');
-    }
   }
 
   void _handleSavePassword() async {
@@ -130,6 +138,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(vertical: 48),
+              //   child: userData.value != null
+              //       ? Column(
+              //           children: [
+              //             Container(
+              //               width: 120,
+              //               height: 120,
+              //               decoration: BoxDecoration(
+              //                 shape: BoxShape.circle,
+              //                 color: (userData.value?["avatar"] != null &&
+              //                         userData.value?["avatar"].isNotEmpty)
+              //                     ? null
+              //                     : const Color(0xFFF1F1FA),
+              //                 image: (userData.value?["avatar"] != null &&
+              //                         userData.value?["avatar"].isNotEmpty)
+              //                     ? DecorationImage(
+              //                         fit: BoxFit.cover,
+              //                         image: NetworkImage(
+              //                             userData.value?["avatar"]),
+              //                       )
+              //                     : null,
+              //               ),
+              //               child: (userData.value?["avatar"] != null &&
+              //                       userData.value?["avatar"].isNotEmpty)
+              //                   ? null
+              //                   : const Icon(LucideIcons.user, size: 64),
+              //             ),
+              //             const SizedBox(height: 20),
+              //             Text(
+              //               userData.value?["displayName"],
+              //               style: const TextStyle(
+              //                 fontSize: 24,
+              //                 fontWeight: FontWeight.bold,
+              //                 color: Color(0xFFFCFCFF),
+              //               ),
+              //             ),
+              //           ],
+              //         )
+              //       : Shimmer.fromColors(
+              //           baseColor: Colors.grey.shade300,
+              //           highlightColor: Colors.grey.shade100,
+              //           enabled: true,
+              //           child: Column(
+              //             children: [
+              //               Container(
+              //                 width: 120,
+              //                 height: 120,
+              //                 decoration: const BoxDecoration(
+              //                   shape: BoxShape.circle,
+              //                   color: Colors.white,
+              //                 ),
+              //               ),
+              //               const SizedBox(height: 20),
+              //               Container(
+              //                 width: 128,
+              //                 height: 24.0,
+              //                 color: Colors.white,
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              // ),
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.only(
@@ -193,9 +264,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 savePassword = value;
                               });
                               _handleSavePassword();
-                              if (value) {
-                                _handleBiometricAuth();
-                              }
                             }
                           },
                           title: const Text(

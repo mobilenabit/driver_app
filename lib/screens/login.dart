@@ -61,9 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       isBiometricAvailable = false;
     }
-  }
 
-  void _checkBiometricSettings() async {
     var result = await const SecureStorage().readSecureData("save_password");
     if (result != null) {
       setState(() {
@@ -125,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   bool _checkLastLoggedInData() {
-    return _lastUserName.isNotEmpty && _lastUserPhoneNumber.isNotEmpty;
+    return _lastUserName.isNotEmpty;
   }
 
   Future<void> _handleLogin() async {
@@ -188,9 +186,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+
     _readLastLoggedInData();
     _checkBiometric();
-    _checkBiometricSettings();
   }
 
   @override
@@ -200,134 +198,202 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         bottom: false,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            const Spacer(),
+            Container(
+              alignment: Alignment.center,
+              width: 128,
+              height: 128,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F1FA),
+                borderRadius: BorderRadius.circular(10),
+                image: const DecorationImage(
+                  image: AssetImage("assets/images/PetroNET_Logo.png"),
+                  fit: BoxFit.contain,
+                ),
+              ),
+              // child: const Text(
+              //   "DigiOil",
+              //   textAlign: TextAlign.center,
+              //   style: TextStyle(
+              //     color: Colors.white,
+              //     fontWeight: FontWeight.w600,
+              //     fontSize: 48,
+              //   ),
+              // ),
+            ),
+            const Spacer(),
             Expanded(
+              flex: 5,
               child: Container(
-                alignment: Alignment.center,
-                width: 256,
-                height: 128,
-                // decoration: BoxDecoration(
-                //   color: const Color(0xFFF1F1FA),
-                //   borderRadius: BorderRadius.circular(10),
-                //   image: const DecorationImage(
-                //     image: AssetImage("assets/images/_Logo.png"),
-                //     fit: BoxFit.contain,
-                //   ),
-                // ),
-                child: const Text(
-                  "DigiOil",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 48,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF1F1FA),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
                   ),
                 ),
-              ),
-            ),
-            Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFFF1F1FA),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-              ),
-              child: Form(
-                key: _formKey,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                        32, _checkLastLoggedInData() ? 0 : 48, 32, 48),
-                    child: Column(
-                      children: [
-                        if (_checkLastLoggedInData()) ...[
-                          Transform.translate(
-                            offset: const Offset(0, -40),
-                            child: Stack(
-                              children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    if (_lastUserAvatar == "")
-                                      Container(
-                                        decoration: const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.white,
+                child: Form(
+                  key: _formKey,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                          32, _checkLastLoggedInData() ? 0 : 48, 32, 48),
+                      child: Column(
+                        children: [
+                          if (_checkLastLoggedInData()) ...[
+                            Transform.translate(
+                              offset: const Offset(0, -40),
+                              child: Stack(
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      if (_lastUserAvatar == "")
+                                        Container(
+                                          decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.white,
+                                          ),
+                                          child: const Icon(
+                                              Icons.account_circle,
+                                              size: 80),
                                         ),
-                                        child: const Icon(Icons.account_circle,
-                                            size: 80),
-                                      ),
-                                    if (_lastUserAvatar != "")
-                                      Container(
-                                        width: 80,
-                                        height: 80,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          image: DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image:
-                                                NetworkImage(_lastUserAvatar),
+                                      if (_lastUserAvatar != "")
+                                        Container(
+                                          width: 80,
+                                          height: 80,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image:
+                                                  NetworkImage(_lastUserAvatar),
+                                            ),
                                           ),
                                         ),
+                                      Text(
+                                        _lastUserName,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                       ),
-                                    Text(
-                                      _lastUserName,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    Text(
-                                      _lastUserPhoneNumber.trim(),
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          _lastUserName = "";
-                                          _lastUserAvatar = "";
-                                          _lastUserPhoneNumber = "";
-                                        });
-                                      },
-                                      style: TextButton.styleFrom(
-                                        foregroundColor:
-                                            const Color(0xFF6360FF),
-                                      ),
-                                      child: const Text(
-                                        "Đăng nhập tài khoản khác",
-                                        style: TextStyle(
+                                      Text(
+                                        _lastUserPhoneNumber.trim(),
+                                        style: const TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w400,
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                      TextButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _lastUserName = "";
+                                            _lastUserAvatar = "";
+                                            _lastUserPhoneNumber = "";
+                                          });
+                                        },
+                                        style: TextButton.styleFrom(
+                                          foregroundColor:
+                                              const Color(0xFF6360FF),
+                                        ),
+                                        child: const Text(
+                                          "Đăng nhập tài khoản khác",
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                        if (!_checkLastLoggedInData()) ...[
+                          ],
+                          if (!_checkLastLoggedInData()) ...[
+                            TextFormField(
+                              focusNode: usernameFocus,
+                              textInputAction: TextInputAction.next,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Tên đăng nhập không được để trống.";
+                                }
+
+                                return null;
+                              },
+                              keyboardType: TextInputType.text,
+                              style: const TextStyle(
+                                fontSize: 13,
+                              ),
+                              decoration: InputDecoration(
+                                fillColor: const Color(0xFFFCFCFF),
+                                filled: true,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(vertical: 0),
+                                hintStyle: const TextStyle(
+                                  color: Color(0xFFA7ABC3),
+                                ),
+                                hintText: "Tên đăng nhập",
+                                isDense: true,
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Colors.transparent,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFF6360FF),
+                                  ),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFE43434),
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFE43434),
+                                  ),
+                                ),
+                                prefixIcon: const Icon(
+                                  LucideIcons.user,
+                                  color: Color(0xFF6360FF),
+                                ),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  _username = value;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                          ],
                           TextFormField(
-                            focusNode: usernameFocus,
-                            textInputAction: TextInputAction.next,
+                            focusNode: passwordFocus,
+                            textInputAction: TextInputAction.done,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
+                            obscureText: !_passwordVisible,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return "Tên đăng nhập không được để trống.";
+                                return "Mật khẩu không được để trống.";
                               }
 
                               return null;
                             },
-                            keyboardType: TextInputType.text,
+                            keyboardType: TextInputType.visiblePassword,
                             style: const TextStyle(
                               fontSize: 13,
                             ),
@@ -339,12 +405,26 @@ class _LoginScreenState extends State<LoginScreen> {
                               hintStyle: const TextStyle(
                                 color: Color(0xFFA7ABC3),
                               ),
-                              hintText: "Tên đăng nhập",
+                              hintText: "Mật khẩu",
                               isDense: true,
+                              prefixIcon: const Icon(
+                                LucideIcons.lock,
+                                color: Color(0xFF6360FF),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: _passwordVisible
+                                    ? const Icon(LucideIcons.eye_off)
+                                    : const Icon(LucideIcons.eye),
+                                onPressed: () {
+                                  setState(() {
+                                    _passwordVisible = !_passwordVisible;
+                                  });
+                                },
+                              ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: const BorderSide(
-                                  color: Colors.transparent,
+                                  color: Color(0xFFE4E5F0),
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
@@ -365,126 +445,46 @@ class _LoginScreenState extends State<LoginScreen> {
                                   color: Color(0xFFE43434),
                                 ),
                               ),
-                              prefixIcon: const Icon(
-                                LucideIcons.user,
-                                color: Color(0xFF6360FF),
-                              ),
+                              suffixIconColor: passwordFocus.hasFocus
+                                  ? const Color(0xFF1B1D29)
+                                  : const Color(0xFFA7ABC3),
                             ),
                             onChanged: (value) {
                               setState(() {
-                                _username = value;
+                                _password = value;
                               });
                             },
                           ),
-                          const SizedBox(height: 20),
-                        ],
-                        TextFormField(
-                          focusNode: passwordFocus,
-                          textInputAction: TextInputAction.done,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          obscureText: !_passwordVisible,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Mật khẩu không được để trống.";
-                            }
-
-                            return null;
-                          },
-                          keyboardType: TextInputType.visiblePassword,
-                          style: const TextStyle(
-                            fontSize: 13,
-                          ),
-                          decoration: InputDecoration(
-                            fillColor: const Color(0xFFFCFCFF),
-                            filled: true,
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 0),
-                            hintStyle: const TextStyle(
-                              color: Color(0xFFA7ABC3),
-                            ),
-                            hintText: "Mật khẩu",
-                            isDense: true,
-                            prefixIcon: const Icon(
-                              LucideIcons.lock,
-                              color: Color(0xFF6360FF),
-                            ),
-                            suffixIcon: IconButton(
-                              icon: _passwordVisible
-                                  ? const Icon(LucideIcons.eye_off)
-                                  : const Icon(LucideIcons.eye),
-                              onPressed: () {
-                                setState(() {
-                                  _passwordVisible = !_passwordVisible;
-                                });
-                              },
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE4E5F0),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF6360FF),
-                              ),
-                            ),
-                            focusedErrorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE43434),
-                              ),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE43434),
-                              ),
-                            ),
-                            suffixIconColor: passwordFocus.hasFocus
-                                ? const Color(0xFF1B1D29)
-                                : const Color(0xFFA7ABC3),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              _password = value;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 15),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 5,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  fixedSize: const Size(48, 48),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                          const SizedBox(height: 15),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                flex: 5,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    fixedSize: const Size(48, 48),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: const Color(0xFF6360FF),
+                                    shadowColor: Colors.transparent,
                                   ),
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: const Color(0xFF6360FF),
-                                  shadowColor: Colors.transparent,
-                                ),
-                                onPressed: _handleLogin,
-                                child: const Text(
-                                  "Đăng nhập",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
+                                  onPressed: _handleLogin,
+                                  child: const Text(
+                                    "Đăng nhập",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            biometricSetting
-                                ? Expanded(
-                                    flex: 1,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        left: 5,
-                                      ),
+                              SizedBox(width: biometricSetting ? 16 : 0),
+                              biometricSetting
+                                  ? Expanded(
+                                      flex: 1,
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           padding: EdgeInsets.zero,
@@ -499,28 +499,59 @@ class _LoginScreenState extends State<LoginScreen> {
                                           shadowColor: Colors.transparent,
                                         ),
                                         onPressed: () {
-                                          _handleBiometricAuth();
+                                          if (_checkLastLoggedInData()) {
+                                            if (!biometricSetting) {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title:
+                                                        const Text("Xác thực"),
+                                                    content: const Text(
+                                                        "Tài khoản chưa bật chế độ xác thực bằng sinh trắc học"),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child:
+                                                            const Text("Đóng"),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            } else if (isBiometricAvailable &&
+                                                biometricSetting) {
+                                              _handleBiometricAuth();
+                                            } else {
+                                              _notifyNoBiometric();
+                                            }
+                                          }
+                                          ;
                                         },
                                         child:
                                             const Icon(LucideIcons.scan_face),
                                       ),
-                                    ),
-                                  )
-                                : Container(),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            "Quên mật khẩu?",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFFFF8181),
+                                    )
+                                  : const SizedBox(),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          TextButton(
+                            onPressed: () {},
+                            child: const Text(
+                              "Quên mật khẩu?",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFFFF8181),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
