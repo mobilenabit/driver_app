@@ -442,9 +442,39 @@ class ApiClient {
           return false;
         },
       );
-      print(response.data);
       return response.data;
     } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getCustomer(int customerId) async {
+    final apiToken = await _ss.readSecureData("access_token");
+    print(customerId);
+    try {
+      final response = await _r.retry(
+        () async => await _dio.get(
+          "$_apiUrl/MD/Customer/$customerId",
+          options: Options(
+            headers: {
+              "Authorization": "Bearer $apiToken",
+              "Content-Type": "application/json",
+            },
+          ),
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      print(e);
       return e.response!.data;
     }
   }

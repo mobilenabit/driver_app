@@ -10,6 +10,7 @@ import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -26,11 +27,8 @@ class AccountScreen extends StatefulWidget {
 class _AccountScreenState extends State<AccountScreen> {
   late List<Map<String, dynamic>> _items = [];
   String selectedLicensePlate = "";
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  int? availableCreditLimit;
+  int? totalCreditLimit;
 
   Future<void> _selectLicensePlate() async {
     final result = await Navigator.push(
@@ -191,6 +189,26 @@ class _AccountScreenState extends State<AccountScreen> {
         );
       },
     );
+  }
+
+  Future<Map<String, dynamic>> getCreditLimit() async {
+    var driverInfo = context.read<LicensePlateModel>().value;
+    var customerId = driverInfo?["vehicle"]["customerId"];
+    try {
+      var res = await apiClient.getCustomer(customerId);
+      if (res["success"]) {
+        return res["data"];
+      }
+    } catch (e) {
+      return {};
+    }
+    return {};
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getCreditLimit();
   }
 
   @override
@@ -386,27 +404,32 @@ class _AccountScreenState extends State<AccountScreen> {
                                 TableCell(
                                   verticalAlignment:
                                       TableCellVerticalAlignment.middle,
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 15,
-                                        ),
-                                        child: Text(
-                                          'Hạn mức còn lại',
-                                          style: style1,
-                                        ),
+                                  child: Column(children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 15,
                                       ),
-                                      Padding(
+                                      child: Text(
+                                        'Hạn mức còn lại',
+                                        style: style1,
+                                      ),
+                                    ),
+                                    Padding(
                                         padding: const EdgeInsets.only(
                                             bottom: 15, top: 15),
-                                        child: Text(
-                                          '16.000.000đ',
-                                          style: style2,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                        child: FutureBuilder(
+                                            future: getCreditLimit(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                return const CircularProgressIndicator();
+                                              }
+                                              return Text(
+                                                '${NumberFormat("###,###").format(snapshot.data?["availableCreditLimit"])} đ',
+                                                style: style2,
+                                              );
+                                            })),
+                                  ]),
                                 ),
                                 TableCell(
                                   verticalAlignment:
@@ -418,16 +441,30 @@ class _AccountScreenState extends State<AccountScreen> {
                                           top: 15,
                                         ),
                                         child: Text(
-                                          'Hạn mức từng giao dịch',
+                                          'Hạn mức tổng',
                                           style: style1,
                                         ),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
                                             bottom: 15, top: 15),
-                                        child: Text(
-                                          '1.500.000đ',
-                                          style: style2,
+                                        child: FutureBuilder(
+                                          future: getCreditLimit(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const CircularProgressIndicator();
+                                            }
+
+                                            if (snapshot.hasError) {
+                                              return const Text('Error');
+                                            }
+
+                                            return Text(
+                                              '${NumberFormat("###,###").format(snapshot.data?["creditLimit"])} đ',
+                                              style: style2,
+                                            );
+                                          },
                                         ),
                                       ),
                                     ],

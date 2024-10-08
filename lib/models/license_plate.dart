@@ -19,6 +19,7 @@ class LicensePlateModel with ChangeNotifier {
     });
 
     return await apiClient.getActiveVehicle(value?["id"]).then((res) {
+      value = res["data"];
       licensePlate = res["data"]["vehicle"]["vehicleCode"];
       _isLoading = false;
       notifyListeners();
