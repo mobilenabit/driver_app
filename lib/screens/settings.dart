@@ -7,6 +7,7 @@ import "package:shimmer/shimmer.dart";
 
 import "../../core/secure_store.dart";
 import "../../core/user_data.dart";
+import "about.dart";
 import "change_password.dart";
 import "login.dart";
 import "user_info.dart";
@@ -285,7 +286,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           contentPadding: EdgeInsets.zero,
                           title: const Text("Về ứng dụng"),
                           trailing: const Icon(LucideIcons.chevron_right),
-                          onTap: () {},
+                          onTap: () {
+                            pushScreenWithoutNavBar(
+                              context,
+                              const AboutScreen(),
+                            );
+                          },
                           visualDensity: VisualDensity.compact,
                         ),
                         ListTile(
