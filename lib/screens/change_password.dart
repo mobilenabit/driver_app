@@ -472,15 +472,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                       children: [
                                         Expanded(
                                           child: ElevatedButton(
-                                            onPressed: _checkFields()
+                                            onPressed: _checkFields() &&
+                                                    !_isError &&
+                                                    (_newPassword ==
+                                                        _confirmPassword)
                                                 ? _handleConfirm
                                                 : null,
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor:
-                                                  const Color(0xFFFFC709),
+                                                  const Color(0xFF6360FF),
                                               disabledForegroundColor:
                                                   Colors.grey,
-                                              foregroundColor: Colors.black,
+                                              foregroundColor: Colors.white,
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
