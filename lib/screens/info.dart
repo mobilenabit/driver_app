@@ -95,7 +95,8 @@ class _InfoScreenState extends State<InfoScreen> {
                 padding: const EdgeInsets.fromLTRB(30, 30, 30, 15),
                 child: Row(
                   children: [
-                    if (userData.value?["avatar"].isNotEmpty)
+                    if (userData.value?["avatar"] != null &&
+                        userData.value?["avatar"].isNotEmpty)
                       Container(
                         width: 55,
                         height: 55,

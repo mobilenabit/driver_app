@@ -270,7 +270,8 @@ class _AccountScreenState extends State<AccountScreen> {
                       onPressed: () {},
                       icon: Stack(
                         children: [
-                          if (userData.value?["avatar"].isNotEmpty)
+                          if (userData.value?["avatar"] != null &&
+                              userData.value?["avatar"].isNotEmpty)
                             Container(
                               width: 120,
                               height: 120,
@@ -425,7 +426,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                                 return const CircularProgressIndicator();
                                               }
                                               return Text(
-                                                '${NumberFormat("###,###").format(snapshot.data?["availableCreditLimit"])} đ',
+                                                '${NumberFormat("###,###").format(snapshot.data?["availableCreditLimit"] ?? 0)} đ',
                                                 style: style2,
                                               );
                                             })),
@@ -461,7 +462,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                             }
 
                                             return Text(
-                                              '${NumberFormat("###,###").format(snapshot.data?["creditLimit"])} đ',
+                                              '${NumberFormat("###,###").format(snapshot.data?["creditLimit"] ?? 0)} đ',
                                               style: style2,
                                             );
                                           },
