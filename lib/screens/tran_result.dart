@@ -5,12 +5,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class TranResultScreen extends StatelessWidget {
-  final String status;
-  final String code;
-  final String date;
-  final String hours;
+  final int status;
+  final int code;
   final double amount;
+  final String hours;
+  final String date;
   final double money;
+  final String vehicleCode;
+  final double unitPrice;
+  final String productName;
 
   const TranResultScreen(
       {super.key,
@@ -19,6 +22,9 @@ class TranResultScreen extends StatelessWidget {
       required this.date,
       required this.hours,
       required this.money,
+      required this.productName,
+      required this.unitPrice,
+      required this.vehicleCode,
       required this.status});
 
   @override
@@ -299,7 +305,7 @@ class TranResultScreen extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              code,
+                                              code.toString(),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,

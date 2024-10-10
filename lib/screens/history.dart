@@ -1,10 +1,14 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:driver_app/core/api_client.dart';
+import 'package:driver_app/core/user_data.dart';
+import 'package:driver_app/models/license_plate.dart';
 import 'package:driver_app/screens/tran_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
+import 'package:provider/provider.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({
@@ -16,61 +20,62 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  late final List<History> _items;
+  List<History> _items = [];
 
   @override
   void initState() {
     super.initState();
-    _items = [
-      History(
-        status: 'Thành công',
-        code: '12345',
-        amount: 32,
-        hours: '16:30',
-        date: '19/09/2024',
-        money: 250000,
-      ),
-      History(
-        status: 'Đã hủy',
-        code: '12345',
-        amount: 6,
-        hours: '20:00',
-        date: '19/09/2024',
-        money: 123000,
-      ),
-      History(
-        status: 'Thành công',
-        code: '12345',
-        amount: 1000,
-        hours: '06:10',
-        date: '19/09/2024',
-        money: 156000,
-      ),
-      History(
-        status: 'Đã hủy',
-        code: '12345',
-        amount: 50,
-        hours: '06:30',
-        date: '20/09/2024',
-        money: 54600,
-      ),
-      History(
-        status: 'Thành công',
-        code: '12345',
-        amount: 50,
-        hours: '05:30',
-        date: '21/09/2024',
-        money: 54600,
-      ),
-      History(
-        status: 'Thành công',
-        code: '12345',
-        amount: 65,
-        hours: '06:30',
-        date: '21/09/2024',
-        money: 45600,
-      ),
-    ];
+    getHistory();
+    // _items = [
+    //   History(
+    //     status: 'Thành công',
+    //     code: '12345',
+    //     amount: 32,
+    //     hours: '16:30',
+    //     date: '19/09/2024',
+    //     money: 250000,
+    //   ),
+    //   History(
+    //     status: 'Đã hủy',
+    //     code: '12345',
+    //     amount: 6,
+    //     hours: '20:00',
+    //     date: '19/09/2024',
+    //     money: 123000,
+    //   ),
+    //   History(
+    //     status: 'Thành công',
+    //     code: '12345',
+    //     amount: 1000,
+    //     hours: '06:10',
+    //     date: '19/09/2024',
+    //     money: 156000,
+    //   ),
+    //   History(
+    //     status: 'Đã hủy',
+    //     code: '12345',
+    //     amount: 50,
+    //     hours: '06:30',
+    //     date: '20/09/2024',
+    //     money: 54600,
+    //   ),
+    //   History(
+    //     status: 'Thành công',
+    //     code: '12345',
+    //     amount: 50,
+    //     hours: '05:30',
+    //     date: '21/09/2024',
+    //     money: 54600,
+    //   ),
+    //   History(
+    //     status: 'Thành công',
+    //     code: '12345',
+    //     amount: 65,
+    //     hours: '06:30',
+    //     date: '21/09/2024',
+    //     money: 45600,
+    //   ),
+    // ];
 
     _sortDate();
     _sortTime();
@@ -108,6 +113,37 @@ class _HistoryScreenState extends State<HistoryScreen> {
     '15 ngày',
     '30 ngày',
   ];
+
+  Future<void> getHistory() async {
+    var licensePlate = context.read<LicensePlateModel>().value;
+
+    try {
+      var response = await apiClient.getHistory(_startDate, _endDate,
+          licensePlate?["driverId"], licensePlate?["vehicleId"]);
+      if (response["success"]) {
+        for (var item in response["data"]) {
+          setState(() {
+            _items.add(History(
+              status: item["status"],
+              code: item["id"],
+              amount: item["trpr"]["qty"],
+              hours:
+                  DateFormat("HH:mm").format(DateTime.parse(item["modified"])),
+              date: DateFormat("dd/MM/yyyy")
+                  .format(DateTime.parse(item["modified"])),
+              money: item["trpr"]["tienHang"],
+              vehicleCode: licensePlate?["vehicle"]["vehicleCode"],
+              unitPrice: item["trpr"]["unitPrice"],
+              productName: item["trpr"]["productName"],
+            ));
+          });
+        }
+      }
+    } catch (e) {
+      print(e);
+      throw Exception("Failed to get history");
+    }
+  }
 
   int? _dateSelected;
 
@@ -229,7 +265,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget build(BuildContext context) {
     var color = const Color.fromRGBO(99, 96, 255, 1);
 
-    return Scaffold(
+    return Consumer2<UserDataModel, LicensePlateModel>(
+      builder: (context, userData, licensePlate, child) => Scaffold(
         backgroundColor: color,
         appBar: AppBar(
           backgroundColor: color,
@@ -555,6 +592,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             hours: item.hours,
                                             money: item.money,
                                             status: item.status,
+                                            vehicleCode: item.vehicleCode,
+                                            unitPrice: item.unitPrice,
+                                            productName: item.productName,
                                           ),
                                         );
                                       },
@@ -595,8 +635,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                       horizontal: 10,
                                                     ),
                                                     decoration: BoxDecoration(
-                                                      color: item.status ==
-                                                              'Thành công'
+                                                      color: item.status == 1
                                                           ? const Color
                                                               .fromRGBO(
                                                               219, 255, 225, 1)
@@ -608,7 +647,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                               50),
                                                     ),
                                                     child: Text(
-                                                      item.status,
+                                                      item.status == 1
+                                                          ? "Thành công"
+                                                          : "Đã huỷ",
                                                       style: TextStyle(
                                                         fontSize: 15,
                                                         fontWeight:
@@ -734,17 +775,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
             ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
 
 class History {
-  final String status;
-  final String code;
+  final int status;
+  final int code;
   final double amount;
   final String hours;
   final String date;
   final double money;
+  final String vehicleCode;
+  final double unitPrice;
+  final String productName;
 
   History({
     required this.amount,
@@ -753,5 +799,8 @@ class History {
     required this.hours,
     required this.money,
     required this.status,
+    required this.vehicleCode,
+    required this.unitPrice,
+    required this.productName,
   });
 }

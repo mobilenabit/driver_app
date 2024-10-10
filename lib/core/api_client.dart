@@ -726,6 +726,51 @@ class ApiClient {
       return e.response!.data;
     }
   }
+
+  Future<Map<String, dynamic>> getHistory(
+      DateTime fromDate, DateTime toDate, int driverId, int VehicleId) async {
+    final apiToken = await _ss.readSecureData("access_token");
+
+    final Map<String, dynamic> details = {
+      "status": -1,
+      "pageSize": 30,
+      "pageIndex": 1,
+      "isDesc": true,
+      "fromDate": fromDate.toIso8601String(),
+      "toDate": toDate.toIso8601String(),
+      "driverId": driverId,
+      "vehicleId": VehicleId,
+      "workshiftId": 0,
+      "trDir": -1,
+    };
+
+    try {
+      final response = await _r.retry(
+        () async => await _dio.post(
+          "$_apiUrl/TR/TR/Find",
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+          data: details,
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
 }
 
 final apiClient = ApiClient();
