@@ -38,6 +38,8 @@
 	<string>Why is my app authenticating using face id?</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>your location</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We require this information to display your location on the map</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Used to demonstrate image picker plugin</string>
 	<key>NSPhotoLibraryUsageDescription</key>
