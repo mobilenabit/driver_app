@@ -8,10 +8,14 @@ import 'package:intl/intl.dart';
 class TransactionResult extends StatelessWidget {
   final Map<String, dynamic> order;
   final String vehicleCode;
+  final String customerName;
+  final String location;
   const TransactionResult({
     super.key,
     required this.order,
     required this.vehicleCode,
+    required this.customerName,
+    required this.location,
   });
 
   @override
@@ -242,8 +246,7 @@ class TransactionResult extends StatelessWidget {
                                             ),
                                             Text(
                                               DateFormat('HH:mm dd/MM/yyyy')
-                                                  .format(
-                                                      order["endFuelingTime"]),
+                                                  .format(DateTime.now()),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
@@ -264,7 +267,7 @@ class TransactionResult extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              order["id"],
+                                              order["id"].toString(),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
@@ -299,27 +302,6 @@ class TransactionResult extends StatelessWidget {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             const Text(
-                                              "Vòi bơm",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                            Text(
-                                              order["nozzleId"],
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: size.height * 0.02),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            const Text(
                                               "Số lượng",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
@@ -339,11 +321,11 @@ class TransactionResult extends StatelessWidget {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Cửa hàng",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
@@ -351,8 +333,8 @@ class TransactionResult extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              'Cửa hàng xăng dầu Xa La',
-                                              style: TextStyle(
+                                              customerName,
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
                                               ),
@@ -360,22 +342,27 @@ class TransactionResult extends StatelessWidget {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Địa chỉ",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 13,
                                               ),
                                             ),
-                                            Text(
-                                              'Đường Cầu Bươu',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 13,
+                                            const SizedBox(width: 16),
+                                            Expanded(
+                                              child: Text(
+                                                location,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 13,
+                                                ),
+                                                textAlign: TextAlign.right,
+                                                softWrap: true,
                                               ),
                                             ),
                                           ],

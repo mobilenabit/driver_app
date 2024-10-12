@@ -2,6 +2,7 @@ import "package:cached_network_image/cached_network_image.dart";
 import "package:carousel_slider/carousel_slider.dart";
 import "package:driver_app/core/api_client.dart";
 import "package:driver_app/core/secure_store.dart";
+import "package:driver_app/models/driver.dart";
 import "package:driver_app/models/license_plate.dart";
 import "package:driver_app/models/map_destinations.dart";
 import "package:driver_app/models/news.dart";
@@ -41,6 +42,7 @@ class _InfoScreenState extends State<InfoScreen> {
   @override
   void initState() {
     final userData = context.read<UserDataModel>().value;
+    print(context.read<DriverModel>().value?["driverName"]);
     super.initState();
 
     _newsBuilder = fetchNewsData();
@@ -81,11 +83,29 @@ class _InfoScreenState extends State<InfoScreen> {
     }
   }
 
+  // Future<Map<String, dynamic>> getDriverData() async {
+  //   final userData = context.read<UserDataModel>().value;
+  //   try {
+  //     final response = await apiClient.getDriver(userData?["userId"]);
+  //     print(response);
+  //     if (response["success"]) {
+  //       return response["data"][0];
+  //     } else {
+  //       throw Exception("Failed to load driver data");
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //     throw Exception("Failed to load driver data");
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
-    return Consumer3<UserDataModel, LicensePlateModel, MapDestinationModel>(
-      builder: (context, userData, licensePlate, mapDestinations, child) =>
-          Scaffold(
+    return Consumer4<UserDataModel, LicensePlateModel, MapDestinationModel,
+        DriverModel>(
+      builder:
+          (context, userData, licensePlate, mapDestinations, driver, child) =>
+              Scaffold(
         backgroundColor: const Color(0xFF6360FF),
         body: SafeArea(
           bottom: false,
@@ -120,13 +140,37 @@ class _InfoScreenState extends State<InfoScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            userData.value?["displayName"],
+                            driver.value?["driverName"] ?? "",
                             style: const TextStyle(
                               color: Color(0xFFFCFCFF),
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          // FutureBuilder(
+                          //     future: getDriverData(),
+                          //     builder: (context, snapshot) {
+                          //       if (snapshot.connectionState ==
+                          //           ConnectionState.waiting) {
+                          //         return const Center(
+                          //             child: CircularProgressIndicator());
+                          //       } else if (snapshot.hasError) {
+                          //         return Center(
+                          //             child: Text('Error: ${snapshot.error}'));
+                          //       } else if (snapshot.hasData) {
+                          //         return Text(
+                          //           snapshot.data?["driverName"] ?? "",
+                          //           style: const TextStyle(
+                          //             color: Color(0xFFFCFCFF),
+                          //             fontSize: 14,
+                          //             fontWeight: FontWeight.bold,
+                          //           ),
+                          //         );
+                          //       } else {
+                          //         return const Center(
+                          //             child: Text('No user data available.'));
+                          //       }
+                          //     }),
                           Text(
                             licensePlate.licensePlate ?? '',
                             style: const TextStyle(

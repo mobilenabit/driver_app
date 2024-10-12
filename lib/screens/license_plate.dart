@@ -129,7 +129,6 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                       itemCount: snapshot.data?["data"].length,
                       itemBuilder: (context, index) {
                         final plate = snapshot.data?["data"][index];
-                        print(plate);
                         var vehicleCode =
                             plate["vehicle"]["vehicleCode"].toString();
                         return vehicleCode.contains(filter)
@@ -140,7 +139,29 @@ class _LicensePlateScreenState extends State<LicensePlateScreen> {
                                 ),
                                 child: GestureDetector(
                                   onTap: () {
-                                    licensePlateModel?.setLicensePlate(plate);
+                                    licensePlateModel
+                                        ?.setLicensePlate(plate)
+                                        .then((res) {
+                                      if (res) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              "Đã chọn biển số $vehicleCode",
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              "Đã xảy ra lỗi, vui lòng chọn lại",
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    });
                                     Navigator.pop(context, vehicleCode);
                                   },
                                   child: Row(

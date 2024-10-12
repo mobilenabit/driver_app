@@ -1,10 +1,13 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:driver_app/components/ticket_cliper.dart';
+import 'package:driver_app/core/api_client.dart';
+import 'package:driver_app/models/license_plate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-class TranResultScreen extends StatelessWidget {
+class TranResultScreen extends StatefulWidget {
   final int status;
   final int code;
   final double amount;
@@ -14,6 +17,8 @@ class TranResultScreen extends StatelessWidget {
   final String vehicleCode;
   final double unitPrice;
   final String productName;
+  final String licensePlate;
+  final int branchId;
 
   const TranResultScreen(
       {super.key,
@@ -25,7 +30,36 @@ class TranResultScreen extends StatelessWidget {
       required this.productName,
       required this.unitPrice,
       required this.vehicleCode,
-      required this.status});
+      required this.status,
+      required this.licensePlate,
+      required this.branchId});
+
+  @override
+  State<TranResultScreen> createState() => _TranResultScreenState();
+}
+
+class _TranResultScreenState extends State<TranResultScreen> {
+  Map<String, dynamic>? orgUnit;
+  void getOrgUnit() async {
+    try {
+      final response = await apiClient.getCompany(widget.branchId);
+      print(response);
+      if (response["success"]) {
+        setState(() {
+          orgUnit = response["data"];
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getOrgUnit();
+    print(orgUnit);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +112,7 @@ class TranResultScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const SizedBox(height: 20),
-                        status == 'Thành công'
+                        widget.status == 1
                             ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
@@ -100,7 +134,7 @@ class TranResultScreen extends StatelessWidget {
                                       decimalDigits: 0,
                                       symbol: "₫",
                                       customPattern: "###,###",
-                                    ).format(money)} ₫',
+                                    ).format(widget.money)} ₫',
                                     style: const TextStyle(
                                       fontSize: 28,
                                       fontWeight: FontWeight.bold,
@@ -130,7 +164,7 @@ class TranResultScreen extends StatelessWidget {
                                       decimalDigits: 0,
                                       symbol: "₫",
                                       customPattern: "###,###",
-                                    ).format(money)} ₫',
+                                    ).format(widget.money)} ₫',
                                     style: const TextStyle(
                                       fontSize: 28,
                                       fontWeight: FontWeight.bold,
@@ -202,28 +236,57 @@ class TranResultScreen extends StatelessWidget {
                                           ),
                                           child: Row(
                                             children: [
-                                              SvgPicture.asset(
-                                                'assets/icons/gasType.svg',
-                                                width: 44,
-                                                height: 44,
-                                              ),
+                                              // SvgPicture.asset(
+                                              //   'assets/icons/gasType.svg',
+                                              //   width: 44,
+                                              //   height: 44,
+                                              // ),
+                                              widget.productName.contains("DO")
+                                                  ? Image.asset(
+                                                      "assets/images/pump_do.png",
+                                                      width: 44,
+                                                      height: 44,
+                                                    )
+                                                  : widget.productName
+                                                          .contains("92")
+                                                      ? Image.asset(
+                                                          "assets/images/pump_r92.png",
+                                                          width: 44,
+                                                          height: 44,
+                                                        )
+                                                      : widget.productName
+                                                              .contains("95")
+                                                          ? Image.asset(
+                                                              "assets/images/pump_r95.png",
+                                                              width: 44,
+                                                              height: 44,
+                                                            )
+                                                          : Image.asset(
+                                                              "assets/images/pump_do.png",
+                                                              width: 44,
+                                                              height: 44,
+                                                            ),
                                               SizedBox(
                                                   width: size.width * 0.025),
-                                              const Column(
+                                              Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    'Xăng E5 RON 92-II',
-                                                    style: TextStyle(
+                                                    widget.productName,
+                                                    style: const TextStyle(
                                                       fontSize: 13,
                                                       fontWeight:
                                                           FontWeight.w600,
                                                     ),
                                                   ),
                                                   Text(
-                                                    '22.000₫',
-                                                    style: TextStyle(
+                                                    '${NumberFormat.currency(
+                                                      decimalDigits: 0,
+                                                      symbol: "₫",
+                                                      customPattern: "###,###",
+                                                    ).format(widget.unitPrice)} ₫',
+                                                    style: const TextStyle(
                                                       fontSize: 13,
                                                       fontWeight:
                                                           FontWeight.w400,
@@ -284,7 +347,7 @@ class TranResultScreen extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              '$hours-$date',
+                                              '${widget.hours}-${widget.date}',
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
@@ -305,7 +368,7 @@ class TranResultScreen extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              code.toString(),
+                                              widget.code.toString(),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
@@ -314,11 +377,11 @@ class TranResultScreen extends StatelessWidget {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Biển số xe",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
@@ -326,8 +389,8 @@ class TranResultScreen extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              '30A-123.45',
-                                              style: TextStyle(
+                                              widget.licensePlate,
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
                                               ),
@@ -335,27 +398,27 @@ class TranResultScreen extends StatelessWidget {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              "Vòi bơm",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                            Text(
-                                              '2',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: size.height * 0.02),
+                                        // const Row(
+                                        //   mainAxisAlignment:
+                                        //       MainAxisAlignment.spaceBetween,
+                                        //   children: [
+                                        //     Text(
+                                        //       "Vòi bơm",
+                                        //       style: TextStyle(
+                                        //         fontWeight: FontWeight.w400,
+                                        //         fontSize: 13,
+                                        //       ),
+                                        //     ),
+                                        //     Text(
+                                        //       '2',
+                                        //       style: TextStyle(
+                                        //         fontWeight: FontWeight.w600,
+                                        //         fontSize: 13,
+                                        //       ),
+                                        //     ),
+                                        //   ],
+                                        // ),
+                                        // SizedBox(height: size.height * 0.02),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -371,7 +434,7 @@ class TranResultScreen extends StatelessWidget {
                                               '${NumberFormat.currency(
                                                 decimalDigits: 0,
                                                 customPattern: "###,###",
-                                              ).format(amount)} lít',
+                                              ).format(widget.amount)} lít',
                                               style: const TextStyle(
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w600,
@@ -380,11 +443,11 @@ class TranResultScreen extends StatelessWidget {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Cửa hàng",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
@@ -392,8 +455,8 @@ class TranResultScreen extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              'Cửa hàng xăng dầu Xa La',
-                                              style: TextStyle(
+                                              orgUnit?["shortName"],
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
                                               ),
@@ -401,24 +464,29 @@ class TranResultScreen extends StatelessWidget {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Địa chỉ",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 13,
                                               ),
                                             ),
-                                            Text(
-                                              'Đường Cầu Bươu',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 13,
+                                            const SizedBox(width: 16),
+                                            Expanded(
+                                              child: Text(
+                                                orgUnit?["address"],
+                                                textAlign: TextAlign.right,
+                                                softWrap: true,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 13,
+                                                ),
                                               ),
-                                            ),
+                                            )
                                           ],
                                         ),
                                       ],

@@ -70,7 +70,7 @@ class _QrScreenState extends State<QrScreen> {
       var response = await apiClient.getConfirmation(userData?["id"]);
 
       while (response["data"] == null) {
-        await Future.delayed(const Duration(seconds: 5));
+        await Future.delayed(const Duration(seconds: 10));
         response = await apiClient.getConfirmation(userData?["id"]);
 
         if (!_polling) {

@@ -10,10 +10,14 @@ import 'package:intl/intl.dart';
 class TransactionFailedResult extends StatelessWidget {
   final Map<String, dynamic> order;
   final String vehicleCode;
+  final String location;
+  final String customerName;
   const TransactionFailedResult({
     super.key,
     required this.order,
     required this.vehicleCode,
+    required this.location,
+    required this.customerName,
   });
 
   @override
@@ -244,8 +248,7 @@ class TransactionFailedResult extends StatelessWidget {
                                             ),
                                             Text(
                                               DateFormat('HH:mm dd/MM/yyyy')
-                                                  .format(
-                                                      order["endFuelingTime"]),
+                                                  .format(DateTime.now()),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
@@ -266,7 +269,7 @@ class TransactionFailedResult extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              order["id"],
+                                              order["id"].toString(),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
@@ -301,27 +304,6 @@ class TransactionFailedResult extends StatelessWidget {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             const Text(
-                                              "Vòi bơm",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                            Text(
-                                              order["nozzleId"],
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: size.height * 0.02),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            const Text(
                                               "Số lượng",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
@@ -341,11 +323,11 @@ class TransactionFailedResult extends StatelessWidget {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Cửa hàng",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
@@ -353,8 +335,8 @@ class TransactionFailedResult extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              'Cửa hàng xăng dầu Xa La',
-                                              style: TextStyle(
+                                              customerName,
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
                                               ),
@@ -362,22 +344,27 @@ class TransactionFailedResult extends StatelessWidget {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Địa chỉ",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 13,
                                               ),
                                             ),
-                                            Text(
-                                              'Đường Cầu Bươu',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 13,
+                                            SizedBox(width: 16),
+                                            Expanded(
+                                              child: Text(
+                                                location,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 13,
+                                                ),
+                                                textAlign: TextAlign.right,
+                                                softWrap: true,
                                               ),
                                             ),
                                           ],

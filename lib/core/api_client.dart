@@ -450,7 +450,6 @@ class ApiClient {
 
   Future<Map<String, dynamic>> getCustomer(int customerId) async {
     final apiToken = await _ss.readSecureData("access_token");
-    print(customerId);
     try {
       final response = await _r.retry(
         () async => await _dio.get(
@@ -533,6 +532,7 @@ class ApiClient {
           return false;
         },
       );
+
       return response.data;
     } on DioException catch (e) {
       return e.response!.data;
@@ -766,6 +766,112 @@ class ApiClient {
           return false;
         },
       );
+      return response.data;
+    } on DioException catch (e) {
+      print(e);
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getCompany(int id) async {
+    final apiToken = await _ss.readSecureData("access_token");
+
+    try {
+      final response = await _r.retry(
+        () async => await _dio.get(
+          "$_apiUrl/MD/OrgUnit/$id",
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getDriver(int userId) async {
+    final apiToken = await _ss.readSecureData("access_token");
+
+    final Map<String, dynamic> details = {
+      "keyword": "",
+      "status": 0,
+      "pageIndex": 1,
+      "pageSize": 10,
+      "orderCol": "",
+      "isDesc": true,
+      "userId": userId,
+      "customerId": 0,
+    };
+
+    try {
+      final response = await _r.retry(
+        () async => await _dio.post(
+          "$_apiUrl/MD/Driver/Find",
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+          data: details,
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      print(e);
+      return e.response!.data;
+    }
+  }
+
+  Future<Map<String, dynamic>> getPumpStation(int id) async {
+    final apiToken = await _ss.readSecureData("access_token");
+
+    try {
+      final response = await _r.retry(
+        () async => await _dio.get(
+          "$_apiUrl/MD/PumpStation/$id",
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer $apiToken",
+            },
+          ),
+        ),
+        retryIf: (e) {
+          if (e is DioException) {
+            return e.type == DioExceptionType.sendTimeout ||
+                e.type == DioExceptionType.receiveTimeout ||
+                e.type == DioExceptionType.connectionTimeout;
+          }
+
+          return false;
+        },
+      );
+
       return response.data;
     } on DioException catch (e) {
       return e.response!.data;

@@ -23,6 +23,8 @@ class QrResultScreen extends StatefulWidget {
 
 class _QrResultScreenState extends State<QrResultScreen> {
   Map<String, dynamic>? order;
+  String? customerName;
+  String? location;
 
   Future<dynamic> submitOrder(int status) async {
     var response = await apiClient.updateOrderStatus(status, widget.orderId);
@@ -40,10 +42,61 @@ class _QrResultScreenState extends State<QrResultScreen> {
       if (response["success"]) {
         return response["data"];
       } else {
-        return {};
+        return response;
       }
     } catch (e) {
       throw Exception("Failed to load log");
+    }
+  }
+
+  void getLog2() async {
+    try {
+      final response = await apiClient.getLog(widget.orderId);
+      if (response["success"]) {
+        setState(() {
+          order = response["data"];
+        });
+        final response1 =
+            await apiClient.getPumpStation(int.parse(order!["nozzleId"]));
+        print(response1);
+        if (response1["success"]) {
+          final response2 =
+              await apiClient.getCompany(response1["data"]["branchId"]);
+          print(response2);
+          if (response2["success"]) {
+            setState(() {
+              customerName = response2["data"]["shortName"];
+              location = response2["data"]["address"];
+            });
+          }
+        }
+      }
+    } catch (e) {
+      throw Exception("Failed to load log");
+    }
+  }
+
+  void getAddress() async {
+    if (order == null) {
+      print("Order is null");
+    }
+    try {
+      final response1 =
+          await apiClient.getPumpStation(int.parse(order!["nozzleId"]));
+      print(response1);
+      if (response1["success"]) {
+        final response2 =
+            await apiClient.getCompany(response1["data"]["branchId"]);
+        print(response2);
+        if (response2["success"]) {
+          setState(() {
+            customerName = response2["data"]["shortName"];
+            location = response2["data"]["address"];
+          });
+        }
+      }
+    } catch (e) {
+      throw Exception("Failed to load address");
     }
   }
 
@@ -51,11 +104,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
   void initState() {
     super.initState();
     print(widget.orderId);
-    getLog().then((value) {
-      setState(() {
-        order = value;
-      });
-    });
+    getLog2();
   }
 
   @override
@@ -274,7 +323,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                                                         "Đang tải...");
                                                   } else {
                                                     return Text(
-                                                      '${DateFormat("HH:mm - dd/MM/yyyy").format(DateTime.parse(snapshot.data?["endFuelingTime"]))}',
+                                                      '${DateFormat("HH:mm - dd/MM/yyyy").format(DateTime.now())}',
                                                       style: const TextStyle(
                                                         fontWeight:
                                                             FontWeight.w600,
@@ -345,46 +394,6 @@ class _QrResultScreenState extends State<QrResultScreen> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             const Text(
-                                              "Vòi bơm",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                            // Text(
-                                            //   '2',
-                                            //   style: TextStyle(
-                                            //     fontWeight: FontWeight.w600,
-                                            //     fontSize: 13,
-                                            //   ),
-                                            // ),
-                                            FutureBuilder(
-                                                future: getLog(),
-                                                builder: (context, snapshot) {
-                                                  if (snapshot
-                                                          .connectionState ==
-                                                      ConnectionState.waiting) {
-                                                    return const Text(
-                                                        "Đang tải...");
-                                                  } else {
-                                                    return Text(
-                                                      '${snapshot.data?["nozzleId"]}',
-                                                      style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 13,
-                                                      ),
-                                                    );
-                                                  }
-                                                })
-                                          ],
-                                        ),
-                                        SizedBox(height: size.height * 0.02),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            const Text(
                                               "Số lượng",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
@@ -413,11 +422,11 @@ class _QrResultScreenState extends State<QrResultScreen> {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Cửa hàng",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
@@ -425,8 +434,8 @@ class _QrResultScreenState extends State<QrResultScreen> {
                                               ),
                                             ),
                                             Text(
-                                              'Cửa hàng xăng dầu Xa La',
-                                              style: TextStyle(
+                                              customerName ?? "Đang tải...",
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 13,
                                               ),
@@ -434,22 +443,27 @@ class _QrResultScreenState extends State<QrResultScreen> {
                                           ],
                                         ),
                                         SizedBox(height: size.height * 0.02),
-                                        const Row(
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Địa chỉ",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 13,
                                               ),
                                             ),
-                                            Text(
-                                              'Đường Cầu Bươu',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 13,
+                                            SizedBox(width: 16),
+                                            Expanded(
+                                              child: Text(
+                                                location ?? "Đang tải...",
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 13,
+                                                ),
+                                                textAlign: TextAlign.right,
+                                                softWrap: true,
                                               ),
                                             ),
                                           ],
@@ -477,7 +491,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
                           child: TextButton(
                             onPressed: () {
                               submitOrder(0);
-                              order == null
+                              order != null
                                   ? Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -485,6 +499,8 @@ class _QrResultScreenState extends State<QrResultScreen> {
                                             TransactionFailedResult(
                                           order: order!,
                                           vehicleCode: widget.vehiclePlate,
+                                          customerName: customerName!,
+                                          location: location!,
                                         ),
                                       ),
                                     )
@@ -527,6 +543,8 @@ class _QrResultScreenState extends State<QrResultScreen> {
                                             TransactionResult(
                                           order: order!,
                                           vehicleCode: widget.vehiclePlate,
+                                          customerName: customerName!,
+                                          location: location!,
                                         ),
                                       ),
                                     )

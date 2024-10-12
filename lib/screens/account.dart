@@ -1,6 +1,7 @@
 import 'dart:convert';
 import "dart:typed_data";
 import 'package:driver_app/core/api_client.dart';
+import 'package:driver_app/models/driver.dart';
 import 'package:driver_app/models/license_plate.dart';
 import 'package:driver_app/models/user_data.dart';
 import 'package:driver_app/screens/license_plate.dart';
@@ -29,6 +30,8 @@ class _AccountScreenState extends State<AccountScreen> {
   String selectedLicensePlate = "";
   int? availableCreditLimit;
   int? totalCreditLimit;
+  String? address;
+  String? customerName;
 
   Future<void> _selectLicensePlate() async {
     final result = await Navigator.push(
@@ -205,10 +208,44 @@ class _AccountScreenState extends State<AccountScreen> {
     return {};
   }
 
+  Future<Map<String, dynamic>> getCompany() async {
+    var company = context.read<UserDataModel>().value?["branchId"];
+    try {
+      final response = await ApiClient().getCompany(company);
+      if (response["success"]) {
+        final response2 =
+            await ApiClient().getCompany(response["data"]["idParent"]);
+        if (response2["success"]) {
+          return response2["data"];
+        }
+      }
+    } catch (e) {
+      return {};
+    }
+    return {};
+  }
+
+  void getCustomer() async {
+    var driverInfo = context.read<LicensePlateModel>().value;
+    try {
+      final response =
+          await apiClient.getCustomer(driverInfo?["vehicle"]["customerId"]);
+      if (response["success"]) {
+        setState(() {
+          address = response["data"]["address"];
+          customerName = response["data"]["customerName"];
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     getCreditLimit();
+    getCustomer();
   }
 
   @override
@@ -234,8 +271,8 @@ class _AccountScreenState extends State<AccountScreen> {
       color: Color.fromRGBO(253, 79, 79, 1),
     );
 
-    return Consumer2<UserDataModel, LicensePlateModel>(
-      builder: (context, userData, licensePlate, child) => Scaffold(
+    return Consumer3<UserDataModel, LicensePlateModel, DriverModel>(
+      builder: (context, userData, licensePlate, driver, child) => Scaffold(
         backgroundColor: const Color(0xFF6360FF),
         appBar: AppBar(
           actions: [
@@ -310,7 +347,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      userData.value?["displayName"],
+                      driver.value?["driverName"],
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -493,7 +530,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                'DVVT Thái Hải',
+                                customerName ?? "Không có thông tin",
                                 style: title,
                               ),
                             ],
@@ -514,7 +551,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                '245 Phùng Hưng, Hà Đông',
+                                address ?? "Không có thông tin",
                                 style: title,
                               ),
                             ],
@@ -534,9 +571,19 @@ class _AccountScreenState extends State<AccountScreen> {
                                 ),
                               ),
                               const SizedBox(width: 10),
-                              Text(
-                                'PVOIL Hà Nội',
-                                style: title,
+                              FutureBuilder(
+                                future: getCompany(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const CircularProgressIndicator();
+                                  }
+                                  return Text(
+                                    snapshot.data?["shortName"] ??
+                                        "Không có thông tin",
+                                    style: title,
+                                  );
+                                },
                               ),
                             ],
                           ),

@@ -22,9 +22,12 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   List<History> _items = [];
   bool _isLoading = false;
+  String currentLicensePlate = "";
 
   @override
   void initState() {
+    currentLicensePlate =
+        context.read<LicensePlateModel>().value?["vehicle"]["vehicleCode"];
     super.initState();
     getHistory();
 
@@ -77,7 +80,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       print(_endDate);
       var response = await apiClient.getHistory(_startDate, _endDate,
           licensePlate?["driverId"], licensePlate?["vehicleId"]);
-
+      print(response);
       if (response["success"]) {
         for (var item in response["data"]) {
           // print("Status: ${item["status"].runtimeType}");
@@ -101,20 +104,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
               vehicleCode: licensePlate?["vehicle"]["vehicleCode"],
               unitPrice: item["trpr"][0]["unitPrice"],
               productName: item["trpr"][0]["productName"],
+              branchId: item["branchId"],
             ));
-          });
-          setState(() {
-            _isLoading = false;
           });
         }
       }
     } catch (e) {
       print("Error: $e");
-      setState(() {
-        _isLoading = false;
-      });
       throw Exception("Failed to get history");
     }
+    setState(() {
+      _isLoading = false;
+    });
+    print(_isLoading);
   }
 
   int? _dateSelected;
@@ -234,8 +236,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }).toList();
   }
 
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   context.watch<LicensePlateModel>().licensePlate;
+  //   getHistory();
+  //   print(_items);
+  // }
+
   @override
   Widget build(BuildContext context) {
+    // watch the licensePlate for changes. getHistory() will be called when the licensePlate changes
+
     var color = const Color.fromRGBO(99, 96, 255, 1);
 
     return Consumer2<UserDataModel, LicensePlateModel>(
@@ -567,16 +579,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                               pushScreenWithoutNavBar(
                                                 context,
                                                 TranResultScreen(
-                                                  amount: item.amount,
-                                                  code: item.code,
-                                                  date: item.date,
-                                                  hours: item.hours,
-                                                  money: item.money,
-                                                  status: item.status,
-                                                  vehicleCode: item.vehicleCode,
-                                                  unitPrice: item.unitPrice,
-                                                  productName: item.productName,
-                                                ),
+                                                    amount: item.amount,
+                                                    code: item.code,
+                                                    date: item.date,
+                                                    hours: item.hours,
+                                                    money: item.money,
+                                                    status: item.status,
+                                                    vehicleCode:
+                                                        item.vehicleCode,
+                                                    unitPrice: item.unitPrice,
+                                                    productName:
+                                                        item.productName,
+                                                    licensePlate: licensePlate
+                                                            .licensePlate ??
+                                                        "",
+                                                    branchId: item.branchId),
                                               );
                                             },
                                             child: Padding(
@@ -804,6 +821,7 @@ class History {
   final String vehicleCode;
   final double unitPrice;
   final String productName;
+  final int branchId;
 
   History({
     required this.amount,
@@ -815,5 +833,6 @@ class History {
     required this.vehicleCode,
     required this.unitPrice,
     required this.productName,
+    required this.branchId,
   });
 }
