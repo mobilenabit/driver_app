@@ -13,6 +13,7 @@ class LicensePlateModel with ChangeNotifier {
     notifyListeners();
 
     await apiClient.getUserData().then((res) {
+      print("GetUserData: $res");
       userData = res["data"];
     }).catchError((e) {
       _isLoading = false;
@@ -32,8 +33,10 @@ class LicensePlateModel with ChangeNotifier {
     });
   }
 
-  Future<bool> setLicensePlate(Map<String, dynamic> newLicensePlate) async {
+  Future<bool> setLicensePlate(Map<String, dynamic> newLicensePlate,
+      Map<String, dynamic>? userData) async {
     licensePlate = newLicensePlate["vehicle"]["vehicleCode"];
+    print(userData);
 
     var response = await apiClient.setActiveVehicle(
         userData?["id"], newLicensePlate["vehicleId"]);
@@ -44,6 +47,7 @@ class LicensePlateModel with ChangeNotifier {
       notifyListeners();
       return true;
     } else {
+      notifyListeners();
       return false;
     }
   }

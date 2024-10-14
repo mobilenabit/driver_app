@@ -34,10 +34,11 @@ class _AccountScreenState extends State<AccountScreen> {
   String? customerName;
 
   Future<void> _selectLicensePlate() async {
-    final result = await Navigator.push(
+    var userData = context.read<UserDataModel>().value;
+    final result = await pushReplacementWithoutNavBar(
       context,
       MaterialPageRoute(
-        builder: (context) => const LicensePlateScreen(),
+        builder: (context) => LicensePlateScreen(userData: userData),
       ),
     );
 

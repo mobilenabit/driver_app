@@ -355,7 +355,7 @@ class TransactionFailedResult extends StatelessWidget {
                                                 fontSize: 13,
                                               ),
                                             ),
-                                            SizedBox(width: 16),
+                                            const SizedBox(width: 16),
                                             Expanded(
                                               child: Text(
                                                 location,
